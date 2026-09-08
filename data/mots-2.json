@@ -1,0 +1,1128 @@
+[
+ {
+  "mot": "à côté de",
+  "classe": "prép.",
+  "formes": []
+ },
+ {
+  "mot": "aller",
+  "classe": "v.",
+  "formes": [
+   "je vais",
+   "tu vas",
+   "il / elle va",
+   "nous allons",
+   "vous allez",
+   "ils / elles vont"
+  ]
+ },
+ {
+  "mot": "alors",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "amuser",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "an",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "appeler",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "après",
+  "classe": "prép.",
+  "formes": []
+ },
+ {
+  "mot": "arrêter",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "arriver",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "attendre",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "au",
+  "classe": "dét.",
+  "formes": [
+   "aux"
+  ]
+ },
+ {
+  "mot": "aujourd'hui",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "aussi",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "auto",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "automne",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "autour",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "autre",
+  "classe": "adj.",
+  "formes": []
+ },
+ {
+  "mot": "avant",
+  "classe": "prép.",
+  "formes": []
+ },
+ {
+  "mot": "avec",
+  "classe": "prép.",
+  "formes": []
+ },
+ {
+  "mot": "banane",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "bas",
+  "classe": "adj.",
+  "formes": [
+   "basse"
+  ]
+ },
+ {
+  "mot": "bois",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "bout",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "brebis",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "bruit",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "café",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "campagne",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "canard",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "cane",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "carotte",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "ce",
+  "classe": "dét.",
+  "formes": [
+   "cet",
+   "cette",
+   "ces"
+  ]
+ },
+ {
+  "mot": "celui",
+  "classe": "pron.",
+  "formes": [
+   "ceux",
+   "celle",
+   "celles"
+  ]
+ },
+ {
+  "mot": "cent",
+  "classe": "dét.",
+  "formes": []
+ },
+ {
+  "mot": "certains",
+  "classe": "dét.",
+  "formes": [
+   "certaines"
+  ]
+ },
+ {
+  "mot": "chanson",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "chaque",
+  "classe": "dét.",
+  "formes": []
+ },
+ {
+  "mot": "chez",
+  "classe": "prép.",
+  "formes": []
+ },
+ {
+  "mot": "cinquante",
+  "classe": "dét.",
+  "formes": []
+ },
+ {
+  "mot": "comme",
+  "classe": "conj.",
+  "formes": []
+ },
+ {
+  "mot": "comment",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "coq",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "côté",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "cour",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "cousin",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "cousine",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "déjà",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "depuis",
+  "classe": "prép.",
+  "formes": []
+ },
+ {
+  "mot": "dernier",
+  "classe": "adj.",
+  "formes": [
+   "dernière"
+  ]
+ },
+ {
+  "mot": "dernier",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "dernière",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "derrière",
+  "classe": "prép.",
+  "formes": []
+ },
+ {
+  "mot": "deuxième",
+  "classe": "adj.",
+  "formes": [
+   "2e"
+  ]
+ },
+ {
+  "mot": "deuxième",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "devant",
+  "classe": "prép.",
+  "formes": []
+ },
+ {
+  "mot": "dire",
+  "classe": "v.",
+  "formes": [
+   "je dis",
+   "tu dis",
+   "il / elle dit",
+   "nous disons",
+   "vous dites",
+   "ils / elles disent"
+  ]
+ },
+ {
+  "mot": "donc",
+  "classe": "conj.",
+  "formes": []
+ },
+ {
+  "mot": "douze",
+  "classe": "dét.",
+  "formes": []
+ },
+ {
+  "mot": "élève",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "en",
+  "classe": "prép.",
+  "formes": []
+ },
+ {
+  "mot": "encore",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "enfin",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "ensuite",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "entendre",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "entre",
+  "classe": "prép.",
+  "formes": []
+ },
+ {
+  "mot": "été",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "face",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "faire",
+  "classe": "v.",
+  "formes": [
+   "je fais",
+   "tu fais",
+   "il / elle fait",
+   "nous faisons",
+   "vous faites",
+   "ils / elles font"
+  ]
+ },
+ {
+  "mot": "fantôme",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "faux",
+  "classe": "adj.",
+  "formes": [
+   "fausse"
+  ]
+ },
+ {
+  "mot": "fée",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "femme",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "figure",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "fils",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "fort",
+  "classe": "adj.",
+  "formes": [
+   "forte"
+  ]
+ },
+ {
+  "mot": "froid",
+  "classe": "adj.",
+  "formes": [
+   "froide"
+  ]
+ },
+ {
+  "mot": "fruit",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "grand-maman",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "grand-mère",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "grand-papa",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "grand-père",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "haut",
+  "classe": "adj.",
+  "formes": [
+   "haute"
+  ]
+ },
+ {
+  "mot": "hiver",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "homme",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "ici",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "idée",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "image",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "jamais",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "joyeux",
+  "classe": "adj.",
+  "formes": [
+   "joyeuse"
+  ]
+ },
+ {
+  "mot": "jument",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "là",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "laid",
+  "classe": "adj.",
+  "formes": [
+   "laide"
+  ]
+ },
+ {
+  "mot": "large",
+  "classe": "adj.",
+  "formes": []
+ },
+ {
+  "mot": "leçon",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "lecture",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "légume",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "leur",
+  "classe": "dét.",
+  "formes": [
+   "leurs"
+  ]
+ },
+ {
+  "mot": "loin",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "lorsque",
+  "classe": "conj.",
+  "formes": [
+   "lorsqu’"
+  ]
+ },
+ {
+  "mot": "madame",
+  "classe": "n. f.",
+  "formes": [
+   "Mme",
+   "mesdames"
+  ]
+ },
+ {
+  "mot": "maintenant",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "mal",
+  "classe": "n. m.",
+  "formes": [
+   "maux"
+  ]
+ },
+ {
+  "mot": "malade",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "marier",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "me",
+  "classe": "pron.",
+  "formes": [
+   "m’"
+  ]
+ },
+ {
+  "mot": "même",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "mettre",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "mieux",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "moi",
+  "classe": "pron.",
+  "formes": []
+ },
+ {
+  "mot": "moins",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "moment",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "monsieur",
+  "classe": "n. m.",
+  "formes": [
+   "M.",
+   "messieurs"
+  ]
+ },
+ {
+  "mot": "monstre",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "monter",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "nature",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "ni",
+  "classe": "conj.",
+  "formes": []
+ },
+ {
+  "mot": "non",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "notre",
+  "classe": "dét.",
+  "formes": [
+   "nos"
+  ]
+ },
+ {
+  "mot": "nouveau",
+  "classe": "adj.",
+  "formes": [
+   "nouvelle"
+  ]
+ },
+ {
+  "mot": "nouveau",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "nouvelle",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "oncle",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "onze",
+  "classe": "dét.",
+  "formes": []
+ },
+ {
+  "mot": "orange",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "oui",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "paire",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "par",
+  "classe": "prép.",
+  "formes": []
+ },
+ {
+  "mot": "parce que",
+  "classe": "conj.",
+  "formes": [
+   "parce qu’"
+  ]
+ },
+ {
+  "mot": "parent",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "parfois",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "partout",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "pas",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "passer",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "patate",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "patte",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "peau",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "peine",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "pendant",
+  "classe": "prép.",
+  "formes": []
+ },
+ {
+  "mot": "penser",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "peu",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "peur",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "peut-être",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "porc",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "pour",
+  "classe": "prép.",
+  "formes": []
+ },
+ {
+  "mot": "pourquoi",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "prendre",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "près",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "prière",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "prince",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "princesse",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "printemps",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "propre",
+  "classe": "adj.",
+  "formes": []
+ },
+ {
+  "mot": "puis",
+  "classe": "conj.",
+  "formes": []
+ },
+ {
+  "mot": "quarante",
+  "classe": "dét.",
+  "formes": []
+ },
+ {
+  "mot": "quatorze",
+  "classe": "dét.",
+  "formes": []
+ },
+ {
+  "mot": "que",
+  "classe": "conj.",
+  "formes": [
+   "qu’"
+  ]
+ },
+ {
+  "mot": "quelque",
+  "classe": "dét.",
+  "formes": [
+   "quelques"
+  ]
+ },
+ {
+  "mot": "quinze",
+  "classe": "dét.",
+  "formes": []
+ },
+ {
+  "mot": "reine",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "répondre",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "rester",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "rose",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "sage",
+  "classe": "adj.",
+  "formes": []
+ },
+ {
+  "mot": "sans",
+  "classe": "prép.",
+  "formes": []
+ },
+ {
+  "mot": "savoir",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "se",
+  "classe": "pron.",
+  "formes": [
+   "s’"
+  ]
+ },
+ {
+  "mot": "seize",
+  "classe": "dét.",
+  "formes": []
+ },
+ {
+  "mot": "semaine",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "seul",
+  "classe": "adj.",
+  "formes": [
+   "seule"
+  ]
+ },
+ {
+  "mot": "si",
+  "classe": "conj.",
+  "formes": []
+ },
+ {
+  "mot": "soixante",
+  "classe": "dét.",
+  "formes": []
+ },
+ {
+  "mot": "sortir",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "sous",
+  "classe": "prép.",
+  "formes": []
+ },
+ {
+  "mot": "souvent",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "suivre",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "sur",
+  "classe": "prép.",
+  "formes": []
+ },
+ {
+  "mot": "surtout",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "tableau",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "tant",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "tante",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "tard",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "te",
+  "classe": "pron.",
+  "formes": [
+   "t’"
+  ]
+ },
+ {
+  "mot": "tellement",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "temps",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "toi",
+  "classe": "pron.",
+  "formes": []
+ },
+ {
+  "mot": "tomber",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "toujours",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "tourner",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "tout",
+  "classe": "dét.",
+  "formes": [
+   "tous",
+   "toute",
+   "toutes"
+  ]
+ },
+ {
+  "mot": "treize",
+  "classe": "dét.",
+  "formes": []
+ },
+ {
+  "mot": "trente",
+  "classe": "dét.",
+  "formes": []
+ },
+ {
+  "mot": "très",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "trop",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "trouver",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "truie",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "venir",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "vers",
+  "classe": "prép.",
+  "formes": []
+ },
+ {
+  "mot": "vieux",
+  "classe": "adj.",
+  "formes": [
+   "vieille"
+  ]
+ },
+ {
+  "mot": "vingt",
+  "classe": "dét.",
+  "formes": []
+ },
+ {
+  "mot": "vite",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "voici",
+  "classe": "prép.",
+  "formes": []
+ },
+ {
+  "mot": "voilà",
+  "classe": "prép.",
+  "formes": []
+ },
+ {
+  "mot": "voix",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "votre",
+  "classe": "dét.",
+  "formes": [
+   "vos"
+  ]
+ },
+ {
+  "mot": "vrai",
+  "classe": "adj.",
+  "formes": [
+   "vraie"
+  ]
+ },
+ {
+  "mot": "vraiment",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "y",
+  "classe": "pron.",
+  "formes": []
+ },
+ {
+  "mot": "zéro",
+  "classe": "n. m.",
+  "formes": []
+ }
+]

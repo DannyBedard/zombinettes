@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400">
+<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#020617"/><stop offset="1" stop-color="#1e3a8a"/></linearGradient></defs>
+<rect width="1200" height="400" fill="url(#sky)"/>
+<circle cx="600" cy="150" r="130" fill="#fef3c7"/><circle cx="600" cy="150" r="170" fill="#fef3c7" opacity=".1"/>
+<g fill="#fde68a" opacity=".35"><circle cx="560" cy="120" r="14"/><circle cx="640" cy="190" r="20"/><circle cx="620" cy="90" r="8"/></g>
+<g fill="#fff" opacity=".7"><circle cx="80" cy="40" r="2"/><circle cx="220" cy="100" r="2"/><circle cx="380" cy="50" r="2.5"/><circle cx="900" cy="60" r="2"/><circle cx="1080" cy="120" r="2"/><circle cx="1150" cy="40" r="1.5"/></g>
+<g fill="#0f172a"><path d="M0 400 V300 l40 -90 l40 90 l30 -70 l30 70 l40 -110 l40 110 l30 -60 l30 60 l35 -95 l35 95 l30 -70 l30 70 V400z"/><path d="M800 400 V310 l35 -90 l35 90 l30 -60 l30 60 l40 -110 l40 110 l30 -70 l30 70 l35 -95 l35 95 l30 -60 l30 60 V400z"/></g>
+<path d="M0 370 Q600 300 1200 370 V400 H0Z" fill="#020617"/>
+<text x="600" y="345" font-size="120" text-anchor="middle">🐺</text>
+<text x="180" y="360" font-size="60" text-anchor="middle">🌲</text><text x="1020" y="360" font-size="60" text-anchor="middle">🌲</text>
+</svg>

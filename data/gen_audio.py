@@ -1,0 +1,59 @@
+"""Génère les clips audio (edge-tts, voix fr-CA neuronales) dans audio/<voix>/<slug>.mp3 + audio/manifest.json.
+Usage : "$HOME/Library/Application Support/pipx/venvs/edge-tts/bin/python" data/gen_audio.py [--limit N] [--voices sylvie,jean]"""
+import asyncio, json, os, sys, time
+import edge_tts
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+P = json.load(open(os.path.join(ROOT, "data/phrases.json")))
+OUT = os.path.join(ROOT, "audio")
+
+def slug(text):
+    return "".join(c if ("a" <= c <= "z" or "0" <= c <= "9") else "_%x" % ord(c) for c in text.strip().lower())
+
+def items():
+    out = []  # (text, rate)
+    for g in (1, 2, 3):
+        for w in json.load(open(os.path.join(ROOT, f"data/mots-{g}.json"))):
+            out.append((w["mot"], "-15%"))
+    for l in P["letters"]: out.append((l, "-10%"))
+    for n in range(0, 101): out.append((str(n), "-10%"))
+    for t in list(P["consignes"].values()) + P["praise"] + P["misc"] + list(P["themes"].values()) + list(P["styles"].values()):
+        out.append((t, "+0%"))
+    return out
+
+async def gen(sem, voice_id, text, rate, path):
+    if os.path.exists(path) and os.path.getsize(path) > 0: return
+    async with sem:
+        for attempt in range(4):
+            try:
+                await edge_tts.Communicate(text, voice_id, rate=rate).save(path); return
+            except Exception as e:
+                await asyncio.sleep(1.5 * (attempt + 1)); err = e
+        print("ÉCHEC", voice_id, text, err, file=sys.stderr)
+
+async def main():
+    args = sys.argv[1:]
+    limit = int(args[args.index("--limit") + 1]) if "--limit" in args else None
+    voices = args[args.index("--voices") + 1].split(",") if "--voices" in args else list(P["voices"])
+    sem = asyncio.Semaphore(6)
+    tasks, manifest = [], {}
+    base = items()[:limit] if limit else items()
+    for v in voices:
+        vid = P["voices"][v]; d = os.path.join(OUT, v); os.makedirs(d, exist_ok=True)
+        lst = base + [(f"Salut! Moi c'est {P['voiceNames'][v]}. On joue ensemble?", "+0%")]
+        manifest[v] = [slug(t) for t, _ in lst]
+        for text, rate in lst:
+            tasks.append(gen(sem, vid, text, rate, os.path.join(d, slug(text) + ".mp3")))
+    t0 = time.time()
+    await asyncio.gather(*tasks)
+    # ne garder dans le manifeste que les fichiers réellement présents
+    for v in voices:
+        manifest[v] = sorted(s for s in manifest[v] if os.path.exists(os.path.join(OUT, v, s + ".mp3")))
+    old = {}
+    mp = os.path.join(OUT, "manifest.json")
+    if os.path.exists(mp): old = json.load(open(mp))
+    old.update(manifest)
+    json.dump(old, open(mp, "w"), ensure_ascii=False)
+    print(f"{len(tasks)} clips en {time.time()-t0:.0f}s ; manifest : { {v: len(s) for v, s in old.items()} }")
+
+asyncio.run(main())

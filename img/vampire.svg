@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400">
+<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a0407"/><stop offset="1" stop-color="#4c0519"/></linearGradient></defs>
+<rect width="1200" height="400" fill="url(#sky)"/>
+<circle cx="880" cy="120" r="110" fill="#fecaca"/><circle cx="880" cy="120" r="150" fill="#fecaca" opacity=".12"/>
+<g fill="#fff" opacity=".6"><circle cx="100" cy="50" r="2"/><circle cx="260" cy="90" r="2"/><circle cx="500" cy="40" r="2.5"/><circle cx="1150" cy="80" r="2"/><circle cx="640" cy="110" r="1.5"/></g>
+<g fill="#0a0203"><rect x="120" y="180" width="60" height="220"/><polygon points="120,180 150,120 180,180"/><rect x="180" y="230" width="140" height="170"/><rect x="320" y="150" width="70" height="250"/><polygon points="320,150 355,80 390,150"/><rect x="200" y="200" width="20" height="30"/><rect x="260" y="200" width="20" height="30"/></g>
+<g fill="#fde68a" opacity=".9"><rect x="140" y="220" width="14" height="22"/><rect x="340" y="200" width="14" height="22"/><rect x="230" y="270" width="14" height="22"/></g>
+<path d="M0 360 Q300 320 600 360 T1200 350 V400 H0Z" fill="#0a0203"/>
+<g fill="#111"><path d="M700 90 q-20 -25 -40 0 q-10 -15 -20 0 l20 20 l20 -10 l20 10z"/><path d="M1050 200 q-15 -20 -30 0 q-8 -12 -16 0 l16 16 l15 -8 l15 8z"/><path d="M560 160 q-15 -20 -30 0 q-8 -12 -16 0 l16 16 l15 -8 l15 8z"/></g>
+<text x="620" y="345" font-size="120" text-anchor="middle">🧛‍♀️</text>
+<text x="980" y="360" font-size="60" text-anchor="middle">🦇</text>
+</svg>

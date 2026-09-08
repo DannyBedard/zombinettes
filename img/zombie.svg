@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400">
+<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0b1f14"/><stop offset="1" stop-color="#1f3d2a"/></linearGradient>
+<radialGradient id="glow"><stop offset="0" stop-color="#d9f99d" stop-opacity=".9"/><stop offset="1" stop-color="#d9f99d" stop-opacity="0"/></radialGradient></defs>
+<rect width="1200" height="400" fill="url(#sky)"/>
+<circle cx="950" cy="110" r="150" fill="url(#glow)"/><circle cx="950" cy="110" r="70" fill="#ecfccb"/>
+<g fill="#fff" opacity=".7"><circle cx="120" cy="60" r="2"/><circle cx="300" cy="40" r="2.5"/><circle cx="520" cy="90" r="2"/><circle cx="700" cy="30" r="2"/><circle cx="1100" cy="60" r="2"/><circle cx="420" cy="140" r="1.5"/></g>
+<path d="M0 300 Q200 230 400 290 T800 280 T1200 300 V400 H0Z" fill="#0f2b1b"/>
+<path d="M0 330 Q300 280 600 330 T1200 320 V400 H0Z" fill="#14532d"/>
+<g fill="#334155" stroke="#1e293b" stroke-width="3"><path d="M180 330 v-70 a30 30 0 0 1 60 0 v70z"/><path d="M420 340 v-60 a25 25 0 0 1 50 0 v60z"/><path d="M760 335 v-80 a32 32 0 0 1 64 0 v80z"/></g>
+<g font-family="Arial" font-weight="700" fill="#94a3b8" font-size="18" text-anchor="middle"><text x="210" y="300">RIP</text><text x="445" y="310">RIP</text><text x="792" y="295">RIP</text></g>
+<ellipse cx="600" cy="360" rx="700" ry="40" fill="#bbf7d0" opacity=".12"/>
+<text x="600" y="330" font-size="120" text-anchor="middle">🧟‍♀️</text>
+<text x="1040" y="345" font-size="64" text-anchor="middle">🎃</text>
+</svg>

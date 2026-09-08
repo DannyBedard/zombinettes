@@ -1,0 +1,2191 @@
+[
+ {
+  "mot": "abri",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "acheter",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "adulte",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "affaire",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "âge",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "agneau",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "aider",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "allure",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "alphabet",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "amour",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "amoureux",
+  "classe": "adj.",
+  "formes": [
+   "amoureuse"
+  ]
+ },
+ {
+  "mot": "amoureux",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "amoureuse",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "ampoule",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "année",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "août",
+  "classe": "n. m.",
+  "formes": [],
+  "variantes": [
+   "aout"
+  ]
+ },
+ {
+  "mot": "appartement",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "apporter",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "apprendre",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "approcher",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "après-midi",
+  "classe": null,
+  "formes": []
+ },
+ {
+  "mot": "argent",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "assez",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "attention",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "attraper",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "aussitôt",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "autobus",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "avaler",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "avancer",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "avant-midi",
+  "classe": null,
+  "formes": []
+ },
+ {
+  "mot": "avion",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "avril",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "baigner",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "bain",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "balle",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "ballon",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "bande",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "barbe",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "bas",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "bateau",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "bâton",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "battre",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "bête",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "bien",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "bientôt",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "boire",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "boîte",
+  "classe": "n. f.",
+  "formes": [],
+  "variantes": [
+   "boite"
+  ]
+ },
+ {
+  "mot": "bonheur",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "bonhomme",
+  "classe": "n. m.",
+  "formes": [
+   "bonshommes"
+  ]
+ },
+ {
+  "mot": "bonjour",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "bonsoir",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "bord",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "botte",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "bouchon",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "bouteille",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "branche",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "brutal",
+  "classe": "adj.",
+  "formes": [
+   "brutaux",
+   "brutale",
+   "brutales"
+  ]
+ },
+ {
+  "mot": "bureau",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "but",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "cacher",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "cadeau",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "camion",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "car",
+  "classe": "conj.",
+  "formes": []
+ },
+ {
+  "mot": "cause",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "certain",
+  "classe": "adj.",
+  "formes": [
+   "certaine"
+  ]
+ },
+ {
+  "mot": "chacun",
+  "classe": "pron.",
+  "formes": []
+ },
+ {
+  "mot": "chagrin",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "chaise",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "champ",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "changer",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "chant",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "chasse",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "chasser",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "chasseur",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "chasseuse",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "château",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "chiffre",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "choisir",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "choix",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "cinéma",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "clair",
+  "classe": "adj.",
+  "formes": [
+   "claire"
+  ]
+ },
+ {
+  "mot": "clé",
+  "classe": "n. f.",
+  "formes": [],
+  "variantes": [
+   "clef"
+  ]
+ },
+ {
+  "mot": "coin",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "combien",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "commencer",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "comprendre",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "compter",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "congé",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "consoler",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "conte",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "continuer",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "contre",
+  "classe": "prép.",
+  "formes": []
+ },
+ {
+  "mot": "corps",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "costume",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "coucher",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "couleur",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "courant",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "courir",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "cours",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "course",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "court",
+  "classe": "adj.",
+  "formes": [
+   "courte"
+  ]
+ },
+ {
+  "mot": "crème",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "cri",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "crier",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "crise",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "croire",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "cuisine",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "d'abord",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "danger",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "danse",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "danser",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "date",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "décembre",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "découvrir",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "dedans",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "dehors",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "demain",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "demande",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "demi",
+  "classe": "adj.",
+  "formes": [
+   "demie"
+  ]
+ },
+ {
+  "mot": "demie",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "déposer",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "dès que",
+  "classe": "conj.",
+  "formes": []
+ },
+ {
+  "mot": "descendre",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "diriger",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "docteur",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "docteure",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "doigt",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "dos",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "droit",
+  "classe": "adj.",
+  "formes": [
+   "droite"
+  ]
+ },
+ {
+  "mot": "droit",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "droite",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "dur",
+  "classe": "adj.",
+  "formes": [
+   "dure"
+  ]
+ },
+ {
+  "mot": "écouter",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "écrire",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "église",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "embrasser",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "enquête",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "ensemble",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "entrer",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "environ",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "épais",
+  "classe": "adj.",
+  "formes": [
+   "épaisse"
+  ]
+ },
+ {
+  "mot": "espérer",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "étoile",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "exemple",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "facile",
+  "classe": "adj.",
+  "formes": []
+ },
+ {
+  "mot": "faim",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "faute",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "fer",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "ferme",
+  "classe": "adj.",
+  "formes": []
+ },
+ {
+  "mot": "ferme",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "fermer",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "février",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "fier",
+  "classe": "adj.",
+  "formes": [
+   "fière"
+  ]
+ },
+ {
+  "mot": "fil",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "film",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "fixe",
+  "classe": "adj.",
+  "formes": []
+ },
+ {
+  "mot": "fleuve",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "fond",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "fou",
+  "classe": "adj.",
+  "formes": [
+   "fol",
+   "folle"
+  ]
+ },
+ {
+  "mot": "frais",
+  "classe": "adj.",
+  "formes": [
+   "fraîche /",
+   "fraiche"
+  ]
+ },
+ {
+  "mot": "fraise",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "frapper",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "gagner",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "garder",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "gauche",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "genou",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "genre",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "gens",
+  "classe": null,
+  "formes": []
+ },
+ {
+  "mot": "gentil",
+  "classe": "adj.",
+  "formes": [
+   "gentille"
+  ]
+ },
+ {
+  "mot": "glace",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "glisser",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "gorge",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "goutte",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "groupe",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "guerre",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "habiter",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "haut",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "hauteur",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "herbe",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "hôpital",
+  "classe": "n. m.",
+  "formes": [
+   "hôpitaux"
+  ]
+ },
+ {
+  "mot": "horrible",
+  "classe": "adj.",
+  "formes": []
+ },
+ {
+  "mot": "important",
+  "classe": "adj.",
+  "formes": [
+   "importante"
+  ]
+ },
+ {
+  "mot": "invitation",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "jambe",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "janvier",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "jeter",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "jeune",
+  "classe": "adj.",
+  "formes": []
+ },
+ {
+  "mot": "joue",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "jouet",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "journal",
+  "classe": "n. m.",
+  "formes": [
+   "journaux"
+  ]
+ },
+ {
+  "mot": "juillet",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "juin",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "jus",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "juste",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "laisser",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "lancer",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "langue",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "lendemain",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "lentement",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "lèvre",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "libre",
+  "classe": "adj.",
+  "formes": []
+ },
+ {
+  "mot": "lieu",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "lièvre",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "ligne",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "lion",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "lionne",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "longtemps",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "lumière",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "machine",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "magasin",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "mai",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "mal",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "maladie",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "malheur",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "manquer",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "marché",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "marcher",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "mari",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "mars",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "mauvais",
+  "classe": "adj.",
+  "formes": [
+   "mauvaise"
+  ]
+ },
+ {
+  "mot": "méchant",
+  "classe": "adj.",
+  "formes": [
+   "méchante"
+  ]
+ },
+ {
+  "mot": "meilleur",
+  "classe": "adj.",
+  "formes": [
+   "meilleure"
+  ]
+ },
+ {
+  "mot": "ménage",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "mener",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "mer",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "métal",
+  "classe": "n. m.",
+  "formes": [
+   "métaux"
+  ]
+ },
+ {
+  "mot": "métier",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "mètre",
+  "classe": "n. m.",
+  "formes": [
+   "m"
+  ]
+ },
+ {
+  "mot": "milieu",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "mille",
+  "classe": "dét.",
+  "formes": []
+ },
+ {
+  "mot": "millier",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "million",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "mine",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "minuit",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "minute",
+  "classe": "n. f.",
+  "formes": [
+   "min"
+  ]
+ },
+ {
+  "mot": "mois",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "moitié",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "montrer",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "morceau",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "mort",
+  "classe": "adj.",
+  "formes": [
+   "morte"
+  ]
+ },
+ {
+  "mot": "mort",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "mort",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "morte",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "mourir",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "moyen",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "mur",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "murmure",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "museau",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "naissance",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "neuf",
+  "classe": "adj.",
+  "formes": [
+   "neuve"
+  ]
+ },
+ {
+  "mot": "nid",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "nombre",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "nourrir",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "nourriture",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "novembre",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "nuage",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "occuper",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "octobre",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "offrir",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "ombre",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "or",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "oublier",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "ours",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "ourse",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "ouvert",
+  "classe": "adj.",
+  "formes": [
+   "ouverte"
+  ]
+ },
+ {
+  "mot": "pâle",
+  "classe": "adj.",
+  "formes": []
+ },
+ {
+  "mot": "pantalon",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "paraître",
+  "classe": "v.",
+  "formes": [],
+  "variantes": [
+   "paraitre"
+  ]
+ },
+ {
+  "mot": "parc",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "part",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "partie",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "passage",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "patin",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "payer",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "pencher",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "perdre",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "permettre",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "photo",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "pièce",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "pierre",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "pile",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "pin",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "plan",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "plastique",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "pleuvoir",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "plusieurs",
+  "classe": "dét.",
+  "formes": []
+ },
+ {
+  "mot": "poche",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "poids",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "poil",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "point",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "porter",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "poser",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "posséder",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "possible",
+  "classe": "adj.",
+  "formes": []
+ },
+ {
+  "mot": "pot",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "poudre",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "pousser",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "poussin",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "précipiter",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "préférer",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "préparer",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "présenter",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "presque",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "prix",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "prochain",
+  "classe": "adj.",
+  "formes": [
+   "prochaine"
+  ]
+ },
+ {
+  "mot": "prochain",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "prochaine",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "professeur",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "professeure",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "promener",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "promettre",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "protéger",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "quel",
+  "classe": "dét.",
+  "formes": [
+   "quels",
+   "quelle",
+   "quelles"
+  ]
+ },
+ {
+  "mot": "quelqu'un",
+  "classe": "pron.",
+  "formes": [
+   "quelques-uns",
+   "quelqu’une",
+   "quelques-unes"
+  ]
+ },
+ {
+  "mot": "question",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "raconter",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "radio",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "rappeler",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "rat",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "rate",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "rayon",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "réaction",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "recevoir",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "recherche",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "rejoindre",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "remarquer",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "remettre",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "remonter",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "remplir",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "renard",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "renarde",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "rencontrer",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "rendre",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "repas",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "reprendre",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "restaurant",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "retard",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "retenir",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "retourner",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "retrouver",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "réussir",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "réveiller",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "revenir",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "rêver",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "riche",
+  "classe": "adj.",
+  "formes": []
+ },
+ {
+  "mot": "rien",
+  "classe": "pron.",
+  "formes": []
+ },
+ {
+  "mot": "rire",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "rivière",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "rond",
+  "classe": "adj.",
+  "formes": [
+   "ronde"
+  ]
+ },
+ {
+  "mot": "rouler",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "ruisseau",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "sabot",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "saison",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "salle",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "salut",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "sans que",
+  "classe": "conj.",
+  "formes": []
+ },
+ {
+  "mot": "santé",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "sapin",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "sauver",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "sec",
+  "classe": "adj.",
+  "formes": [
+   "sèche"
+  ]
+ },
+ {
+  "mot": "secouer",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "sembler",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "sentier",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "sentir",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "septembre",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "service",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "servir",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "soie",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "soigner",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "soin",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "soirée",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "son",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "sorte",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "souhaiter",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "soulier",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "souper",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "sourcil",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "souvenir",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "spectacle",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "sucre",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "suite",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "sujet",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "surface",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "taille",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "téléphone",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "télévision",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "terminer",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "terrain",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "timide",
+  "classe": "adj.",
+  "formes": []
+ },
+ {
+  "mot": "tirer",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "toucher",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "tour",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "tranquille",
+  "classe": "adj.",
+  "formes": []
+ },
+ {
+  "mot": "travailler",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "traverser",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "trésor",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "triste",
+  "classe": "adj.",
+  "formes": []
+ },
+ {
+  "mot": "troisième",
+  "classe": "adj.",
+  "formes": [
+   "3e"
+  ]
+ },
+ {
+  "mot": "troisième",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "trottoir",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "trou",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "tuer",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "usine",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "vacances",
+  "classe": null,
+  "formes": []
+ },
+ {
+  "mot": "valoir",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "ventre",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "verre",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "verser",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "vêtement",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "viande",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "village",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "vinaigre",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "visite",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "vitesse",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "vivre",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "voisin",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "voisine",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "voiture",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "voyage",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "vue",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "zoo",
+  "classe": "n. m.",
+  "formes": []
+ }
+]

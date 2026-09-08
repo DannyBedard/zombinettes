@@ -1,0 +1,1120 @@
+[
+ {
+  "mot": "à",
+  "classe": "prép.",
+  "formes": []
+ },
+ {
+  "mot": "aile",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "aimer",
+  "classe": "v.",
+  "formes": [
+   "j'aime",
+   "tu aimes",
+   "il / elle aime",
+   "nous aimons",
+   "vous aimez",
+   "ils / elles aiment"
+  ]
+ },
+ {
+  "mot": "air",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "ami",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "amie",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "animal",
+  "classe": "n. m.",
+  "formes": [
+   "animaux"
+  ]
+ },
+ {
+  "mot": "arbre",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "avoir",
+  "classe": "v.",
+  "formes": [
+   "j’ai",
+   "tu as",
+   "il / elle a",
+   "nous avons",
+   "vous avez",
+   "ils / elles ont"
+  ]
+ },
+ {
+  "mot": "beau",
+  "classe": "adj.",
+  "formes": [
+   "bel",
+   "belle"
+  ]
+ },
+ {
+  "mot": "beaucoup",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "beaucoup de",
+  "classe": "dét.",
+  "formes": []
+ },
+ {
+  "mot": "bébé",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "blanc",
+  "classe": "adj.",
+  "formes": [
+   "blanche"
+  ]
+ },
+ {
+  "mot": "bleu",
+  "classe": "adj.",
+  "formes": [
+   "bleue"
+  ]
+ },
+ {
+  "mot": "bon",
+  "classe": "adj.",
+  "formes": [
+   "bonne"
+  ]
+ },
+ {
+  "mot": "bonbon",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "bouche",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "bras",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "brun",
+  "classe": "adj.",
+  "formes": [
+   "brune"
+  ]
+ },
+ {
+  "mot": "carte",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "chambre",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "chanter",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "chapeau",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "chat",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "chatte",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "chaud",
+  "classe": "adj.",
+  "formes": [
+   "chaude"
+  ]
+ },
+ {
+  "mot": "chemin",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "cher",
+  "classe": "adj.",
+  "formes": [
+   "chère"
+  ]
+ },
+ {
+  "mot": "chercher",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "cheval",
+  "classe": "n. m.",
+  "formes": [
+   "chevaux"
+  ]
+ },
+ {
+  "mot": "cheveu",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "chien",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "chienne",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "chose",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "ciel",
+  "classe": "n. m.",
+  "formes": [
+   "cieux"
+  ]
+ },
+ {
+  "mot": "cinq",
+  "classe": "dét.",
+  "formes": []
+ },
+ {
+  "mot": "classe",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "cœur",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "cou",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "coup",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "dame",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "dans",
+  "classe": "prép.",
+  "formes": []
+ },
+ {
+  "mot": "de",
+  "classe": "prép.",
+  "formes": []
+ },
+ {
+  "mot": "demander",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "dent",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "deux",
+  "classe": "dét.",
+  "formes": []
+ },
+ {
+  "mot": "devenir",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "devoir",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "dimanche",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "dix",
+  "classe": "dét.",
+  "formes": []
+ },
+ {
+  "mot": "donner",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "dormir",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "doux",
+  "classe": "adj.",
+  "formes": [
+   "douce"
+  ]
+ },
+ {
+  "mot": "du",
+  "classe": "dét.",
+  "formes": [
+   "de l'",
+   "de la",
+   "des"
+  ]
+ },
+ {
+  "mot": "eau",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "école",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "enfant",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "et",
+  "classe": "conj.",
+  "formes": []
+ },
+ {
+  "mot": "être",
+  "classe": "v.",
+  "formes": [
+   "je suis",
+   "tu es",
+   "il / elle est",
+   "nous sommes",
+   "vous êtes",
+   "ils / elles sont"
+  ]
+ },
+ {
+  "mot": "famille",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "fenêtre",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "fête",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "feu",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "feuille",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "fille",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "finir",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "fleur",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "fois",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "forêt",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "frère",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "garçon",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "grand",
+  "classe": "adj.",
+  "formes": [
+   "grande"
+  ]
+ },
+ {
+  "mot": "gris",
+  "classe": "adj.",
+  "formes": [
+   "grise"
+  ]
+ },
+ {
+  "mot": "gros",
+  "classe": "adj.",
+  "formes": [
+   "grosse"
+  ]
+ },
+ {
+  "mot": "heure",
+  "classe": "n. f.",
+  "formes": [
+   "h"
+  ]
+ },
+ {
+  "mot": "heureux",
+  "classe": "adj.",
+  "formes": [
+   "heureuse"
+  ]
+ },
+ {
+  "mot": "histoire",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "huit",
+  "classe": "dét.",
+  "formes": []
+ },
+ {
+  "mot": "il",
+  "classe": "pron.",
+  "formes": [
+   "ils",
+   "elle",
+   "elles"
+  ]
+ },
+ {
+  "mot": "jardin",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "jaune",
+  "classe": "adj.",
+  "formes": []
+ },
+ {
+  "mot": "je",
+  "classe": "pron.",
+  "formes": [
+   "j’"
+  ]
+ },
+ {
+  "mot": "jeu",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "jeudi",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "joie",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "joli",
+  "classe": "adj.",
+  "formes": [
+   "jolie"
+  ]
+ },
+ {
+  "mot": "jouer",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "jour",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "journée",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "lapin",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "lapine",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "le",
+  "classe": "dét.",
+  "formes": [
+   "l’",
+   "la",
+   "les"
+  ]
+ },
+ {
+  "mot": "lettre",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "lever",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "lire",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "lit",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "livre",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "long",
+  "classe": "adj.",
+  "formes": [
+   "longue"
+  ]
+ },
+ {
+  "mot": "loup",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "louve",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "lundi",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "lune",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "main",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "mais",
+  "classe": "conj.",
+  "formes": []
+ },
+ {
+  "mot": "maison",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "maman",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "manger",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "marche",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "mardi",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "matin",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "merci",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "mercredi",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "mère",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "midi",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "mon",
+  "classe": "dét.",
+  "formes": [
+   "ma",
+   "mes"
+  ]
+ },
+ {
+  "mot": "monde",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "montagne",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "mot",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "mouton",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "musique",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "ne pas",
+  "classe": "adv.",
+  "formes": [
+   "ne... pas",
+   "n'… pas"
+  ]
+ },
+ {
+  "mot": "neige",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "neuf",
+  "classe": "dét.",
+  "formes": []
+ },
+ {
+  "mot": "nez",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "noir",
+  "classe": "adj.",
+  "formes": [
+   "noire"
+  ]
+ },
+ {
+  "mot": "nom",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "nous",
+  "classe": "pron.",
+  "formes": []
+ },
+ {
+  "mot": "nuit",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "œil",
+  "classe": "n. m.",
+  "formes": [
+   "yeux"
+  ]
+ },
+ {
+  "mot": "œuf",
+  "classe": "n. m.",
+  "formes": [
+   "œufs"
+  ]
+ },
+ {
+  "mot": "oiseau",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "on",
+  "classe": "pron.",
+  "formes": []
+ },
+ {
+  "mot": "oreille",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "ou",
+  "classe": "conj.",
+  "formes": []
+ },
+ {
+  "mot": "ouvrir",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "page",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "pain",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "papa",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "papier",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "parler",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "pauvre",
+  "classe": "adj.",
+  "formes": []
+ },
+ {
+  "mot": "pays",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "père",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "personne",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "petit",
+  "classe": "adj.",
+  "formes": [
+   "petite"
+  ]
+ },
+ {
+  "mot": "petit",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "petite",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "phrase",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "pied",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "place",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "plaisir",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "plein",
+  "classe": "adj.",
+  "formes": [
+   "pleine"
+  ]
+ },
+ {
+  "mot": "pluie",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "plus",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "poisson",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "pomme",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "porte",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "poule",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "poupée",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "pouvoir",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "premier",
+  "classe": "adj.",
+  "formes": [
+   "1er",
+   "première",
+   "1re"
+  ]
+ },
+ {
+  "mot": "premier",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "première",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "quand",
+  "classe": "adv.",
+  "formes": []
+ },
+ {
+  "mot": "quatre",
+  "classe": "dét.",
+  "formes": []
+ },
+ {
+  "mot": "queue",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "qui",
+  "classe": "pron.",
+  "formes": []
+ },
+ {
+  "mot": "regarder",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "robe",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "roi",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "rose",
+  "classe": "adj.",
+  "formes": []
+ },
+ {
+  "mot": "rouge",
+  "classe": "adj.",
+  "formes": []
+ },
+ {
+  "mot": "route",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "rue",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "sac",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "samedi",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "sept",
+  "classe": "dét.",
+  "formes": []
+ },
+ {
+  "mot": "six",
+  "classe": "dét.",
+  "formes": []
+ },
+ {
+  "mot": "sœur",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "soir",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "soleil",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "son",
+  "classe": "dét.",
+  "formes": [
+   "sa",
+   "ses"
+  ]
+ },
+ {
+  "mot": "souris",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "table",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "terre",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "tête",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "ton",
+  "classe": "dét.",
+  "formes": [
+   "ta",
+   "tes"
+  ]
+ },
+ {
+  "mot": "train",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "trois",
+  "classe": "dét.",
+  "formes": []
+ },
+ {
+  "mot": "tu",
+  "classe": "pron.",
+  "formes": []
+ },
+ {
+  "mot": "un",
+  "classe": "dét.",
+  "formes": [
+   "une",
+   "des"
+  ]
+ },
+ {
+  "mot": "vélo",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "vendredi",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "vent",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "vert",
+  "classe": "adj.",
+  "formes": [
+   "verte"
+  ]
+ },
+ {
+  "mot": "vie",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "ville",
+  "classe": "n. f.",
+  "formes": []
+ },
+ {
+  "mot": "visage",
+  "classe": "n. m.",
+  "formes": []
+ },
+ {
+  "mot": "voir",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "voler",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "vouloir",
+  "classe": "v.",
+  "formes": []
+ },
+ {
+  "mot": "vous",
+  "classe": "pron.",
+  "formes": []
+ }
+]

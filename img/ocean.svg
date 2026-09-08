@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400">
+<defs><linearGradient id="sea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0c4a6e"/><stop offset="1" stop-color="#082f49"/></linearGradient></defs>
+<rect width="1200" height="400" fill="url(#sea)"/>
+<g fill="#7dd3fc" opacity=".15"><path d="M0 80 Q150 40 300 80 T600 80 T900 80 T1200 80 V0 H0Z"/><path d="M0 0 h1200 v30 Q1000 70 800 30 T400 30 T0 30z" opacity=".5"/></g>
+<g fill="none" stroke="#38bdf8" stroke-width="6" opacity=".5"><path d="M0 180 Q100 150 200 180 T400 180 T600 180 T800 180 T1000 180 T1200 180"/><path d="M0 260 Q100 230 200 260 T400 260 T600 260 T800 260 T1000 260 T1200 260" opacity=".6"/></g>
+<g fill="none" stroke="#bae6fd" stroke-width="3" opacity=".7"><circle cx="150" cy="120" r="10"/><circle cx="190" cy="80" r="6"/><circle cx="1000" cy="140" r="12"/><circle cx="1050" cy="90" r="7"/><circle cx="900" cy="300" r="8"/></g>
+<path d="M0 400 V340 Q300 300 600 350 T1200 330 V400z" fill="#c2b280" opacity=".9"/>
+<text x="600" y="345" font-size="120" text-anchor="middle">🐬</text>
+<text x="250" y="370" font-size="56" text-anchor="middle">🐚</text><text x="950" y="375" font-size="56" text-anchor="middle">🦀</text><text x="420" y="230" font-size="48" text-anchor="middle">🐠</text>
+</svg>
