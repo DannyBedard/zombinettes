@@ -1,8 +1,10 @@
 # Les Zombinettes
 
 Jeu éducatif pour le 1er cycle du primaire (PWA, iPad et iPhone) : dictée de mots basée sur la Liste
-orthographique officielle du ministère de l'Éducation du Québec (1re, 2e et 3e année), dictée de nombres
-et calculs (additions, soustractions) avec difficulté réglable. Les consignes sont dites à voix haute.
+orthographique officielle du ministère de l'Éducation du Québec (1re, 2e et 3e année), lecture (mot → image),
+dictée de nombres jusqu'aux milliers, calculs (additions, soustractions), plus grand / plus petit, lecture de
+l'heure, tracé (moulé et attaché) et musique (aigu ou grave, rythme, instrument mystère), avec difficulté
+réglable. Les consignes sont dites à voix haute.
 
 ## Lancer en local
 
@@ -36,17 +38,34 @@ maison : longueur, graphèmes complexes, accents, lettres muettes, doubles lettr
 la 1re année, 5 à 7 pour la 2e, 8 à 10 pour la 3e. Seuls les paliers débloqués fournissent de nouveaux mots.
 Le palier monte tout seul quand 70 % des mots débloqués sont connus (désactivable et réglable dans l'espace parent).
 
+Lettres pièges : en mode « lettres à placer », des lettres qui se confondent avec celles du mot (é/è, b/d, m/n…)
+s'ajoutent aux tuiles (0 à 5, réglable).
+
+Lire : un mot écrit, 3 ou 4 images emoji (`data/lecture.json`). Le mot n'est jamais dit avant la réponse. Aux niveaux 2 et 3,
+les images proposées ont des noms qui ressemblent au mot (même début, même fin).
+
+Plus grand : deux nombres, « touche le plus grand » ou « le plus petit ». La moitié du temps, les deux nombres ont le
+même premier chiffre.
+
+L'heure : horloge à aiguilles en SVG, 3 choix. Niveaux : heures justes, demies, quarts, 5 minutes. Un des choix
+inverse souvent les aiguilles (erreur classique).
+
+Musique : aigu ou grave (deux notes, écart plus petit selon le niveau), rythme (ta, ti-ti, chut ; l'enfant tape sur le
+tambour, jugé sur les proportions entre les coups, pas sur le tempo) et instrument mystère (une courte mélodie jouée
+avec un vrai échantillon). Sons synthétisés en Web Audio, sauf les instruments (`audio/instr/`).
+
 Tracer : un modèle de lettre (minuscule, majuscule) ou de chiffre en gris pâle, l'enfant repasse dessus au doigt.
-Modèle en police scolaire (Chalkboard SE). Réussi quand le tracé, épaissi d'une marge, recouvre au moins 60 % du modèle (25 % sans épaississement), que le trait fait au moins 60 % de la hauteur de la lettre affichée et que moins de 20 % de l'encre sort de la zone de tolérance
+Modèle en police scolaire (Chalkboard SE), centré selon la boîte réelle du glyphe. Lettres et petits mots en attaché
+avec Playwrite CA (modèle cursif scolaire canadien). Réussi quand le tracé, épaissi d'une marge, recouvre au moins 60 % du modèle (25 % sans épaississement), que le trait fait au moins 60 % de la hauteur de la lettre affichée et que moins de 20 % de l'encre sort de la zone de tolérance
 autour du modèle (le dépassement s'affiche en rouge) ; pas de reconnaissance d'écriture. Choix des jeux de
 caractères dans l'espace parent.
 
 ## Voix
 
-Les mots, lettres, nombres 0-100 et phrases du jeu sont pré-générés en mp3 dans `audio/<voix>/` avec des voix
+Les mots, lettres, nombres 0-100, centaines, milliers, heures et phrases du jeu sont pré-générés en mp3 dans `audio/<voix>/` avec des voix
 neuronales québécoises (Sylvie et Jean) via edge-tts, et livrés avec l'app. À l'exécution, chaque
-morceau de phrase joue son clip s'il existe, sinon la voix système prend le relais (mots de la semaine, nombres
-au-dessus de 100). Regénérer après un changement de mots ou de phrases :
+morceau de phrase joue son clip s'il existe, sinon la voix système prend le relais (mots de la semaine). Les nombres au-dessus de
+100 sont assemblés (« trois mille » + « quatre cents » + « 56 »). Regénérer après un changement de mots ou de phrases :
 
     "$HOME/Library/Application Support/pipx/venvs/edge-tts/bin/python" data/gen_audio.py
 
@@ -75,3 +94,10 @@ soustractions oui/non, points pour compter). Dans l'exercice de calcul, le bouto
 finie donne un collant.
 
 Source : https://cdn-contenu.quebec.ca/cdn-contenu/education/pfeq/primaire/Liste-orthographique-document-reference.pdf
+
+## Crédits
+
+- Échantillons d'instruments (`audio/instr/`) : [tonejs-instruments](https://github.com/nbrosowsky/tonejs-instruments)
+  de Nicholaus Brosowsky, licence [CC-BY 3.0](https://creativecommons.org/licenses/by/3.0/), une note par instrument
+  convertie en AAC mono.
+- Police Playwrite CA (`fonts/`) : The Playwrite Project Authors (TypeTogether), licence SIL OFL 1.1 (`fonts/OFL.txt`).

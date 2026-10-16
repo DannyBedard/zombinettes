@@ -17,9 +17,13 @@ def items():
             out.append((w["mot"], "-15%"))
     for l in P["letters"]: out.append((l, "-10%"))
     for n in range(0, 101): out.append((str(n), "-10%"))
+    for t in P["bignumbers"] + P["hours"]: out.append((t, "-10%"))
+    for w in json.load(open(os.path.join(ROOT, "data/lecture.json"))): out.append((w["mot"], "-15%"))
+    for t in P["instruments"] + P["misc2"]: out.append((t, "+0%"))
     for t in list(P["consignes"].values()) + P["praise"] + P["misc"] + list(P["themes"].values()) + list(P["styles"].values()):
         out.append((t, "+0%"))
-    return out
+    seen = set()
+    return [x for x in out if not (x[0] in seen or seen.add(x[0]))]
 
 async def gen(sem, voice_id, text, rate, path):
     if os.path.exists(path) and os.path.getsize(path) > 0: return

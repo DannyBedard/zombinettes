@@ -1,0 +1,502 @@
+[
+{
+"mot": "arbre",
+"emoji": "🌳"
+},
+{
+"mot": "bébé",
+"emoji": "👶"
+},
+{
+"mot": "bonbon",
+"emoji": "🍬"
+},
+{
+"mot": "bouche",
+"emoji": "👄"
+},
+{
+"mot": "bras",
+"emoji": "💪"
+},
+{
+"mot": "chapeau",
+"emoji": "🎩"
+},
+{
+"mot": "chat",
+"emoji": "🐱"
+},
+{
+"mot": "cheval",
+"emoji": "🐴"
+},
+{
+"mot": "chien",
+"emoji": "🐶"
+},
+{
+"mot": "cœur",
+"emoji": "❤️"
+},
+{
+"mot": "dent",
+"emoji": "🦷"
+},
+{
+"mot": "eau",
+"emoji": "💧"
+},
+{
+"mot": "école",
+"emoji": "🏫"
+},
+{
+"mot": "feu",
+"emoji": "🔥"
+},
+{
+"mot": "feuille",
+"emoji": "🍃"
+},
+{
+"mot": "fille",
+"emoji": "👧"
+},
+{
+"mot": "fleur",
+"emoji": "🌸"
+},
+{
+"mot": "garçon",
+"emoji": "👦"
+},
+{
+"mot": "lapin",
+"emoji": "🐰"
+},
+{
+"mot": "lettre",
+"emoji": "✉️"
+},
+{
+"mot": "lit",
+"emoji": "🛏️"
+},
+{
+"mot": "livre",
+"emoji": "📖"
+},
+{
+"mot": "loup",
+"emoji": "🐺"
+},
+{
+"mot": "lune",
+"emoji": "🌙"
+},
+{
+"mot": "main",
+"emoji": "✋"
+},
+{
+"mot": "maison",
+"emoji": "🏠"
+},
+{
+"mot": "montagne",
+"emoji": "⛰️"
+},
+{
+"mot": "mouton",
+"emoji": "🐑"
+},
+{
+"mot": "musique",
+"emoji": "🎵"
+},
+{
+"mot": "neige",
+"emoji": "❄️"
+},
+{
+"mot": "nez",
+"emoji": "👃"
+},
+{
+"mot": "œil",
+"emoji": "👁️"
+},
+{
+"mot": "œuf",
+"emoji": "🥚"
+},
+{
+"mot": "oiseau",
+"emoji": "🐦"
+},
+{
+"mot": "oreille",
+"emoji": "👂"
+},
+{
+"mot": "pain",
+"emoji": "🍞"
+},
+{
+"mot": "pied",
+"emoji": "🦶"
+},
+{
+"mot": "pluie",
+"emoji": "🌧️"
+},
+{
+"mot": "poisson",
+"emoji": "🐟"
+},
+{
+"mot": "pomme",
+"emoji": "🍎"
+},
+{
+"mot": "porte",
+"emoji": "🚪"
+},
+{
+"mot": "poule",
+"emoji": "🐔"
+},
+{
+"mot": "robe",
+"emoji": "👗"
+},
+{
+"mot": "roi",
+"emoji": "👑"
+},
+{
+"mot": "rose",
+"emoji": "🌹"
+},
+{
+"mot": "sac",
+"emoji": "🎒"
+},
+{
+"mot": "soleil",
+"emoji": "☀️"
+},
+{
+"mot": "souris",
+"emoji": "🐭"
+},
+{
+"mot": "train",
+"emoji": "🚂"
+},
+{
+"mot": "vélo",
+"emoji": "🚲"
+},
+{
+"mot": "terre",
+"emoji": "🌍"
+},
+{
+"mot": "carte",
+"emoji": "🗺️"
+},
+{
+"mot": "banane",
+"emoji": "🍌"
+},
+{
+"mot": "canard",
+"emoji": "🦆"
+},
+{
+"mot": "carotte",
+"emoji": "🥕"
+},
+{
+"mot": "coq",
+"emoji": "🐓"
+},
+{
+"mot": "fantôme",
+"emoji": "👻"
+},
+{
+"mot": "fée",
+"emoji": "🧚"
+},
+{
+"mot": "monstre",
+"emoji": "👹"
+},
+{
+"mot": "orange",
+"emoji": "🍊"
+},
+{
+"mot": "patate",
+"emoji": "🥔"
+},
+{
+"mot": "reine",
+"emoji": "👸"
+},
+{
+"mot": "auto",
+"emoji": "🚗"
+},
+{
+"mot": "café",
+"emoji": "☕"
+},
+{
+"mot": "homme",
+"emoji": "👨"
+},
+{
+"mot": "femme",
+"emoji": "👩"
+},
+{
+"mot": "porc",
+"emoji": "🐖"
+},
+{
+"mot": "tableau",
+"emoji": "🖼️"
+},
+{
+"mot": "étoile",
+"emoji": "⭐"
+},
+{
+"mot": "zombie",
+"emoji": "🧟"
+},
+{
+"mot": "vampire",
+"emoji": "🧛"
+},
+{
+"mot": "sirène",
+"emoji": "🧜‍♀️"
+},
+{
+"mot": "licorne",
+"emoji": "🦄"
+},
+{
+"mot": "guitare",
+"emoji": "🎸"
+},
+{
+"mot": "piano",
+"emoji": "🎹"
+},
+{
+"mot": "gâteau",
+"emoji": "🎂"
+},
+{
+"mot": "fraise",
+"emoji": "🍓"
+},
+{
+"mot": "crayon",
+"emoji": "✏️"
+},
+{
+"mot": "tortue",
+"emoji": "🐢"
+},
+{
+"mot": "vache",
+"emoji": "🐄"
+},
+{
+"mot": "cochon",
+"emoji": "🐷"
+},
+{
+"mot": "ours",
+"emoji": "🐻"
+},
+{
+"mot": "lion",
+"emoji": "🦁"
+},
+{
+"mot": "tigre",
+"emoji": "🐯"
+},
+{
+"mot": "singe",
+"emoji": "🐵"
+},
+{
+"mot": "panda",
+"emoji": "🐼"
+},
+{
+"mot": "chaise",
+"emoji": "🪑"
+},
+{
+"mot": "ballon",
+"emoji": "🎈"
+},
+{
+"mot": "cadeau",
+"emoji": "🎁"
+},
+{
+"mot": "bateau",
+"emoji": "⛵"
+},
+{
+"mot": "avion",
+"emoji": "✈️"
+},
+{
+"mot": "fusée",
+"emoji": "🚀"
+},
+{
+"mot": "camion",
+"emoji": "🚚"
+},
+{
+"mot": "pizza",
+"emoji": "🍕"
+},
+{
+"mot": "lait",
+"emoji": "🥛"
+},
+{
+"mot": "clé",
+"emoji": "🔑"
+},
+{
+"mot": "nuage",
+"emoji": "☁️"
+},
+{
+"mot": "papillon",
+"emoji": "🦋"
+},
+{
+"mot": "abeille",
+"emoji": "🐝"
+},
+{
+"mot": "escargot",
+"emoji": "🐌"
+},
+{
+"mot": "serpent",
+"emoji": "🐍"
+},
+{
+"mot": "araignée",
+"emoji": "🕷️"
+},
+{
+"mot": "grenouille",
+"emoji": "🐸"
+},
+{
+"mot": "baleine",
+"emoji": "🐋"
+},
+{
+"mot": "dauphin",
+"emoji": "🐬"
+},
+{
+"mot": "pieuvre",
+"emoji": "🐙"
+},
+{
+"mot": "tomate",
+"emoji": "🍅"
+},
+{
+"mot": "citron",
+"emoji": "🍋"
+},
+{
+"mot": "cerise",
+"emoji": "🍒"
+},
+{
+"mot": "raisin",
+"emoji": "🍇"
+},
+{
+"mot": "bougie",
+"emoji": "🕯️"
+},
+{
+"mot": "cloche",
+"emoji": "🔔"
+},
+{
+"mot": "lunettes",
+"emoji": "👓"
+},
+{
+"mot": "chaussette",
+"emoji": "🧦"
+},
+{
+"mot": "botte",
+"emoji": "👢"
+},
+{
+"mot": "fourmi",
+"emoji": "🐜"
+},
+{
+"mot": "renard",
+"emoji": "🦊"
+},
+{
+"mot": "hibou",
+"emoji": "🦉"
+},
+{
+"mot": "pingouin",
+"emoji": "🐧"
+},
+{
+"mot": "requin",
+"emoji": "🦈"
+},
+{
+"mot": "maïs",
+"emoji": "🌽"
+},
+{
+"mot": "fromage",
+"emoji": "🧀"
+},
+{
+"mot": "biscuit",
+"emoji": "🍪"
+},
+{
+"mot": "beigne",
+"emoji": "🍩"
+},
+{
+"mot": "sapin",
+"emoji": "🎄"
+}
+]
