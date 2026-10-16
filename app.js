@@ -406,9 +406,10 @@ function clockSvg(h, m) {
   const R = 90, ang = a => (a - 90) * Math.PI / 180, pt = (a, r) => `${(100 + r * Math.cos(ang(a))).toFixed(1)},${(100 + r * Math.sin(ang(a))).toFixed(1)}`;
   const ticks = Array.from({ length: 60 }, (_, k) => `<line x1="${pt(k * 6, R - (k % 5 ? 4 : 9)).replace(",", '" y1="')}" x2="${pt(k * 6, R - 1).replace(",", '" y2="')}" class="${k % 5 ? "tk" : "tk5"}"/>`).join("");
   const nums = Array.from({ length: 12 }, (_, k) => { const [x, y] = pt((k + 1) * 30, R - 22).split(","); return `<text x="${x}" y="${y}">${k + 1}</text>`; }).join("");
+  const mins = Array.from({ length: 12 }, (_, k) => { const [x, y] = pt(k * 30, R - 43).split(","); return `<text x="${x}" y="${y}" class="mn">${String(k * 5).padStart(2, "0")}</text>`; }).join("");
   return `<svg class="clock" viewBox="0 0 200 200"><circle cx="100" cy="100" r="${R}" class="face"/>${ticks}${nums}
     <line x1="100" y1="100" x2="${pt((h % 12) * 30 + m / 2, 46).replace(",", '" y2="')}" class="hh"/>
-    <line x1="100" y1="100" x2="${pt(m * 6, 72).replace(",", '" y2="')}" class="mh"/><circle cx="100" cy="100" r="6" class="pin"/></svg>`;
+    <line x1="100" y1="100" x2="${pt(m * 6, 72).replace(",", '" y2="')}" class="mh"/>${mins}<circle cx="100" cy="100" r="6" class="pin"/></svg>`;
 }
 
 /* ---------- musique (Web Audio) ---------- */

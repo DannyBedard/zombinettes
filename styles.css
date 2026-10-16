@@ -207,10 +207,11 @@ table.stats td { padding: 8px 4px; border-bottom: 1px solid var(--line); } table
 .choice.bad { border-color: var(--bad); opacity: .7; }
 .choice.lit { border-color: var(--accent); transform: scale(1.06); }
 .clockwrap { display: flex; justify-content: center; margin: 4px 0 14px; }
-.clock { width: min(62vw, 240px); height: auto; }
+.clock { width: min(72vw, 300px); height: auto; }
 .clock .face { fill: #fff; stroke: var(--accent); stroke-width: 6; }
 .clock .tk { stroke: #c7c7cc; stroke-width: 1.5; } .clock .tk5 { stroke: #333; stroke-width: 3; }
 .clock text { font: 700 17px system-ui, sans-serif; fill: #1c1c1e; text-anchor: middle; dominant-baseline: central; }
+.clock text.mn { font-size: 10px; font-weight: 700; fill: var(--accent); stroke: #fff; stroke-width: 3px; paint-order: stroke; }
 .clock .hh { stroke: #1c1c1e; stroke-width: 7; stroke-linecap: round; }
 .clock .mh { stroke: var(--accent); stroke-width: 4.5; stroke-linecap: round; }
 .clock .pin { fill: #1c1c1e; }
