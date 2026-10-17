@@ -33,7 +33,8 @@ Parent) ; progression segmentée dans les exercices ; fin de partie avec score e
 
 Accueil : 🔥 Défi du jour (une partie de 10 questions : 4 de français, 4 de maths, 2 de musique, piochées dans des jeux
 différents ; la réussir une fois par jour fait monter la série), puis un bouton « Mélange » par catégorie (10 questions
-de la catégorie), puis tous les jeux sous des sous-titres 📚 Français, 🧮 Maths, 🎵 Musique. Le tracé (lettres en
+de la catégorie ; en français, les mots et Lire pèsent 3 fois plus que les autres jeux ; dans chaque catégorie, les jeux
+les moins vus dans les mélanges passent en premier), puis tous les jeux sous des sous-titres 📚 Français, 🧮 Maths, 🎵 Musique. Le tracé (lettres en
 français, chiffres et nombres en maths) n'entre pas dans les mélanges. Dans une partie mélangée, chaque type de question
 dit sa consigne la première fois seulement.
 
@@ -64,7 +65,8 @@ Phrases : 3 à 6 mots (réglable) et le point à remettre dans l'ordre (`data/ph
 seulement après la réponse.
 
 Les sous : pièces canadiennes dessinées en SVG (taille relative et couleur réalistes, valeur écrite dessus), à compter au
-pavé numérique. Niveaux : 5 ¢ et 10 ¢, + 25 ¢ jusqu'à 1 $, 1 $ et 2 $.
+pavé numérique. Niveaux : 1 reconnaître la pièce (« Touche la pièce de 10 ¢ »), 2 compter des pièces pareilles (choix de
+réponses), 3 5 ¢ et 10 ¢ mêlées (choix), 4 + 25 ¢ jusqu'à 1 $ (pavé), 5 1 $ et 2 $ (pavé).
 
 Défi du jour : voir Organisation. Série 🔥 remise à 1 si on saute un jour, collant spécial à 3, 7, 14 et 30 jours.
 

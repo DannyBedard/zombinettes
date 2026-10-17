@@ -8,9 +8,9 @@ const DEFAULTS = {
   math: { numMax: 199, firstMax: 20, addMax: 10, sub: true, visual: true, length: 8 },
   mathStats: { number: { ok: 0, ko: 0 }, calc: { ok: 0, ko: 0 }, trace: { ok: 0, ko: 0 }, read: { ok: 0, ko: 0 }, sound: { ok: 0, ko: 0 }, syllab: { ok: 0, ko: 0 }, phrase: { ok: 0, ko: 0 }, money: { ok: 0, ko: 0 }, keys: { ok: 0, ko: 0 }, figures: { ok: 0, ko: 0 }, compare: { ok: 0, ko: 0 }, clock: { ok: 0, ko: 0 }, music: { ok: 0, ko: 0 } },
   trace: { lower: true, upper: true, digits: true, nums: true, cursive: true, cwords: true, length: 6 },
-  read: { level: 2 }, sound: { rime: true, debut: true }, phrase: { max: 4 }, money: { level: 1 }, keys: { level: 3 }, daily: null, streak: { n: 0, last: "" }, cmp: { max: 1000 }, clock: { level: 1 }, music: { pitch: true, rhythm: true, instr: true, level: 2 },
+  read: { level: 2 }, sound: { rime: true, debut: true }, phrase: { max: 4 }, money: { level: 1 }, keys: { level: 3 }, daily: null, streak: { n: 0, last: "" }, mixCount: {}, cmp: { max: 1000 }, clock: { level: 1 }, music: { pitch: true, rhythm: true, instr: true, level: 2 },
   plays: { word: 0, read: 0, sound: 0, syllab: 0, phrase: 0, money: 0, keys: 0, figures: 0, number: 0, calc: 0, compare: 0, clock: 0, trace: 0, music: 0 },
-  boost: 4
+  boost: 5
 };
 const ACTIVITIES = [
   ["word", "Les mots", "🎤", "#7c3aed", "#ec4899", "Dictée · liste du ministère"],
@@ -36,7 +36,7 @@ const CATS = [
   ["math", "Maths", "🧮", "#0ea5e9", "#22c55e", ["number", "calc", "compare", "money", "clock", "traceNum"]],
   ["mus", "Musique", "🎵", "#a855f7", "#f43f5e", ["pitch", "rhythm", "instr", "keys", "figures"]]
 ];
-const DAILY_MIX = { fr: 4, math: 4, mus: 2 }, NO_MIX = ["trace", "traceNum"];
+const DAILY_MIX = { fr: 4, math: 4, mus: 2 }, NO_MIX = ["trace", "traceNum"], MIX_WEIGHT = { word: 3, read: 3 };
 const HUNDREDS = ["", "cent", "deux cents", "trois cents", "quatre cents", "cinq cents", "six cents", "sept cents", "huit cents", "neuf cents"];
 const THOUSANDS = ["", "mille", "deux mille", "trois mille", "quatre mille", "cinq mille", "six mille", "sept mille", "huit mille", "neuf mille"];
 const HOURS = ["midi", "une heure", "deux heures", "trois heures", "quatre heures", "cinq heures", "six heures", "sept heures", "huit heures", "neuf heures", "dix heures", "onze heures", "midi"];
@@ -100,12 +100,13 @@ function load() {
   out.mute = Object.assign({}, DEFAULTS.mute, s.mute || {});
   out.trace = Object.assign({}, DEFAULTS.trace, s.trace || {});
   out.plays = Object.assign({}, DEFAULTS.plays, s.plays || {});
-  for (const k of ["read", "sound", "phrase", "money", "keys", "cmp", "clock", "music", "streak"]) out[k] = Object.assign({}, DEFAULTS[k], s[k] || {});
+  for (const k of ["read", "sound", "phrase", "money", "keys", "cmp", "clock", "music", "streak", "mixCount"]) out[k] = Object.assign({}, DEFAULTS[k], s[k] || {});
   for (const k in DEFAULTS.mathStats) out.mathStats[k] = out.mathStats[k] || { ok: 0, ko: 0 };
   if (s.voiceURI && !s.voice) out.voice = "system:" + s.voiceURI;
   if (s.palier && (s.boost || 0) < 2) out.clock = { level: 1 };
   if (s.palier && (s.boost || 0) < 3) out.math.numMax = 199;
-  if (s.palier && (s.boost || 0) < 4) { out.boost = 4; out.keys = { level: 3 }; }
+  if (s.palier && (s.boost || 0) < 4) out.keys = { level: 3 };
+  if (s.palier && (s.boost || 0) < 5) { out.boost = 5; out.money = { level: 1 }; }
   if (s.palier && !s.boost) { out.palier = Math.max(out.palier, 5);
     out.math = Object.assign(out.math, { firstMax: Math.max(out.math.firstMax, 20), addMax: Math.max(out.math.addMax, 10), sub: true });
     out.trace = Object.assign(out.trace, { upper: true, cursive: true, cwords: true });
@@ -223,7 +224,7 @@ function promptParts(it) {
     case "phrase": return ["Remets les mots dans l'ordre pour faire une phrase."];
     case "keys": return [`Trouve le ${NOTES[it.note]} sur le clavier.`];
     case "figures": return it.sub === "temps" ? [`Combien de temps vaut ${it.fig[1]}?`] : [FIGURES.find(x => x[0] === it.answer)[2]];
-    case "money": return ["Compte l'argent et écris combien ça fait."];
+    case "money": return it.sub === "find" ? ["Touche la pièce de", ...coinWords(it.value)] : it.sub === "count" ? ["Compte l'argent. Combien ça fait?"] : ["Compte l'argent et écris combien ça fait."];
     case "sound": return [it.sub === "rime" ? "Quel mot rime avec" : "Quel mot commence comme", it.target.mot, { pause: 400 }, it.choices[0].mot, it.choices[1].mot, "ou", it.choices[2].mot];
     case "compare": return [it.ask === "grand" ? "Touche le plus grand nombre." : "Touche le plus petit nombre."];
     case "clock": return ["Quelle heure est-il?"];
@@ -358,16 +359,28 @@ function coinSvg(v) {
   else shape = `<circle cx="${r}" cy="${r}" r="${r - 1}" fill="${v === 5 ? "#c7cbd3" : v === 10 ? "#d6d9df" : "#bfc3cc"}" stroke="#8b8f99" stroke-width="2"/><circle cx="${r}" cy="${r}" r="${r - 6}" fill="none" stroke="#9ca0aa" stroke-width="1"/>`;
   return `<svg class="coin" width="${d}" height="${d}" viewBox="0 0 ${d} ${d}">${shape}<text x="${r}" y="${r}" style="font-size:${Math.round(d * 0.3)}px">${lbl}</text></svg>`;
 }
+function coinWords(v) { return v < 100 ? [...numberParts(v), "sous"] : [String(v / 100), v > 100 ? "dollars" : "dollar"]; }
+function coinLabel(v) { return v < 100 ? `${v} ¢` : `${v / 100} $`; }
+function moneyChoices(total, step) {
+  const opts = new Set([total]);
+  for (const d of shuffle([-2, -1, 1, 2])) { if (opts.size >= 3) break; const v = total + d * step; if (v > 0) opts.add(v); }
+  return shuffle([...opts]);
+}
 function buildMoneySession() {
-  const lvl = S.money.level, set = lvl === 1 ? [5, 10] : lvl === 2 ? [5, 10, 25] : [100, 200], cap = lvl === 1 ? 50 : lvl === 2 ? 100 : 1000, items = [];
+  const lvl = S.money.level, items = [];
   for (let i = 0; i < S.math.length; i++) {
+    if (lvl === 1) {
+      const v = pick([5, 10, 25, 100, 200]), others = shuffle([5, 10, 25, 100, 200].filter(x => x !== v)).slice(0, 2);
+      items.push({ kind: "money", sub: "find", value: v, choices: shuffle([v, ...others]), answer: String(v) });
+      continue;
+    }
     let coins = [];
-    const n = rand(2, lvl === 1 ? 5 : 4);
-    while (coins.length < n) { const c = pick(set); if (coins.reduce((a, b) => a + b, 0) + c <= cap) coins.push(c); else break; }
-    if (coins.length < 2) coins = [set[0], set[set.length - 1]];
+    if (lvl === 2) { const c = pick([5, 10]); coins = Array(rand(2, 4)).fill(c); }
+    else if (lvl === 3) { const n = rand(2, 3); while (coins.length < n) coins.push(pick([5, 10])); }
+    else { const set = lvl === 4 ? [5, 10, 25] : [100, 200], cap = lvl === 4 ? 100 : 1000, n = rand(2, 4); while (coins.length < n) { const c = pick(set); if (coins.reduce((a, b) => a + b, 0) + c <= cap) coins.push(c); else break; } if (coins.length < 2) coins = [set[0], set[1]]; }
     coins.sort((a, b) => b - a);
-    const total = coins.reduce((a, b) => a + b, 0), unit = lvl === 3 ? "$" : "¢";
-    items.push({ kind: "money", coins, unit, answer: String(unit === "$" ? total / 100 : total) });
+    const total = coins.reduce((a, b) => a + b, 0), unit = lvl === 5 ? "$" : "¢", ans = unit === "$" ? total / 100 : total;
+    items.push({ kind: "money", sub: lvl <= 3 ? "count" : "pad", coins, unit, choices: lvl <= 3 ? moneyChoices(ans, lvl === 2 ? coins[0] : 5) : null, answer: String(ans) });
   }
   return items;
 }
@@ -480,16 +493,25 @@ function gameItems(id) {
   if (id === "word") return POOL.length || S.weekly.length ? buildWordSession() : [];
   return BUILDERS[id]();
 }
+function allocate(cat, n) {
+  const games = CATS.find(c => c[0] === cat)[5].filter(g => !NO_MIX.includes(g)), w = g => MIX_WEIGHT[g] || 1, tot = games.reduce((a, g) => a + w(g), 0);
+  const share = {}; let left = n;
+  for (const g of games) { share[g] = Math.floor(n * w(g) / tot); left -= share[g]; }
+  const seen = g => (S.mixCount[g] || 0) / w(g);
+  const order = shuffle(games).sort((a, b) => (share[a] ? 1 : 0) - (share[b] ? 1 : 0) || seen(a) - seen(b));
+  for (let k = 0; left > 0; k++, left--) share[order[k % order.length]]++;
+  for (const g of games) S.mixCount[g] = (S.mixCount[g] || 0) + share[g];
+  return share;
+}
 function mixItems(plan) {
   const out = [];
   for (const [cat, n] of plan) {
-    const games = shuffle(CATS.find(c => c[0] === cat)[5].filter(g => !NO_MIX.includes(g))), cache = {};
-    for (let k = 0; k < n; k++) {
-      const g = games[k % games.length]; cache[g] = cache[g] || shuffle(gameItems(g));
-      const it = cache[g].pop(); if (it) out.push(it);
-    }
+    const share = allocate(cat, n);
+    for (const g in share) if (share[g]) out.push(...shuffle(gameItems(g)).slice(0, share[g]));
   }
-  return shuffle(out);
+  let mixed = shuffle(out);
+  for (let k = 1; k < mixed.length; k++) if (mixed[k].kind === mixed[k - 1].kind) { const j = mixed.findIndex((x, q) => q > k && x.kind !== mixed[k].kind); if (j > 0) [mixed[k], mixed[j]] = [mixed[j], mixed[k]]; }
+  return mixed;
 }
 function sessionTitle(kind) {
   if (kind === "daily") return "🔥 Défi du jour";
@@ -518,7 +540,7 @@ function nextItem() {
   session.attempt = 0;
   renderItem(it);
   const key = it.kind + (it.sub || ""), first = !session.seen.has(key);
-  const prompt = it.kind === "calc" && S.mute.calc ? [] : it.kind === "read" ? [] : ["phrase", "money", "clock"].includes(it.kind) && !first ? [] : promptParts(it);
+  const prompt = it.kind === "calc" && S.mute.calc ? [] : it.kind === "read" ? [] : ["phrase", "money", "clock"].includes(it.kind) && it.sub !== "find" && !first ? [] : promptParts(it);
   const ann = it.kind === "trace" ? (it.num ? "Voici le nombre :" : it.word ? "Voici le mot en lettres attachées :" : it.cursive ? "Voici la lettre attachée :" : it.isDigit ? "Voici le chiffre :" : "Voici la lettre :") : ANNONCE[it.kind];
   const consigne = it.kind === "trace" && it.cursive ? "Trace en lettres attachées avec ton doigt." : CONSIGNE[it.kind];
   const intro = first || (it.kind === "trace" && it.cursive !== session.lastCursive);
@@ -548,6 +570,10 @@ function renderItem(it) {
     body = `<div class="cmpq">Touche <b>${FIGURES.find(x => x[0] === it.answer)[1]}</b></div><div class="choices figs">${it.choices.map(c => `<button class="choice fig" data-v="${c[0]}"><img src="img/music/${c[0]}.svg" alt=""></button>`).join("")}</div>`;
   } else if (it.kind === "phrase") {
     body = `<div class="slots phr" id="slots"></div><div class="tiles phr" id="tiles"></div><div class="actions"><button class="btn ghost small" id="erase">⌫</button></div>`;
+  } else if (it.kind === "money" && it.sub === "find") {
+    body = `<div class="cmpq">Touche la pièce de <b>${coinLabel(it.value)}</b></div><div class="choices coinpick">${it.choices.map(v => `<button class="choice" data-v="${v}">${coinSvg(v)}</button>`).join("")}</div>`;
+  } else if (it.kind === "money" && it.sub === "count") {
+    body = `<div class="coins">${it.coins.map(coinSvg).join("")}</div><div class="cmpq">Combien ça fait?</div><div class="choices">${it.choices.map(v => `<button class="choice txt" data-v="${v}">${v} ${it.unit}</button>`).join("")}</div>`;
   } else if (it.kind === "money") {
     body = `<div class="coins">${it.coins.map(coinSvg).join("")}</div><div class="calc"><span id="num">?</span> ${it.unit}</div><div class="pad numpad">${[1, 2, 3, 4, 5, 6, 7, 8, 9, "⌫", 0, "✓"].map(k => `<button data-k="${k}">${k}</button>`).join("")}</div>`;
   } else if (it.kind === "syllab") {
@@ -911,9 +937,11 @@ function check(it, answer) {
       const f = FIGURES.find(x => x[0] === target); shown = `<img class="figans" src="img/music/${f[0]}.svg" alt=""> ${f[1]}`; spoken = ["C'est", f[1]];
     } else if (it.kind === "phrase") {
       shown = esc(it.phrase); spoken = [it.phrase];
+    } else if (it.kind === "money" && it.sub === "find") {
+      shown = `${coinSvg(+target)} ${coinLabel(+target)}`; spoken = coinWords(+target);
     } else if (it.kind === "money") {
       shown = `${target} ${it.unit}`; spoken = ["ça fait", ...numberParts(target), it.unit === "¢" ? "sous" : +target > 1 ? "dollars" : "dollar"];
-      $("#num").textContent = target; $("#num").className = "bad";
+      if ($("#num")) { $("#num").textContent = target; $("#num").className = "bad"; }
     } else if (it.kind === "syllab") {
       shown = it.syl.join(" · "); spoken = [it.mot];
     } else if (it.kind === "sound") {
@@ -1144,7 +1172,7 @@ function parent() {
     </div>
     <div class="card">
       <h2>🪙 Les sous</h2>
-      ${pills("monLvl", [1, 2, 3], S.money.level, v => ["", "5 ¢ et 10 ¢", "+ 25 ¢ (jusqu'à 1 $)", "1 $ et 2 $"][v])}
+      ${pills("monLvl", [1, 2, 3, 4, 5], S.money.level, v => ["", "Reconnaître les pièces", "Compter des pièces pareilles", "5 ¢ et 10 ¢ mêlées", "+ 25 ¢ (jusqu'à 1 $)", "1 $ et 2 $"][v])}
     </div>
     <div class="card">
       <h2>🐊 Plus grand, plus petit</h2>
@@ -1254,7 +1282,7 @@ function parent() {
     const msg = $("#offMsg"); const m = MANIFEST[S.voice];
     if (!("caches" in window)) { msg.textContent = "Non disponible dans ce navigateur."; return; }
     if (!m) { msg.textContent = "La voix choisie n'a pas de clips à télécharger."; return; }
-    const urls = [...m].map(sl => `audio/${S.voice}/${sl}.mp3`); const cache = await caches.open("zombinettes-v8"); urls.push(...INSTRUMENTS.flatMap(x => [1, 2].map(k => `audio/instr/${x[0]}-${k}.m4a`))); let done = 0;
+    const urls = [...m].map(sl => `audio/${S.voice}/${sl}.mp3`); const cache = await caches.open("zombinettes-v9"); urls.push(...INSTRUMENTS.flatMap(x => [1, 2].map(k => `audio/instr/${x[0]}-${k}.m4a`))); let done = 0;
     for (let i = 0; i < urls.length; i += 25) {
       const batch = urls.slice(i, i + 25).filter(u => u);
       const existing = await Promise.all(batch.map(u => cache.match(u)));

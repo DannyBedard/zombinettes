@@ -269,3 +269,5 @@ button.daily { display: block; width: calc(100% - 32px); text-align: left; color
 .cathead { margin: 18px 16px 4px; font-size: 1.15rem; display: flex; align-items: center; gap: 8px; }
 .cathead span { font-size: 1.6rem; }
 .cathead.all { margin-top: 22px; color: var(--muted); font-size: .9rem; text-transform: uppercase; letter-spacing: .06em; }
+.choices.coinpick .choice { aspect-ratio: 1; background: var(--surface2); }
+.answer .coin { vertical-align: middle; }
