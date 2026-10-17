@@ -51,7 +51,7 @@ L'heure : horloge à aiguilles en SVG, 3 choix. Niveaux : heures justes, + les 3
 inverse souvent les aiguilles (erreur classique).
 
 Musique : aigu ou grave (deux notes, écart plus petit selon le niveau), rythme (ta, ti-ti, chut ; l'enfant tape sur le
-tambour, jugé sur les proportions entre les coups, pas sur le tempo) et instrument mystère (une courte mélodie jouée
+tambour ; très tolérant : réussi si le nombre de coups est bon à un près, raté seulement si elle pitonne au hasard, avec un essai gratuit) et instrument mystère (une courte mélodie jouée
 avec un vrai échantillon). Sons synthétisés en Web Audio, sauf les instruments (`audio/instr/`).
 
 Tracer : un modèle de lettre (minuscule, majuscule) ou de chiffre en gris pâle, l'enfant repasse dessus au doigt.

@@ -477,13 +477,8 @@ function setupRhythm(it) {
   session.taps = []; session.listening = true; session.rhythmRetry = false;
   const evaluate = () => {
     const taps = session.taps; if (session.locked) return;
-    let ok = taps.length === expected.length;
-    if (ok && taps.length > 1) {
-      const act = [], exp = []; for (let k = 1; k < taps.length; k++) { act.push(taps[k] - taps[k - 1]); exp.push(expected[k][0] - expected[k - 1][0]); }
-      const scale = act.reduce((t, a, k) => t + a * exp[k], 0) / exp.reduce((t, e) => t + e * e, 0);
-      const lo = Math.min(...exp), hi = Math.max(...exp), mean = v => { const x = act.filter((_, k) => exp[k] === v); return x.reduce((t, a) => t + a, 0) / x.length; };
-      ok = act.every((a, k) => Math.abs(a / scale - exp[k]) <= exp[k] * 0.6) && (hi === lo || mean(hi) / mean(lo) >= 1 + (hi / lo - 1) * 0.3);
-    }
+    const gaps = taps.slice(1).map((t, k) => t - taps[k]).sort((a, b) => a - b);
+    const ok = Math.abs(taps.length - expected.length) <= 1 && taps.length >= 2 && gaps[Math.floor(gaps.length / 2)] >= 0.12;
     if (!ok && !session.rhythmRetry) {
       session.rhythmRetry = true; session.taps = []; drumBtn.classList.remove("ready");
       const fb = $("#fb"); fb.className = "feedback"; fb.textContent = "Presque! Écoute encore.";
@@ -501,8 +496,7 @@ function setupRhythm(it) {
     const spans = app.querySelectorAll("#rhythm span"), on = expected[session.taps.length - 1];
     if (on) { spans.forEach(x => x.classList.remove("lit")); spans[Math.floor(on[0])].classList.add("lit"); }
     clearTimeout(timer);
-    if (session.taps.length >= expected.length) timer = setTimeout(evaluate, 500);
-    else timer = setTimeout(evaluate, 3500);
+    timer = setTimeout(evaluate, session.taps.length > expected.length ? 300 : session.taps.length === expected.length ? 900 : 2500);
   };
 }
 function dots(it) {
