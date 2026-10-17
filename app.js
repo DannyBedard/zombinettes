@@ -28,15 +28,16 @@ const ACTIVITIES = [
   ["pitch", "Aigu ou grave", "🔔", "#a855f7", "#f43f5e", "Quel son est le plus aigu?"],
   ["rhythm", "Rythme", "🥁", "#f43f5e", "#f97316", "Ta, ti-ti, chut au tambour"],
   ["instr", "Instrument mystère", "🎻", "#9333ea", "#0ea5e9", "Quel instrument joue?"],
+  ["traceMus", "Tracer les notes", "🖊️", "#db2777", "#7c3aed", "Ronde, blanche, noire, croche"],
   ["keys", "Piano", "🎹", "#0f172a", "#a855f7", "Trouve la note sur le clavier"],
   ["figures", "Les notes", "🎼", "#be185d", "#6366f1", "Ronde, blanche, noire…"]
 ];
 const CATS = [
   ["fr", "Français", "📚", "#7c3aed", "#ec4899", ["word", "read", "syllab", "sound", "phrase", "trace"]],
   ["math", "Maths", "🧮", "#0ea5e9", "#22c55e", ["number", "calc", "compare", "money", "clock", "traceNum"]],
-  ["mus", "Musique", "🎵", "#a855f7", "#f43f5e", ["pitch", "rhythm", "instr", "keys", "figures"]]
+  ["mus", "Musique", "🎵", "#a855f7", "#f43f5e", ["pitch", "rhythm", "instr", "keys", "figures", "traceMus"]]
 ];
-const DAILY_MIX = { fr: 4, math: 4, mus: 2 }, NO_MIX = ["trace", "traceNum"], MIX_WEIGHT = { word: 3, read: 3 };
+const DAILY_MIX = { fr: 4, math: 4, mus: 2 }, NO_MIX = ["trace", "traceNum", "traceMus"], MIX_WEIGHT = { word: 3, read: 3 };
 const HUNDREDS = ["", "cent", "deux cents", "trois cents", "quatre cents", "cinq cents", "six cents", "sept cents", "huit cents", "neuf cents"];
 const THOUSANDS = ["", "mille", "deux mille", "trois mille", "quatre mille", "cinq mille", "six mille", "sept mille", "huit mille", "neuf mille"];
 const HOURS = ["midi", "une heure", "deux heures", "trois heures", "quatre heures", "cinq heures", "six heures", "sept heures", "huit heures", "neuf heures", "dix heures", "onze heures", "midi"];
@@ -216,7 +217,7 @@ function timeParts(h, m) { return ["Il est", HOURS[h], ...(m ? numberParts(m) : 
 function promptParts(it) {
   switch (it.kind) {
     case "word": return [it.mot];
-    case "trace": return it.num ? numberParts(it.ch) : it.word ? [it.ch] : [it.ch.toLowerCase(), ...(it.ch !== it.ch.toLowerCase() ? ["majuscule"] : [])];
+    case "trace": return it.fig ? [it.ch] : it.num ? numberParts(it.ch) : it.word ? [it.ch] : [it.ch.toLowerCase(), ...(it.ch !== it.ch.toLowerCase() ? ["majuscule"] : [])];
     case "number": return numberParts(it.n);
     case "calc": return [...numberParts(it.a), it.op === "+" ? "plus" : "moins", ...numberParts(it.b)];
     case "read": return [CONSIGNE.read];
@@ -226,7 +227,7 @@ function promptParts(it) {
     case "figures": return it.sub === "temps" ? [`Combien de temps vaut ${it.fig[1]}?`] : [FIGURES.find(x => x[0] === it.answer)[2]];
     case "money": return it.sub === "find" ? ["Touche la pièce de", ...coinWords(it.value)] : it.sub === "count" ? ["Compte l'argent. Combien ça fait?"] : ["Compte l'argent et écris combien ça fait."];
     case "sound": return [it.sub === "rime" ? "Quel mot rime avec" : "Quel mot commence comme", it.target.mot, { pause: 400 }, it.choices[0].mot, it.choices[1].mot, "ou", it.choices[2].mot];
-    case "compare": return [it.ask === "grand" ? "Touche le plus grand nombre." : "Touche le plus petit nombre."];
+    case "compare": return ["Le crocodile mange toujours le plus grand nombre. Choisis la bonne bouche."];
     case "clock": return ["Quelle heure est-il?"];
     case "music": return it.sub === "pitch" ? [it.ask === "aigu" ? "Touche le son le plus aigu." : "Touche le son le plus grave."] : it.sub === "rhythm" ? ["Écoute le rythme, puis tape-le sur le tambour."] : ["Quel instrument joue?"];
   }
@@ -302,6 +303,30 @@ function buildNumberSession() {
     items.push({ kind: "number", n, answer: String(n) });
   }
   return items;
+}
+const TRACE_FIGS = [["ronde", "la ronde"], ["blanche", "la blanche"], ["noire", "la noire"], ["croche", "la croche"], ["croches", "les deux croches"]];
+function buildTraceMusSession() {
+  const out = []; let bag = [];
+  for (let i = 0; i < S.trace.length; i++) { if (!bag.length) bag = shuffle(TRACE_FIGS); const [fig, name] = bag.pop(); out.push({ kind: "trace", ch: name, fig, isDigit: false, answer: "ok" }); }
+  return out;
+}
+function drawFig(g, fig, w, h, color, extra) {
+  const bw = fig === "croches" ? 170 : 100, bh = 160, sc = Math.min(h * 0.8 / bh, w * 0.86 / bw), ex = (extra || 0) / sc;
+  g.save(); g.translate(w / 2 - bw * sc / 2, h / 2 - bh * sc / 2); g.scale(sc, sc);
+  g.fillStyle = g.strokeStyle = color; g.lineCap = g.lineJoin = "round";
+  const head = (cx, cy, filled, big) => {
+    g.beginPath(); g.ellipse(cx, cy, big ? 30 : 24, big ? 20 : 17, big ? 0 : -0.35, 0, Math.PI * 2);
+    if (filled) { g.fill(); if (ex) { g.lineWidth = ex; g.stroke(); } } else { g.lineWidth = (big ? 10 : 8) + ex; g.stroke(); }
+  };
+  const line = (x1, y1, x2, y2, lw) => { g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); g.lineWidth = lw + ex; g.stroke(); };
+  if (fig === "ronde") head(50, 80, false, true);
+  else if (fig === "croches") { head(40, 135, true); head(122, 135, true); line(62, 129, 62, 22, 7); line(144, 129, 144, 22, 7); line(62, 24, 144, 24, 16); }
+  else {
+    head(40, 135, fig !== "blanche"); line(62, 129, 62, 15, 7);
+    if (fig === "croche") { g.beginPath(); g.moveTo(62, 15); g.bezierCurveTo(70, 50, 100, 55, 88, 100); g.lineWidth = 7 + ex; g.stroke(); }
+  }
+  g.restore();
+  return { px: h, x: 0, y: 0 };
 }
 function buildTraceNumSession() {
   const t = S.trace, pool = [];
@@ -443,16 +468,30 @@ function buildSoundSession() {
   return items;
 }
 function buildCompareSession() {
-  const max = S.cmp.max, items = [];
+  const max = S.cmp.max, items = [], num = () => max > 100 ? bigNumber(max) : rand(0, max);
   for (let i = 0; i < S.math.length; i++) {
-    let a = max > 100 ? bigNumber(max) : rand(0, max), b;
-    if (Math.random() < 0.5 && a >= 10) { const p = Math.pow(10, String(a).length - 1); b = Math.floor(a / p) * p + rand(0, p - 1); }
-    else b = max > 100 ? bigNumber(max) : rand(0, max);
-    if (a === b) b = a + rand(1, 9);
-    const ask = Math.random() < 0.5 ? "grand" : "petit";
-    items.push({ kind: "compare", a, b, ask, answer: String(ask === "grand" ? Math.max(a, b) : Math.min(a, b)) });
+    let a = num(), b;
+    const r = Math.random();
+    if (r < 0.2) b = a;
+    else if (r < 0.6 && a >= 10) { const p = Math.pow(10, String(a).length - 1); b = Math.floor(a / p) * p + rand(0, p - 1); }
+    else b = num();
+    if (a === b && r >= 0.2) b = a + rand(1, 9);
+    items.push({ kind: "compare", a, b, answer: a > b ? "gt" : a < b ? "lt" : "eq" });
   }
   return items;
+}
+function crocSvg(v) {
+  if (v === "eq") return `<svg class="croc" viewBox="0 0 120 100"><rect class="bar" x="20" y="30" width="80" height="13" rx="6.5"/><rect class="bar" x="20" y="57" width="80" height="13" rx="6.5"/></svg>`;
+  const teeth = (x1, y1, x2, y2, dir) => [0.12, 0.27, 0.42, 0.57, 0.72, 0.87].map(t => { const x = x1 + (x2 - x1) * t, y = y1 + (y2 - y1) * t; return `<path class="tooth" d="M${(x - 3.5).toFixed(1)},${y.toFixed(1)} L${(x + 3.5).toFixed(1)},${(y + (y2 - y1) / 22).toFixed(1)} L${x.toFixed(1)},${(y + dir * 8).toFixed(1)}Z"/>`; }).join("");
+  return `<svg class="croc" viewBox="0 0 120 100"><g ${v === "lt" ? 'transform="translate(120,0) scale(-1,1)"' : ""}>
+    <path class="mouth" d="M78,50 L12,19 L12,83 L78,54 Z"/><path class="tongue" d="M76,52 C60,46 44,48 38,54 C46,58 62,58 76,53 Z"/>
+    <path class="skin" d="M112,46 C116,62 108,78 94,82 L14,95 C7,95 4,86 11,82 L78,55 Z"/>
+    <path class="skin" d="M112,48 C114,30 104,20 96,14 C88,8 78,10 72,15 L14,6 C7,6 4,15 11,19 L78,49 Z"/>
+    <path class="skin" d="M74,48 L114,42 L114,58 L74,56 Z"/>
+    ${teeth(16, 20, 74, 47, 1)}${teeth(16, 82, 74, 57, -1)}
+    <circle class="eye" cx="91" cy="19" r="8"/><circle class="pupil" cx="89" cy="19" r="3.5"/>
+    <ellipse class="nostril" cx="17" cy="10" rx="2.6" ry="1.8"/><circle class="scale" cx="100" cy="34" r="2"/><circle class="scale" cx="106" cy="40" r="1.6"/><circle class="scale" cx="101" cy="68" r="2"/>
+  </g></svg>`;
 }
 const clockLabel = (h, m) => `${h} h${m ? " " + String(m).padStart(2, "0") : ""}`;
 function clockMinutes(lvl) { return lvl === 1 ? [0] : lvl === 2 ? [0, 30] : [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]; }
@@ -488,7 +527,7 @@ function buildMusicSession(sub) {
   }
   return items;
 }
-const BUILDERS = { number: buildNumberSession, trace: buildTraceSession, traceNum: buildTraceNumSession, calc: buildCalcSession, read: buildReadSession, sound: buildSoundSession, syllab: buildSyllabSession, phrase: buildPhraseSession, money: buildMoneySession, keys: buildKeysSession, figures: buildFiguresSession, compare: buildCompareSession, clock: buildClockSession, pitch: () => buildMusicSession("pitch"), rhythm: () => buildMusicSession("rhythm"), instr: () => buildMusicSession("instr") };
+const BUILDERS = { number: buildNumberSession, trace: buildTraceSession, traceNum: buildTraceNumSession, calc: buildCalcSession, read: buildReadSession, sound: buildSoundSession, syllab: buildSyllabSession, phrase: buildPhraseSession, money: buildMoneySession, keys: buildKeysSession, figures: buildFiguresSession, traceMus: buildTraceMusSession, compare: buildCompareSession, clock: buildClockSession, pitch: () => buildMusicSession("pitch"), rhythm: () => buildMusicSession("rhythm"), instr: () => buildMusicSession("instr") };
 function gameItems(id) {
   if (id === "word") return POOL.length || S.weekly.length ? buildWordSession() : [];
   return BUILDERS[id]();
@@ -540,10 +579,10 @@ function nextItem() {
   session.attempt = 0;
   renderItem(it);
   const key = it.kind + (it.sub || ""), first = !session.seen.has(key);
-  const prompt = it.kind === "calc" && S.mute.calc ? [] : it.kind === "read" ? [] : ["phrase", "money", "clock"].includes(it.kind) && it.sub !== "find" && !first ? [] : promptParts(it);
-  const ann = it.kind === "trace" ? (it.num ? "Voici le nombre :" : it.word ? "Voici le mot en lettres attachées :" : it.cursive ? "Voici la lettre attachée :" : it.isDigit ? "Voici le chiffre :" : "Voici la lettre :") : ANNONCE[it.kind];
-  const consigne = it.kind === "trace" && it.cursive ? "Trace en lettres attachées avec ton doigt." : CONSIGNE[it.kind];
-  const intro = first || (it.kind === "trace" && it.cursive !== session.lastCursive);
+  const prompt = it.kind === "calc" && S.mute.calc ? [] : it.kind === "read" ? [] : ["phrase", "money", "clock", "compare"].includes(it.kind) && it.sub !== "find" && !first ? [] : promptParts(it);
+  const ann = it.kind === "trace" ? (it.fig ? "Voici la note :" : it.num ? "Voici le nombre :" : it.word ? "Voici le mot en lettres attachées :" : it.cursive ? "Voici la lettre attachée :" : it.isDigit ? "Voici le chiffre :" : "Voici la lettre :") : ANNONCE[it.kind];
+  const consigne = it.kind === "trace" && it.fig ? "Trace la note avec ton doigt. Quand la tête est pleine, remplis-la." : it.kind === "trace" && it.cursive ? "Trace en lettres attachées avec ton doigt." : CONSIGNE[it.kind];
+  const intro = first || (it.kind === "trace" && !it.fig && it.cursive !== session.lastCursive);
   const parts = intro && !S.mute[it.kind] && consigne ? [consigne, { pause: 700 }, ...(ann ? [ann, { pause: 350 }] : []), ...prompt] : it.kind === "read" ? (first ? [CONSIGNE.read] : []) : prompt;
   session.seen.add(key); session.lastCursive = it.cursive;
   const me = session, idx = session.i;
@@ -581,7 +620,7 @@ function renderItem(it) {
   } else if (it.kind === "sound") {
     body = `<div class="cmpq">${it.sub === "rime" ? "Ça rime avec" : "Ça commence comme"}</div><div class="target">${it.target.emoji}<small>${esc(it.target.mot)}</small></div><div class="choices">${it.choices.map(c => `<button class="choice emo" data-v="${esc(c.mot)}">${c.emoji}</button>`).join("")}</div>`;
   } else if (it.kind === "compare") {
-    body = `<div class="cmpq">Le plus <b>${it.ask === "grand" ? "GRAND" : "petit"}</b> ${it.ask === "grand" ? "🐘" : "🐭"}</div><div class="choices two">${shuffle([it.a, it.b]).map(n => `<button class="choice num" data-v="${n}">${n}</button>`).join("")}</div>`;
+    body = `<div class="cmprow"><span class="cn">${it.a}</span><span class="cslot" id="cslot">?</span><span class="cn">${it.b}</span></div><div class="choices crocs">${["gt", "eq", "lt"].map(v => `<button class="choice" data-v="${v}">${crocSvg(v)}</button>`).join("")}</div>`;
   } else if (it.kind === "clock") {
     body = `<div class="clockwrap">${clockSvg(it.h, it.m, S.clock.level >= 3)}</div><div class="choices">${it.choices.map(c => `<button class="choice txt" data-v="${c}">${c}</button>`).join("")}</div>`;
   } else if (it.kind === "music") {
@@ -610,9 +649,11 @@ function renderItem(it) {
   else if ($(".choices")) setupChoices(it);
   else setupPad(it);
 }
+function cmpSentence(it) { return [...numberParts(it.a), { gt: "est plus grand que", lt: "est plus petit que", eq: "est égal à" }[it.answer], ...numberParts(it.b)]; }
 function setupChoices(it) {
   $(".choices").onclick = e => {
     const b = e.target.closest(".choice"); if (!b || session.locked) return;
+    if (it.kind === "compare") $("#cslot").innerHTML = crocSvg(b.dataset.v);
     b.classList.add(b.dataset.v === it.answer ? "ok" : "bad");
     if (it.kind === "music" && it.sub === "pitch") playNotes([it.notes[+b.dataset.v]]);
     check(it, b.dataset.v);
@@ -828,6 +869,7 @@ async function setupTrace(it) {
     return { px, x: w / 2 - (m.actualBoundingBoxRight - m.actualBoundingBoxLeft) / 2, y: h / 2 + (m.actualBoundingBoxAscent - m.actualBoundingBoxDescent) / 2 };
   };
   const shape = (g, w, h, color, extra) => {
+    if (it.fig) return drawFig(g, it.fig, w, h, color, extra);
     const L = layout(g, w, h); g.fillStyle = g.strokeStyle = color; g.lineJoin = g.lineCap = "round";
     g.fillText(it.ch, L.x, L.y);
     const lw = (it.cursive ? L.px * 0.08 : 0) + (extra || 0);
@@ -837,6 +879,7 @@ async function setupTrace(it) {
   const drawGuide = () => {
     ctx.clearRect(0, 0, W, H);
     if (it.cursive) { shape(ctx, W, H, "#e4dbfa"); const L = layout(ctx, W, H); ctx.fillStyle = "#a78bfa"; ctx.fillText(it.ch, L.x, L.y); return; }
+    if (it.fig) { drawFig(ctx, it.fig, W, H, "#e4dbfa", 10); drawFig(ctx, it.fig, W, H, "#c4b5fd"); return; }
     const L = shape(ctx, W, H, "#e4dbfa"); ctx.strokeStyle = "#c4b5fd"; ctx.lineWidth = 2; ctx.setLineDash([6, 6]); ctx.strokeText(it.ch, L.x, L.y); ctx.setLineDash([]);
   };
   const MH = 96, MW = Math.round(MH * W / H), TOL = 0.13;
@@ -910,7 +953,7 @@ function check(it, answer) {
     save();
     fb.className = "feedback ok"; fb.textContent = pick(PRAISE);
     $("#starsN").textContent = `👥 ${S.stars}`;
-    confetti(); chatter(it.kind, [fb.textContent, ...(it.kind === "read" ? [it.mot] : it.kind === "sound" ? [it.target.mot, it.answer] : it.kind === "syllab" ? [it.mot] : it.kind === "phrase" ? [it.phrase] : it.kind === "figures" ? (it.sub === "temps" ? [`${it.fig[1][0].toUpperCase()}${it.fig[1].slice(1)} vaut ${TEMPS[it.answer]}.`] : [FIGURES.find(x => x[0] === it.answer)[1]]) : it.kind === "clock" ? timeParts(it.h, it.m) : it.kind === "music" && it.sub === "instr" ? ["C'est", INSTRUMENTS.find(x => x[0] === it.ins)[1]] : [])]);
+    confetti(); chatter(it.kind, [fb.textContent, ...(it.kind === "read" ? [it.mot] : it.kind === "sound" ? [it.target.mot, it.answer] : it.kind === "syllab" ? [it.mot] : it.kind === "phrase" ? [it.phrase] : it.kind === "compare" ? cmpSentence(it) : it.kind === "figures" ? (it.sub === "temps" ? [`${it.fig[1][0].toUpperCase()}${it.fig[1].slice(1)} vaut ${TEMPS[it.answer]}.`] : [FIGURES.find(x => x[0] === it.answer)[1]]) : it.kind === "clock" ? timeParts(it.h, it.m) : it.kind === "music" && it.sub === "instr" ? ["C'est", INSTRUMENTS.find(x => x[0] === it.ins)[1]] : [])]);
     $("#slots") && $("#slots").querySelectorAll(".slot").forEach(s => s.classList.add("ok"));
     $("#num") && ($("#num").className = "ok");
     $("#trace") && $("#trace").classList.add("ok");
@@ -947,7 +990,7 @@ function check(it, answer) {
     } else if (it.kind === "sound") {
       const a = it.choices.find(c => c.mot === target); shown = `${it.target.emoji} ${esc(it.target.mot)} · ${a.emoji} ${esc(a.mot)}`; spoken = [it.target.mot, { pause: 250 }, a.mot];
     } else if (it.kind === "compare") {
-      shown = target; spoken = [it.ask === "grand" ? "Le plus grand, c'est" : "Le plus petit, c'est", ...numberParts(target)];
+      shown = `${it.a} ${{ gt: "&gt;", lt: "&lt;", eq: "=" }[target]} ${it.b}`; spoken = cmpSentence(it); $("#cslot").innerHTML = crocSvg(target);
     } else if (it.kind === "clock") {
       shown = target; spoken = timeParts(it.h, it.m);
     } else if (it.kind === "music") {
@@ -961,7 +1004,7 @@ function check(it, answer) {
     }
     app.querySelectorAll(".choice").forEach(c => { if (c.dataset.v === target) c.classList.add("ok"); });
     fb.insertAdjacentHTML("afterend", `<div class="answer">${shown}</div><div class="actions"><button class="btn small" id="again">🔊 ↻</button><button class="btn ghost small" id="skip">→</button></div>`);
-    if (it.kind === "word" || it.kind === "read" || it.kind === "sound" || it.kind === "syllab" || it.kind === "phrase") say(spoken); else chatter(it.kind, spoken);
+    if (it.kind === "word" || it.kind === "read" || it.kind === "sound" || it.kind === "syllab" || it.kind === "phrase" || it.kind === "compare") say(spoken); else chatter(it.kind, spoken);
     if (it.kind === "music" && it.sub === "rhythm") setTimeout(() => { if (session.items[session.i] === it && $("#again")) playMusic(it); }, S.mute.music ? 300 : 1300);
     $("#again").onclick = () => { renderItem(it); replay(it); };
     $("#skip").onclick = () => { session.i++; nextItem(); };
@@ -1282,7 +1325,7 @@ function parent() {
     const msg = $("#offMsg"); const m = MANIFEST[S.voice];
     if (!("caches" in window)) { msg.textContent = "Non disponible dans ce navigateur."; return; }
     if (!m) { msg.textContent = "La voix choisie n'a pas de clips à télécharger."; return; }
-    const urls = [...m].map(sl => `audio/${S.voice}/${sl}.mp3`); const cache = await caches.open("zombinettes-v9"); urls.push(...INSTRUMENTS.flatMap(x => [1, 2].map(k => `audio/instr/${x[0]}-${k}.m4a`))); let done = 0;
+    const urls = [...m].map(sl => `audio/${S.voice}/${sl}.mp3`); const cache = await caches.open("zombinettes-v10"); urls.push(...INSTRUMENTS.flatMap(x => [1, 2].map(k => `audio/instr/${x[0]}-${k}.m4a`))); let done = 0;
     for (let i = 0; i < urls.length; i += 25) {
       const batch = urls.slice(i, i + 25).filter(u => u);
       const existing = await Promise.all(batch.map(u => cache.match(u)));

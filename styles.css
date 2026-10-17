@@ -271,3 +271,15 @@ button.daily { display: block; width: calc(100% - 32px); text-align: left; color
 .cathead.all { margin-top: 22px; color: var(--muted); font-size: .9rem; text-transform: uppercase; letter-spacing: .06em; }
 .choices.coinpick .choice { aspect-ratio: 1; background: var(--surface2); }
 .answer .coin { vertical-align: middle; }
+.cmprow { display: flex; justify-content: center; align-items: center; gap: 14px; margin: 6px 0 18px; }
+.cmprow .cn { font-size: 3rem; font-weight: 800; min-width: 1.6em; text-align: center; }
+.cslot { width: 84px; height: 84px; border: 3px dashed var(--line); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--muted); }
+.cslot .croc { width: 76px; height: 76px; }
+.choices.crocs .choice { aspect-ratio: 1; }
+.croc { width: 80%; height: 80%; }
+.croc .skin { fill: #22c55e; stroke: #14532d; stroke-width: 2.5; stroke-linejoin: round; }
+.croc .mouth { fill: #be123c; } .croc .tongue { fill: #fb7185; }
+.croc .tooth { fill: #fff; stroke: #14532d; stroke-width: 0.8; }
+.croc .eye { fill: #fef08a; stroke: #14532d; stroke-width: 2; } .croc .pupil { fill: #111; }
+.croc .nostril { fill: #14532d; } .croc .scale { fill: #15803d; }
+.croc .bar { fill: #22c55e; stroke: #14532d; stroke-width: 2.5; }

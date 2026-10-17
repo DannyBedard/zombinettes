@@ -70,8 +70,9 @@ réponses), 3 5 ¢ et 10 ¢ mêlées (choix), 4 + 25 ¢ jusqu'à 1 $ (pavé), 5 
 
 Défi du jour : voir Organisation. Série 🔥 remise à 1 si on saute un jour, collant spécial à 3, 7, 14 et 30 jours.
 
-Plus grand : deux nombres, « touche le plus grand » ou « le plus petit ». La moitié du temps, les deux nombres ont le
-même premier chiffre.
+Plus grand? : deux nombres et une case vide ; l'enfant choisit la bouche du crocodile (qui mange toujours le plus grand)
+ou le signe égal. Crocodiles dessinés en SVG. Une fois sur 5, les deux nombres sont égaux ; souvent, ils ont le même
+premier chiffre. La phrase est dite après (« 893 est plus grand que 729 »).
 
 L'heure : horloge à aiguilles en SVG, 3 choix. Niveaux : heures justes, + les 30, puis 5 minutes avec les minutes écrites en rouge (00 à 55) à l'intérieur du cadran. Un des choix
 inverse souvent les aiguilles (erreur classique).
@@ -79,6 +80,8 @@ inverse souvent les aiguilles (erreur classique).
 Piano : « Trouve le ré » sur un clavier de 2 octaves (les deux do sont acceptés). Bouton 💡 Indice : petit dessin et
 voix qui rappellent que le do est la touche blanche à gauche du groupe de 2 touches noires (les groupes de 2 s'allument
 sur le clavier), puis qu'on monte do, ré, mi… Niveaux : do seulement, do-ré-mi, toutes les notes.
+
+Tracer les notes : ronde, blanche, noire (tête à remplir), croche, deux croches, dessinées au canevas comme modèle.
 
 Les notes : « Touche la noire », 3 images, ou « Combien de temps vaut la blanche? » (ronde 4, blanche 2, noire 1 ; pas les croches pour l'instant) (ronde, blanche, noire, deux croches, clé de sol, clé de fa ; SVG de Wikimedia
 Commons dans `img/music/`, crédits dans `img/music/CREDITS.md`). Les silences viendront plus tard.
