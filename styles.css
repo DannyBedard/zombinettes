@@ -261,3 +261,11 @@ table.stats td { padding: 8px 4px; border-bottom: 1px solid var(--line); } table
 .figans { height: 2.2rem; background: #fff; border-radius: 6px; vertical-align: middle; padding: 2px; }
 .figq { display: flex; justify-content: center; margin: 0 0 14px; }
 .figq img { width: 140px; height: 140px; background: #fff; border-radius: 14px; padding: 10px; object-fit: contain; }
+button.daily { display: block; width: calc(100% - 32px); text-align: left; color: var(--ink); }
+.daily .ds { color: var(--muted); font-size: .9rem; }
+.mixes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 0 16px 6px; }
+.mix { border-radius: 14px; padding: 14px 6px; background: linear-gradient(135deg, var(--c1), var(--c2)); color: #fff; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.mix span { font-size: 2.2rem; } .mix b { font-size: 1rem; } .mix small { opacity: .85; font-size: .78rem; }
+.cathead { margin: 18px 16px 4px; font-size: 1.15rem; display: flex; align-items: center; gap: 8px; }
+.cathead span { font-size: 1.6rem; }
+.cathead.all { margin-top: 22px; color: var(--muted); font-size: .9rem; text-transform: uppercase; letter-spacing: .06em; }

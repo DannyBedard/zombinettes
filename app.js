@@ -7,7 +7,7 @@ const DEFAULTS = {
   stars: 0, stickers: {}, sessions: 0, progress: {}, sessionLength: 8, newPerSession: 3,
   math: { numMax: 199, firstMax: 20, addMax: 10, sub: true, visual: true, length: 8 },
   mathStats: { number: { ok: 0, ko: 0 }, calc: { ok: 0, ko: 0 }, trace: { ok: 0, ko: 0 }, read: { ok: 0, ko: 0 }, sound: { ok: 0, ko: 0 }, syllab: { ok: 0, ko: 0 }, phrase: { ok: 0, ko: 0 }, money: { ok: 0, ko: 0 }, keys: { ok: 0, ko: 0 }, figures: { ok: 0, ko: 0 }, compare: { ok: 0, ko: 0 }, clock: { ok: 0, ko: 0 }, music: { ok: 0, ko: 0 } },
-  trace: { lower: true, upper: true, digits: true, cursive: true, cwords: true, length: 6 },
+  trace: { lower: true, upper: true, digits: true, nums: true, cursive: true, cwords: true, length: 6 },
   read: { level: 2 }, sound: { rime: true, debut: true }, phrase: { max: 4 }, money: { level: 1 }, keys: { level: 3 }, daily: null, streak: { n: 0, last: "" }, cmp: { max: 1000 }, clock: { level: 1 }, music: { pitch: true, rhythm: true, instr: true, level: 2 },
   plays: { word: 0, read: 0, sound: 0, syllab: 0, phrase: 0, money: 0, keys: 0, figures: 0, number: 0, calc: 0, compare: 0, clock: 0, trace: 0, music: 0 },
   boost: 4
@@ -18,16 +18,25 @@ const ACTIVITIES = [
   ["syllab", "Syllabes", "🥁", "#ea580c", "#facc15", "Un coup de tambour par syllabe"],
   ["sound", "Rimes et sons", "👂", "#0891b2", "#a3e635", "Ça rime? Ça commence pareil?"],
   ["phrase", "Phrases", "🧩", "#7c3aed", "#22d3ee", "Remets les mots en ordre"],
+  ["trace", "Tracer les lettres", "✏️", "#14b8a6", "#8b5cf6", "Lettres, mots et attaché"],
   ["number", "Les nombres", "🔢", "#0ea5e9", "#22c55e", "Écoute et écris le nombre"],
   ["calc", "Les calculs", "➕", "#f97316", "#ef4444", "Additions et soustractions"],
   ["compare", "Plus grand?", "🐊", "#16a34a", "#0ea5e9", "Le plus grand, le plus petit"],
   ["money", "Les sous", "🪙", "#ca8a04", "#64748b", "Compte l'argent"],
   ["clock", "L'heure", "🕒", "#6366f1", "#06b6d4", "Lis l'heure sur l'horloge"],
-  ["trace", "Tracer", "✏️", "#14b8a6", "#8b5cf6", "Lettres, chiffres et attaché"],
+  ["traceNum", "Tracer les chiffres", "✍️", "#0d9488", "#3b82f6", "Chiffres et nombres"],
+  ["pitch", "Aigu ou grave", "🔔", "#a855f7", "#f43f5e", "Quel son est le plus aigu?"],
+  ["rhythm", "Rythme", "🥁", "#f43f5e", "#f97316", "Ta, ti-ti, chut au tambour"],
+  ["instr", "Instrument mystère", "🎻", "#9333ea", "#0ea5e9", "Quel instrument joue?"],
   ["keys", "Piano", "🎹", "#0f172a", "#a855f7", "Trouve la note sur le clavier"],
-  ["figures", "Les notes", "🎼", "#be185d", "#6366f1", "Ronde, blanche, noire…"],
-  ["music", "Musique", "🎵", "#a855f7", "#f43f5e", "Aigu, grave, rythme, instruments"]
+  ["figures", "Les notes", "🎼", "#be185d", "#6366f1", "Ronde, blanche, noire…"]
 ];
+const CATS = [
+  ["fr", "Français", "📚", "#7c3aed", "#ec4899", ["word", "read", "syllab", "sound", "phrase", "trace"]],
+  ["math", "Maths", "🧮", "#0ea5e9", "#22c55e", ["number", "calc", "compare", "money", "clock", "traceNum"]],
+  ["mus", "Musique", "🎵", "#a855f7", "#f43f5e", ["pitch", "rhythm", "instr", "keys", "figures"]]
+];
+const DAILY_MIX = { fr: 4, math: 4, mus: 2 }, NO_MIX = ["trace", "traceNum"];
 const HUNDREDS = ["", "cent", "deux cents", "trois cents", "quatre cents", "cinq cents", "six cents", "sept cents", "huit cents", "neuf cents"];
 const THOUSANDS = ["", "mille", "deux mille", "trois mille", "quatre mille", "cinq mille", "six mille", "sept mille", "huit mille", "neuf mille"];
 const HOURS = ["midi", "une heure", "deux heures", "trois heures", "quatre heures", "cinq heures", "six heures", "sept heures", "huit heures", "neuf heures", "dix heures", "onze heures", "midi"];
@@ -207,7 +216,7 @@ function timeParts(h, m) { return ["Il est", HOURS[h], ...(m ? numberParts(m) : 
 function promptParts(it) {
   switch (it.kind) {
     case "word": return [it.mot];
-    case "trace": return it.word ? [it.ch] : [it.ch.toLowerCase(), ...(it.ch !== it.ch.toLowerCase() ? ["majuscule"] : [])];
+    case "trace": return it.num ? numberParts(it.ch) : it.word ? [it.ch] : [it.ch.toLowerCase(), ...(it.ch !== it.ch.toLowerCase() ? ["majuscule"] : [])];
     case "number": return numberParts(it.n);
     case "calc": return [...numberParts(it.a), it.op === "+" ? "plus" : "moins", ...numberParts(it.b)];
     case "read": return [CONSIGNE.read];
@@ -294,14 +303,19 @@ function buildNumberSession() {
   }
   return items;
 }
+function buildTraceNumSession() {
+  const t = S.trace, pool = [];
+  if (t.digits || !t.nums) pool.push(..."0123456789".split("").map(c => ({ kind: "trace", ch: c, isDigit: true })));
+  if (t.nums) for (let k = 0; k < 10; k++) pool.push({ kind: "trace", ch: String(rand(10, 99)), isDigit: true, word: true, num: true });
+  return shuffle(pool).slice(0, t.length).map(it => Object.assign({ answer: "ok" }, it));
+}
 function buildTraceSession() {
   const t = S.trace, pool = [];
   if (t.lower) pool.push(..."abcdefghijklmnopqrstuvwxyz".split("").map(c => ({ kind: "trace", ch: c, isDigit: false })));
   if (t.upper) pool.push(..."ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map(c => ({ kind: "trace", ch: c, isDigit: false })));
-  if (t.digits) pool.push(..."0123456789".split("").map(c => ({ kind: "trace", ch: c, isDigit: true })));
   if (t.cursive) pool.push(..."abcdefghijklmnopqrstuvwxyz".split("").map(c => ({ kind: "trace", ch: c, isDigit: false, cursive: true })));
   if (t.cwords) pool.push(...shuffle(CURSIVE_WORDS).slice(0, 12).map(w => ({ kind: "trace", ch: w, isDigit: false, cursive: true, word: true })));
-  if (!pool.length) pool.push(..."0123456789".split("").map(c => ({ kind: "trace", ch: c, isDigit: true })));
+  if (!pool.length) pool.push(..."abcdefghijklmnopqrstuvwxyz".split("").map(c => ({ kind: "trace", ch: c, isDigit: false })));
   return shuffle(pool).slice(0, t.length).map(it => Object.assign({ answer: "ok" }, it));
 }
 function buildCalcSession() {
@@ -444,11 +458,9 @@ function buildClockSession() {
 }
 const RHYTHMS = { 1: ["ta ta ta ta", "ta ta titi ta", "titi ta ta ta", "ta titi ta ta", "ta ta ta titi"], 2: ["titi titi ta ta", "ta titi titi ta", "titi ta titi ta", "ta ta titi titi", "titi titi titi ta", "ta titi ta titi"], 3: ["ta chut ta ta", "titi ta chut ta", "ta titi chut titi", "titi chut titi ta", "ta ta chut titi"] };
 function rhythmPattern(lvl) { return pick([].concat(...[1, 2, 3].filter(l => l <= lvl).map(l => RHYTHMS[l]))).split(" "); }
-function buildMusicSession() {
-  const mu = S.music, subs = ["pitch", "rhythm", "instr"].filter(k => mu[k]), items = []; let bag = []; const fileOf = {};
-  if (!subs.length) subs.push("pitch");
+function buildMusicSession(sub) {
+  const mu = S.music, items = []; let bag = []; const fileOf = {};
   for (let i = 0; i < S.math.length; i++) {
-    const sub = subs[i % subs.length];
     if (sub === "pitch") {
       const gap = mu.level === 1 ? rand(9, 12) : mu.level === 2 ? rand(4, 7) : rand(2, 3), base = rand(-5, 5), up = Math.random() < 0.5;
       const notes = up ? [base, base + gap] : [base + gap, base], ask = Math.random() < 0.5 ? "aigu" : "grave";
@@ -462,19 +474,40 @@ function buildMusicSession() {
       items.push({ kind: "music", sub, ins: ins[0], file: fileOf[ins[0]], choices: shuffle([ins, ...others]), answer: ins[0] });
     }
   }
-  return shuffle(items);
+  return items;
+}
+const BUILDERS = { number: buildNumberSession, trace: buildTraceSession, traceNum: buildTraceNumSession, calc: buildCalcSession, read: buildReadSession, sound: buildSoundSession, syllab: buildSyllabSession, phrase: buildPhraseSession, money: buildMoneySession, keys: buildKeysSession, figures: buildFiguresSession, compare: buildCompareSession, clock: buildClockSession, pitch: () => buildMusicSession("pitch"), rhythm: () => buildMusicSession("rhythm"), instr: () => buildMusicSession("instr") };
+function gameItems(id) {
+  if (id === "word") return POOL.length || S.weekly.length ? buildWordSession() : [];
+  return BUILDERS[id]();
+}
+function mixItems(plan) {
+  const out = [];
+  for (const [cat, n] of plan) {
+    const games = shuffle(CATS.find(c => c[0] === cat)[5].filter(g => !NO_MIX.includes(g))), cache = {};
+    for (let k = 0; k < n; k++) {
+      const g = games[k % games.length]; cache[g] = cache[g] || shuffle(gameItems(g));
+      const it = cache[g].pop(); if (it) out.push(it);
+    }
+  }
+  return shuffle(out);
+}
+function sessionTitle(kind) {
+  if (kind === "daily") return "🔥 Défi du jour";
+  if (kind.startsWith("mix:")) { const c = CATS.find(x => x[0] === kind.slice(4)); return `${c[2]} Mélange ${c[1]}`; }
+  const a = ACTIVITIES.find(x => x[0] === kind); return a ? `${a[2]} ${a[1]}` : "";
 }
 
 /* ---------- moteur de session ---------- */
 function startSession(kind) {
   stopAudio();
   let items;
-  if (kind === "word") {
-    if (!POOL.length && !S.weekly.length) { view(`${topbar()}<div class="card">Aucun mot chargé.</div>`); $("#back").onclick = home; return; }
-    items = buildWordSession();
-  } else items = { number: buildNumberSession, trace: buildTraceSession, calc: buildCalcSession, read: buildReadSession, sound: buildSoundSession, syllab: buildSyllabSession, phrase: buildPhraseSession, money: buildMoneySession, keys: buildKeysSession, figures: buildFiguresSession, compare: buildCompareSession, clock: buildClockSession, music: buildMusicSession }[kind]();
+  if (kind === "daily") items = mixItems(Object.entries(DAILY_MIX));
+  else if (kind.startsWith("mix:")) items = mixItems([[kind.slice(4), 10]]);
+  else items = gameItems(kind);
+  if (!items.length) { view(`${topbar()}<div class="card">Aucun mot chargé.</div>`); $("#back").onclick = home; return; }
   S.plays[kind] = (S.plays[kind] || 0) + 1; save();
-  session = { kind, items, i: 0, retry: [], good: 0, total: items.length, s: S.sessions, first: true };
+  session = { kind, items, i: 0, retry: [], good: 0, total: items.length, s: S.sessions, seen: new Set() };
   nextItem();
 }
 function nextItem() {
@@ -485,12 +518,13 @@ function nextItem() {
   const it = session.items[session.i];
   session.attempt = 0;
   renderItem(it);
-  const prompt = it.kind === "calc" && S.mute.calc ? [] : it.kind === "read" ? [] : ["phrase", "money", "clock"].includes(it.kind) && !session.first ? [] : promptParts(it);
-  const ann = it.kind === "trace" ? (it.word ? "Voici le mot en lettres attachées :" : it.cursive ? "Voici la lettre attachée :" : it.isDigit ? "Voici le chiffre :" : "Voici la lettre :") : ANNONCE[it.kind];
+  const key = it.kind + (it.sub || ""), first = !session.seen.has(key);
+  const prompt = it.kind === "calc" && S.mute.calc ? [] : it.kind === "read" ? [] : ["phrase", "money", "clock"].includes(it.kind) && !first ? [] : promptParts(it);
+  const ann = it.kind === "trace" ? (it.num ? "Voici le nombre :" : it.word ? "Voici le mot en lettres attachées :" : it.cursive ? "Voici la lettre attachée :" : it.isDigit ? "Voici le chiffre :" : "Voici la lettre :") : ANNONCE[it.kind];
   const consigne = it.kind === "trace" && it.cursive ? "Trace en lettres attachées avec ton doigt." : CONSIGNE[it.kind];
-  const intro = session.first || (it.kind === "trace" && it.cursive !== session.lastCursive);
-  const parts = intro && !S.mute[it.kind] && consigne ? [consigne, { pause: 700 }, ...(ann ? [ann, { pause: 350 }] : []), ...prompt] : it.kind === "read" ? (session.first ? [CONSIGNE.read] : []) : prompt;
-  session.first = false; session.lastCursive = it.cursive;
+  const intro = first || (it.kind === "trace" && it.cursive !== session.lastCursive);
+  const parts = intro && !S.mute[it.kind] && consigne ? [consigne, { pause: 700 }, ...(ann ? [ann, { pause: 350 }] : []), ...prompt] : it.kind === "read" ? (first ? [CONSIGNE.read] : []) : prompt;
+  session.seen.add(key); session.lastCursive = it.cursive;
   const me = session, idx = session.i;
   setTimeout(() => { if (session === me && session.i === idx && $("#speak")) say(parts).then(() => { if (it.kind === "music" && session === me && session.i === idx && !session.locked && $("#speak")) playMusic(it); }); }, 300);
 }
@@ -917,19 +951,14 @@ const STREAK_STICKERS = { 3: "🔥", 7: "💎", 14: "🏆", 30: "🌟" };
 function dayStr(d) { return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; }
 function dailyState() {
   const t = dayStr(new Date());
-  if (!S.daily || S.daily.date !== t) {
-    let h = 0; for (const c of t) h = (h * 31 + c.charCodeAt(0)) >>> 0;
-    const r = arr => { h = (h * 1103515245 + 12345) >>> 0; return arr[h % arr.length]; };
-    S.daily = { date: t, acts: [r(["word", "read", "sound", "syllab", "phrase"]), r(["number", "calc", "compare", "money", "clock"]), r(["trace", "music", "keys", "figures"])], done: [] };
-    if (S.daily.acts[2] === S.daily.acts[0]) S.daily.acts[2] = S.daily.acts[0] === "read" ? "music" : "trace";
-    save();
-  }
+  if (!S.daily || S.daily.date !== t) S.daily = { date: t, done: false };
+  else if (S.daily.acts) S.daily = { date: t, done: S.daily.done.length >= S.daily.acts.length };
   return S.daily;
 }
 function streakNow() { const y = dayStr(new Date(Date.now() - 864e5)), t = dayStr(new Date()); return S.streak.last === t || S.streak.last === y ? S.streak.n : 0; }
 function markDaily(kind) {
-  const d = dailyState(); if (!d.acts.includes(kind) || d.done.includes(kind)) return null;
-  d.done.push(kind); if (d.done.length < d.acts.length) return { partial: true };
+  const d = dailyState(); if (kind !== "daily" || d.done) return null;
+  d.done = true;
   const t = dayStr(new Date()), y = dayStr(new Date(Date.now() - 864e5));
   S.streak = { n: S.streak.last === y ? S.streak.n + 1 : S.streak.last === t ? S.streak.n : 1, last: t };
   const st = STREAK_STICKERS[S.streak.n]; if (st) S.stickers[st] = (S.stickers[st] || 0) + 1;
@@ -947,7 +976,7 @@ function endSession() {
       <p class="tagline">${gained >= session.total / 2 ? `${gained} sur ${session.total}` : "Tu as travaillé fort!"}</p>
       ${up ? `<div class="levelup">🏅 Niveau ${S.palier} débloqué!</div>` : ""}
       <div class="toast"><span class="ic">${sticker}</span><div><div class="tt">Succès débloqué</div><div class="tn">Nouveau collant${S.stickers[sticker] > 1 ? ` ×${S.stickers[sticker]}` : ""}</div></div></div>
-      ${daily && daily.complete ? `<div class="toast streak"><span class="ic">${daily.sticker || "🔥"}</span><div><div class="tt">Défi du jour réussi!</div><div class="tn">🔥 ${daily.n} jour${daily.n > 1 ? "s" : ""} de suite${daily.sticker ? " · collant spécial!" : ""}</div></div></div>` : daily && daily.partial ? `<div class="toast"><span class="ic">✅</span><div><div class="tt">Défi du jour</div><div class="tn">${S.daily.done.length} sur 3</div></div></div>` : ""}
+      ${daily && daily.complete ? `<div class="toast streak"><span class="ic">${daily.sticker || "🔥"}</span><div><div class="tt">Défi du jour réussi!</div><div class="tn">🔥 ${daily.n} jour${daily.n > 1 ? "s" : ""} de suite${daily.sticker ? " · collant spécial!" : ""}</div></div></div>` : ""}
     </div>
     <button class="btn pink" id="again">Encore une partie</button>
     <button class="btn ghost" id="album">🏆 Mes succès</button>
@@ -955,6 +984,7 @@ function endSession() {
   confetti(60);
   chatter(session.kind, ["Bravo! Tu as gagné un nouveau collant!", ...(gained ? [String(gained), gained > 1 ? "nouveaux abonnés" : "nouvel abonné"] : ["Tu as travaillé fort!"]), ...(up ? ["Et tu passes au niveau", String(S.palier)] : []), ...(daily && daily.complete ? ["Défi du jour réussi!", String(daily.n), daily.n > 1 ? "jours de suite" : ""] : [])]);
   const k = session.kind;
+  if (k === "daily") $("#again").textContent = "Rejouer le défi";
   $("#back").onclick = home; $("#home").onclick = home; $("#again").onclick = () => startSession(k); $("#album").onclick = album;
 }
 
@@ -977,21 +1007,25 @@ function channelHeader() {
 function topbar(back = true) {
   return `<div class="topbar">${back ? `<button class="back" id="back">←</button>` : "<span></span>"}<span><span class="stars" title="niveau">🏅 ${S.palier}</span> <span class="stars" id="starsN" title="abonnés">👥 ${S.stars}</span></span></div>`;
 }
-function home() {
-  stopAudio();
-  const cards = ACTIVITIES.map(([id, title, ic, c1, c2, sub]) => `
-    <button class="tilecard" id="${id}">
+function tileCard([id, title, ic, c1, c2, sub]) {
+  return `<button class="tilecard" data-g="${id}">
       <div class="thumb" style="--c1:${c1};--c2:${c2}">${ic}${S.weekly.length && id === "word" ? `<span class="live">SEMAINE</span>` : ""}</div>
       <div class="info"><div class="mini">${ic}</div><div><div class="t">${title}</div><div class="s">${sub}</div><div class="s">${S.plays[id] ? `${S.plays[id]} partie${S.plays[id] > 1 ? "s" : ""} jouée${S.plays[id] > 1 ? "s" : ""}` : "Jamais joué"}</div></div></div>
-    </button>`).join("");
-  const d = dailyState(), sn = streakNow(), all = d.done.length === d.acts.length;
-  const daily = `<div class="daily ${all ? "complete" : ""}"><div class="dh"><b>${all ? "Défi du jour réussi! 🎉" : "Défi du jour"}</b><span class="flame ${sn ? "" : "off"}">🔥 ${sn}</span></div>
-    <div class="dacts">${d.acts.map(id => { const a = ACTIVITIES.find(x => x[0] === id); return `<button class="dact ${d.done.includes(id) ? "done" : ""}" data-d="${id}"><span>${d.done.includes(id) ? "✅" : a[2]}</span><small>${a[1]}</small></button>`; }).join("")}</div></div>`;
+    </button>`;
+}
+function home() {
+  stopAudio();
+  const d = dailyState(), sn = streakNow();
+  const daily = `<button class="daily ${d.done ? "complete" : ""}" data-g="daily"><div class="dh"><b>${d.done ? "Défi du jour réussi! 🎉" : "🔥 Défi du jour"}</b><span class="flame ${sn ? "" : "off"}">🔥 ${sn}</span></div>
+    <div class="ds">${d.done ? "Tu peux le rejouer pour le plaisir." : "10 questions : français, maths et musique"}</div></button>`;
+  const mixes = `<div class="mixes">${CATS.map(([id, t, ic, c1, c2]) => `<button class="mix" data-g="mix:${id}" style="--c1:${c1};--c2:${c2}"><span>${ic}</span><b>${t}</b><small>Mélange</small></button>`).join("")}</div>`;
+  const lists = CATS.map(([id, t, ic, , , games]) => `<h2 class="cathead"><span>${ic}</span>${t}</h2><div class="grid">${games.map(g => tileCard(ACTIVITIES.find(a => a[0] === g))).join("")}</div>`).join("");
   view(`${channelHeader()}
     ${daily}
-    <div class="grid">${cards}</div>`, "home");
-  ACTIVITIES.forEach(([id]) => $("#" + id).onclick = () => startSession(id));
-  app.querySelectorAll("[data-d]").forEach(b => b.onclick = () => startSession(b.dataset.d));
+    ${mixes}
+    <h2 class="cathead all">Tous les jeux</h2>
+    ${lists}`, "home");
+  app.querySelectorAll("[data-g]").forEach(b => b.onclick = () => startSession(b.dataset.g));
 }
 function album() {
   const unlocked = Object.keys(S.stickers).length;
@@ -1124,9 +1158,6 @@ function parent() {
     </div>
     <div class="card">
       <h2>🎵 Musique</h2>
-      <label><input type="checkbox" id="muPitch" ${S.music.pitch ? "checked" : ""}> Aigu ou grave</label>
-      <label><input type="checkbox" id="muRhythm" ${S.music.rhythm ? "checked" : ""}> Rythme (ta, ti-ti, chut)</label>
-      <label><input type="checkbox" id="muInstr" ${S.music.instr ? "checked" : ""}> Instrument mystère</label>
       <label>Niveau</label>
       ${pills("muLvl", [1, 2, 3], S.music.level, v => ["", "Facile", "Moyen", "Difficile"][v])}
     </div>
@@ -1145,7 +1176,8 @@ function parent() {
       <h2>✏️ Tracer</h2>
       <label><input type="checkbox" id="tLower" ${S.trace.lower ? "checked" : ""}> Lettres minuscules</label>
       <label><input type="checkbox" id="tUpper" ${S.trace.upper ? "checked" : ""}> Lettres MAJUSCULES</label>
-      <label><input type="checkbox" id="tDigits" ${S.trace.digits ? "checked" : ""}> Chiffres</label>
+      <label><input type="checkbox" id="tDigits" ${S.trace.digits ? "checked" : ""}> Chiffres (Tracer les chiffres)</label>
+      <label><input type="checkbox" id="tNums" ${S.trace.nums ? "checked" : ""}> Nombres à 2 chiffres (Tracer les chiffres)</label>
       <label><input type="checkbox" id="tCursive" ${S.trace.cursive ? "checked" : ""}> Lettres attachées</label>
       <label><input type="checkbox" id="tCwords" ${S.trace.cwords ? "checked" : ""}> Petits mots en attaché</label>
       <label>Tracés par partie</label>
@@ -1154,7 +1186,8 @@ function parent() {
     <div class="card">
       <h2>📊 Progrès</h2>
       <table class="stats">
-        <tr><td>Parties (mots / lire / rimes / syllabes / phrases / nombres / calculs / plus grand / sous / heure / tracés / piano / notes / musique)</td><td>${["word", "read", "sound", "syllab", "phrase", "number", "calc", "compare", "money", "clock", "trace", "keys", "figures", "music"].map(k => S.plays[k] || 0).join(" / ")}</td></tr>
+        ${CATS.map(([id, t, ic, , , games]) => `<tr><td>${ic} Parties ${t}</td><td>${games.map(g => `${ACTIVITIES.find(a => a[0] === g)[1]} ${S.plays[g] || 0}`).join(" · ")} · Mélange ${S.plays["mix:" + id] || 0}</td></tr>`).join("")}
+        <tr><td>🔥 Défis du jour joués</td><td>${S.plays.daily || 0}</td></tr>
         <tr><td>Mots débloqués / total</td><td>${un.length} / ${POOL.length}</td></tr>
         <tr><td>Mots rencontrés</td><td>${seen}</td></tr>
         <tr><td>À apprendre / en cours / presque / acquis</td><td>${boxes.join(" / ")}</td></tr>
@@ -1162,7 +1195,7 @@ function parent() {
         <tr><td>Nombres réussis / ratés</td><td>${S.mathStats.number.ok} / ${S.mathStats.number.ko}</td></tr>
         <tr><td>Calculs réussis / ratés</td><td>${S.mathStats.calc.ok} / ${S.mathStats.calc.ko}</td></tr>
         <tr><td>Tracés réussis</td><td>${S.mathStats.trace.ok}</td></tr>
-        ${[["read", "Lecture"], ["sound", "Rimes et sons"], ["syllab", "Syllabes"], ["phrase", "Phrases"], ["money", "Sous"], ["keys", "Piano"], ["figures", "Notes de musique"], ["compare", "Plus grand"], ["clock", "Heure"], ["music", "Musique"]].map(([k, l]) => `<tr><td>${l} réussis / ratés</td><td>${S.mathStats[k].ok} / ${S.mathStats[k].ko}</td></tr>`).join("")}
+        ${[["read", "Lecture"], ["sound", "Rimes et sons"], ["syllab", "Syllabes"], ["phrase", "Phrases"], ["money", "Sous"], ["keys", "Piano"], ["figures", "Notes de musique"], ["compare", "Plus grand"], ["clock", "Heure"], ["music", "Aigu, rythme, instruments"]].map(([k, l]) => `<tr><td>${l} réussis / ratés</td><td>${S.mathStats[k].ok} / ${S.mathStats[k].ko}</td></tr>`).join("")}
         <tr><td>Abonnés</td><td>${S.stars}</td></tr>
       </table>
       ${hard.length ? `<label>Mots difficiles</label><p>${hard.map(([k, p]) => `<span class="pill">${esc(k)} ×${p.ko}</span>`).join("")}</p>` : ""}
@@ -1193,9 +1226,9 @@ function parent() {
   $("#save").onclick = () => {
     S.palier = +$("#palier").value; S.palierAuto = $("#auto").checked; S.mode = sel.mode; S.decoys = sel.decoys; S.sessionLength = sel.len;
     S.read = { level: sel.readLvl }; S.sound = { rime: $("#soRime").checked, debut: $("#soDebut").checked }; S.phrase = { max: sel.phrMax }; S.money = { level: sel.monLvl }; S.keys = { level: sel.keysLvl }; S.cmp = { max: sel.cmpMax }; S.clock = { level: sel.clockLvl };
-    S.music = { pitch: $("#muPitch").checked, rhythm: $("#muRhythm").checked, instr: $("#muInstr").checked, level: sel.muLvl };
+    S.music = { level: sel.muLvl };
     S.weekly = [...new Set($("#weekly").value.split(/[\n,;]+/).map(s => s.trim().toLowerCase().replace(/\s+/g, " ")).filter(Boolean))];
-    S.trace = { lower: $("#tLower").checked, upper: $("#tUpper").checked, digits: $("#tDigits").checked, cursive: $("#tCursive").checked, cwords: $("#tCwords").checked, length: sel.tlen };
+    S.trace = { lower: $("#tLower").checked, upper: $("#tUpper").checked, digits: $("#tDigits").checked, nums: $("#tNums").checked, cursive: $("#tCursive").checked, cwords: $("#tCwords").checked, length: sel.tlen };
     S.math = { numMax: sel.numMax, firstMax: +$("#firstMax").value, addMax: +$("#addMax").value, sub: $("#sub").checked, visual: $("#visual").checked, length: sel.mlen };
     save(); home();
   };
@@ -1222,7 +1255,7 @@ function parent() {
     const msg = $("#offMsg"); const m = MANIFEST[S.voice];
     if (!("caches" in window)) { msg.textContent = "Non disponible dans ce navigateur."; return; }
     if (!m) { msg.textContent = "La voix choisie n'a pas de clips à télécharger."; return; }
-    const urls = [...m].map(sl => `audio/${S.voice}/${sl}.mp3`); const cache = await caches.open("zombinettes-v7"); urls.push(...INSTRUMENTS.flatMap(x => [1, 2].map(k => `audio/instr/${x[0]}-${k}.m4a`))); let done = 0;
+    const urls = [...m].map(sl => `audio/${S.voice}/${sl}.mp3`); const cache = await caches.open("zombinettes-v8"); urls.push(...INSTRUMENTS.flatMap(x => [1, 2].map(k => `audio/instr/${x[0]}-${k}.m4a`))); let done = 0;
     for (let i = 0; i < urls.length; i += 25) {
       const batch = urls.slice(i, i + 25).filter(u => u);
       const existing = await Promise.all(batch.map(u => cache.match(u)));

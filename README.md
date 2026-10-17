@@ -29,6 +29,14 @@ Parent) ; progression segmentée dans les exercices ; fin de partie avec score e
 - `sw.js`, `manifest.webmanifest`, `icons/` : PWA
 - `data/mots-{1,2,3}.json` : mots par année, extraits du PDF du MEQ par `data/parse_liste.py`
 
+## Organisation
+
+Accueil : 🔥 Défi du jour (une partie de 10 questions : 4 de français, 4 de maths, 2 de musique, piochées dans des jeux
+différents ; la réussir une fois par jour fait monter la série), puis un bouton « Mélange » par catégorie (10 questions
+de la catégorie), puis tous les jeux sous des sous-titres 📚 Français, 🧮 Maths, 🎵 Musique. Le tracé (lettres en
+français, chiffres et nombres en maths) n'entre pas dans les mélanges. Dans une partie mélangée, chaque type de question
+dit sa consigne la première fois seulement.
+
 ## Comment ça apprend
 
 Chaque mot a une boîte (0 à 3). Un mot réussi monte d'une boîte, un mot raté retombe à 0.
@@ -58,9 +66,7 @@ seulement après la réponse.
 Les sous : pièces canadiennes dessinées en SVG (taille relative et couleur réalistes, valeur écrite dessus), à compter au
 pavé numérique. Niveaux : 5 ¢ et 10 ¢, + 25 ¢ jusqu'à 1 $, 1 $ et 2 $.
 
-Défi du jour : 3 activités tirées selon la date (un jeu de français, un de maths, un autre) en haut de l'accueil. Les
-3 finies dans la journée font monter la série 🔥 (remise à 1 si on saute un jour), avec un collant spécial à 3, 7, 14 et
-30 jours.
+Défi du jour : voir Organisation. Série 🔥 remise à 1 si on saute un jour, collant spécial à 3, 7, 14 et 30 jours.
 
 Plus grand : deux nombres, « touche le plus grand » ou « le plus petit ». La moitié du temps, les deux nombres ont le
 même premier chiffre.
