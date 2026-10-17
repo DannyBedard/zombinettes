@@ -8,9 +8,9 @@ const DEFAULTS = {
   math: { numMax: 199, firstMax: 20, addMax: 10, sub: true, visual: true, length: 8 },
   mathStats: { number: { ok: 0, ko: 0 }, calc: { ok: 0, ko: 0 }, trace: { ok: 0, ko: 0 }, read: { ok: 0, ko: 0 }, sound: { ok: 0, ko: 0 }, syllab: { ok: 0, ko: 0 }, phrase: { ok: 0, ko: 0 }, money: { ok: 0, ko: 0 }, keys: { ok: 0, ko: 0 }, figures: { ok: 0, ko: 0 }, compare: { ok: 0, ko: 0 }, clock: { ok: 0, ko: 0 }, music: { ok: 0, ko: 0 } },
   trace: { lower: true, upper: true, digits: true, cursive: true, cwords: true, length: 6 },
-  read: { level: 2 }, sound: { rime: true, debut: true }, phrase: { max: 4 }, money: { level: 1 }, keys: { level: 2 }, daily: null, streak: { n: 0, last: "" }, cmp: { max: 1000 }, clock: { level: 1 }, music: { pitch: true, rhythm: true, instr: true, level: 2 },
+  read: { level: 2 }, sound: { rime: true, debut: true }, phrase: { max: 4 }, money: { level: 1 }, keys: { level: 3 }, daily: null, streak: { n: 0, last: "" }, cmp: { max: 1000 }, clock: { level: 1 }, music: { pitch: true, rhythm: true, instr: true, level: 2 },
   plays: { word: 0, read: 0, sound: 0, syllab: 0, phrase: 0, money: 0, keys: 0, figures: 0, number: 0, calc: 0, compare: 0, clock: 0, trace: 0, music: 0 },
-  boost: 3
+  boost: 4
 };
 const ACTIVITIES = [
   ["word", "Les mots", "🎤", "#7c3aed", "#ec4899", "Dictée · liste du ministère"],
@@ -34,6 +34,7 @@ const HOURS = ["midi", "une heure", "deux heures", "trois heures", "quatre heure
 const INSTRUMENTS = [["piano", "le piano", "🎹"], ["guitar", "la guitare", "🎸"], ["violin", "le violon", "🎻"], ["trumpet", "la trompette", "🎺"], ["saxophone", "le saxophone", "🎷"], ["flute", "la flûte", "🪈"], ["drum", "le tambour", "🥁"]];
 const CURSIVE_WORDS = ["ami", "chat", "lit", "nez", "eau", "jeu", "lune", "main", "mot", "nuit", "rue", "sac", "vélo", "bébé", "dix", "feu", "loup", "roi", "pain", "pied", "lire", "jour", "soir", "gris", "bleu", "fée", "papa", "maman", "robe", "page"];
 const NOTES = ["do", "ré", "mi", "fa", "sol", "la", "si"], NOTE_SEMI = [0, 2, 4, 5, 7, 9, 11];
+const DURATIONS = { ronde: 4, blanche: 2, noire: 1 }, TEMPS = { 1: "un temps", 2: "deux temps", 4: "quatre temps" };
 const FIGURES = [["ronde", "la ronde", "Touche la ronde."], ["blanche", "la blanche", "Touche la blanche."], ["noire", "la noire", "Touche la noire."], ["croches", "les deux croches", "Touche les deux croches."], ["cle-sol", "la clé de sol", "Touche la clé de sol."], ["cle-fa", "la clé de fa", "Touche la clé de fa."]];
 const DECOY = { a: "oeà", à: "a", e: "éèa", é: "eèê", è: "éeê", ê: "èé", i: "ly", o: "au", u: "on", y: "i", s: "zc", c: "sk", k: "c", g: "jq", j: "g", m: "n", n: "mu", b: "dp", d: "bt", p: "qb", q: "pg", t: "df", f: "vt", v: "f", l: "i", r: "l", h: "n", z: "s", x: "s" };
 const THEME_AVATAR = { violet: "🧟‍♀️", zombie: "🧟‍♀️", vampire: "🧛‍♀️", loup: "🐺", licorne: "🦄", ocean: "🐬", chanteuse: "👩‍🎤", sirene: "🧜‍♀️" };
@@ -95,7 +96,8 @@ function load() {
   for (const k in DEFAULTS.mathStats) out.mathStats[k] = out.mathStats[k] || { ok: 0, ko: 0 };
   if (s.voiceURI && !s.voice) out.voice = "system:" + s.voiceURI;
   if (s.palier && (s.boost || 0) < 2) out.clock = { level: 1 };
-  if (s.palier && (s.boost || 0) < 3) { out.boost = 3; out.math.numMax = 199; }
+  if (s.palier && (s.boost || 0) < 3) out.math.numMax = 199;
+  if (s.palier && (s.boost || 0) < 4) { out.boost = 4; out.keys = { level: 3 }; }
   if (s.palier && !s.boost) { out.palier = Math.max(out.palier, 5);
     out.math = Object.assign(out.math, { firstMax: Math.max(out.math.firstMax, 20), addMax: Math.max(out.math.addMax, 10), sub: true });
     out.trace = Object.assign(out.trace, { upper: true, cursive: true, cwords: true });
@@ -212,7 +214,7 @@ function promptParts(it) {
     case "syllab": return [it.mot];
     case "phrase": return ["Remets les mots dans l'ordre pour faire une phrase."];
     case "keys": return [`Trouve le ${NOTES[it.note]} sur le clavier.`];
-    case "figures": return [FIGURES.find(x => x[0] === it.answer)[2]];
+    case "figures": return it.sub === "temps" ? [`Combien de temps vaut ${it.fig[1]}?`] : [FIGURES.find(x => x[0] === it.answer)[2]];
     case "money": return ["Compte l'argent et écris combien ça fait."];
     case "sound": return [it.sub === "rime" ? "Quel mot rime avec" : "Quel mot commence comme", it.target.mot, { pause: 400 }, it.choices[0].mot, it.choices[1].mot, "ou", it.choices[2].mot];
     case "compare": return [it.ask === "grand" ? "Touche le plus grand nombre." : "Touche le plus petit nombre."];
@@ -358,10 +360,10 @@ function buildMoneySession() {
 }
 function buildKeysSession() {
   const pool = S.keys.level === 1 ? [0] : S.keys.level === 2 ? [0, 1, 2] : [0, 1, 2, 3, 4, 5, 6], items = [];
-  let last = -1;
+  let bag = [], last = -1;
   for (let i = 0; i < S.math.length; i++) {
-    let n = pick(pool); if (pool.length > 1) while (n === last) n = pick(pool);
-    last = n; items.push({ kind: "keys", note: n, answer: String(n) });
+    if (!bag.length) { bag = shuffle(pool); if (bag.length > 1 && bag[bag.length - 1] === last) bag.unshift(bag.pop()); }
+    const n = bag.pop(); last = n; items.push({ kind: "keys", note: n, answer: String(n) });
   }
   return items;
 }
@@ -369,7 +371,9 @@ function buildFiguresSession() {
   const items = []; let bag = [];
   for (let i = 0; i < S.math.length; i++) {
     if (!bag.length) bag = shuffle(FIGURES);
-    const f = bag.pop(), others = shuffle(FIGURES.filter(x => x !== f)).slice(0, 2);
+    const f = bag.pop();
+    if (DURATIONS[f[0]] && i % 2) { items.push({ kind: "figures", sub: "temps", fig: f, choices: shuffle([1, 2, 4]), answer: String(DURATIONS[f[0]]) }); continue; }
+    const others = shuffle(FIGURES.filter(x => x !== f)).slice(0, 2);
     items.push({ kind: "figures", choices: shuffle([f, ...others]), answer: f[0] });
   }
   return items;
@@ -505,6 +509,8 @@ function renderItem(it) {
   } else if (it.kind === "keys") {
     body = `<div class="cmpq">Trouve le <b>${NOTES[it.note].toUpperCase()}</b></div><div class="kbdwrap">${keyboardSvg()}</div>
       <div class="hint" id="hint"><button class="btn ghost small" id="hintBtn">💡 Indice</button><div class="hintbox" id="hintBox" hidden>${hintSvg()}<p>Le <b>DO</b>, c'est la touche blanche juste à <b>gauche</b> du groupe de <b>2 touches noires</b>.</p>${it.note ? `<p>Ensuite, on monte vers la droite : do, ré, mi, fa, sol, la, si.</p>` : ""}</div></div>`;
+  } else if (it.kind === "figures" && it.sub === "temps") {
+    body = `<div class="cmpq">Combien de temps vaut <b>${it.fig[1]}</b>?</div><div class="figq"><img src="img/music/${it.fig[0]}.svg" alt=""></div><div class="choices">${it.choices.map(n => `<button class="choice txt" data-v="${n}">${n} temps</button>`).join("")}</div>`;
   } else if (it.kind === "figures") {
     body = `<div class="cmpq">Touche <b>${FIGURES.find(x => x[0] === it.answer)[1]}</b></div><div class="choices figs">${it.choices.map(c => `<button class="choice fig" data-v="${c[0]}"><img src="img/music/${c[0]}.svg" alt=""></button>`).join("")}</div>`;
   } else if (it.kind === "phrase") {
@@ -845,7 +851,7 @@ function check(it, answer) {
     save();
     fb.className = "feedback ok"; fb.textContent = pick(PRAISE);
     $("#starsN").textContent = `👥 ${S.stars}`;
-    confetti(); chatter(it.kind, [fb.textContent, ...(it.kind === "read" ? [it.mot] : it.kind === "sound" ? [it.target.mot, it.answer] : it.kind === "syllab" ? [it.mot] : it.kind === "phrase" ? [it.phrase] : it.kind === "figures" ? [FIGURES.find(x => x[0] === it.answer)[1]] : it.kind === "clock" ? timeParts(it.h, it.m) : it.kind === "music" && it.sub === "instr" ? ["C'est", INSTRUMENTS.find(x => x[0] === it.ins)[1]] : [])]);
+    confetti(); chatter(it.kind, [fb.textContent, ...(it.kind === "read" ? [it.mot] : it.kind === "sound" ? [it.target.mot, it.answer] : it.kind === "syllab" ? [it.mot] : it.kind === "phrase" ? [it.phrase] : it.kind === "figures" ? (it.sub === "temps" ? [`${it.fig[1][0].toUpperCase()}${it.fig[1].slice(1)} vaut ${TEMPS[it.answer]}.`] : [FIGURES.find(x => x[0] === it.answer)[1]]) : it.kind === "clock" ? timeParts(it.h, it.m) : it.kind === "music" && it.sub === "instr" ? ["C'est", INSTRUMENTS.find(x => x[0] === it.ins)[1]] : [])]);
     $("#slots") && $("#slots").querySelectorAll(".slot").forEach(s => s.classList.add("ok"));
     $("#num") && ($("#num").className = "ok");
     $("#trace") && $("#trace").classList.add("ok");
@@ -866,6 +872,8 @@ function check(it, answer) {
     } else if (it.kind === "keys") {
       shown = NOTES[it.note].toUpperCase(); spoken = [];
       app.querySelectorAll(`.kbd .wk[data-n="${it.note}"]`).forEach(r => r.classList.add("ok"));
+    } else if (it.kind === "figures" && it.sub === "temps") {
+      shown = `${it.fig[1]} = ${target} temps`; spoken = [`${it.fig[1][0].toUpperCase()}${it.fig[1].slice(1)} vaut ${TEMPS[target]}.`];
     } else if (it.kind === "figures") {
       const f = FIGURES.find(x => x[0] === target); shown = `<img class="figans" src="img/music/${f[0]}.svg" alt=""> ${f[1]}`; spoken = ["C'est", f[1]];
     } else if (it.kind === "phrase") {
@@ -1099,7 +1107,7 @@ function parent() {
     </div>
     <div class="card">
       <h2>🎹 Piano</h2>
-      ${pills("keysLvl", [1, 2, 3], S.keys.level, v => ["", "Do seulement", "Do, ré, mi", "Toutes les notes"][v])}
+      ${pills("keysLvl", [1, 2, 3], S.keys.level, v => ["", "Do seulement", "Do, ré, mi", "Les 7 notes"][v])}
     </div>
     <div class="card">
       <h2>🪙 Les sous</h2>

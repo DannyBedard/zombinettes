@@ -72,7 +72,7 @@ Piano : « Trouve le ré » sur un clavier de 2 octaves (les deux do sont accept
 voix qui rappellent que le do est la touche blanche à gauche du groupe de 2 touches noires (les groupes de 2 s'allument
 sur le clavier), puis qu'on monte do, ré, mi… Niveaux : do seulement, do-ré-mi, toutes les notes.
 
-Les notes : « Touche la noire », 3 images (ronde, blanche, noire, deux croches, clé de sol, clé de fa ; SVG de Wikimedia
+Les notes : « Touche la noire », 3 images, ou « Combien de temps vaut la blanche? » (ronde 4, blanche 2, noire 1 ; pas les croches pour l'instant) (ronde, blanche, noire, deux croches, clé de sol, clé de fa ; SVG de Wikimedia
 Commons dans `img/music/`, crédits dans `img/music/CREDITS.md`). Les silences viendront plus tard.
 
 Musique : aigu ou grave (deux notes, écart plus petit selon le niveau), rythme (ta, ti-ti, chut ; l'enfant tape sur le
