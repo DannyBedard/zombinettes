@@ -51,8 +51,8 @@ L'heure : horloge à aiguilles en SVG, 3 choix. Niveaux : heures justes, + les 3
 inverse souvent les aiguilles (erreur classique).
 
 Musique : aigu ou grave (deux notes, écart plus petit selon le niveau), rythme (ta, ti-ti, chut ; l'enfant tape sur le
-tambour ; très tolérant : réussi si le nombre de coups est bon à un près, raté seulement si elle pitonne au hasard, avec un essai gratuit) et instrument mystère (une courte mélodie jouée
-avec un vrai échantillon). Sons synthétisés en Web Audio, sauf les instruments (`audio/instr/`).
+tambour ; très tolérant : réussi si le nombre de coups est bon à un près, raté seulement si elle pitonne au hasard, avec un essai gratuit) et instrument mystère (un vrai enregistrement de 8 secondes,
+2 extraits par instrument). Sons synthétisés en Web Audio, sauf les instruments (`audio/instr/`).
 
 Tracer : un modèle de lettre (minuscule, majuscule) ou de chiffre en gris pâle, l'enfant repasse dessus au doigt.
 Modèle en police scolaire (Chalkboard SE), centré selon la boîte réelle du glyphe. Lettres et petits mots en attaché
@@ -97,7 +97,6 @@ Source : https://cdn-contenu.quebec.ca/cdn-contenu/education/pfeq/primaire/Liste
 
 ## Crédits
 
-- Échantillons d'instruments (`audio/instr/`) : [tonejs-instruments](https://github.com/nbrosowsky/tonejs-instruments)
-  de Nicholaus Brosowsky, licence [CC-BY 3.0](https://creativecommons.org/licenses/by/3.0/), une note par instrument
-  convertie en AAC mono.
+- Extraits d'instruments (`audio/instr/`) : vrais enregistrements de Wikimedia Commons (domaine public, CC0, CC BY,
+  CC BY-SA), 2 extraits de 8 secondes par instrument. Auteurs et licences dans `audio/instr/CREDITS.md`.
 - Police Playwrite CA (`fonts/`) : The Playwrite Project Authors (TypeTogether), licence SIL OFL 1.1 (`fonts/OFL.txt`).

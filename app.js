@@ -432,17 +432,15 @@ function drum(t0) {
   for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / d.length);
   const ng = actx.createGain(); ng.gain.value = 0.35; n.buffer = b; n.connect(ng); ng.connect(actx.destination); n.start(t0);
 }
-async function sampleNotes(id, notes) {
-  const buf = await getBuffer(`audio/instr/${id}.m4a`); let t = now();
-  for (const [semi, beats] of notes) {
-    const src = actx.createBufferSource(), g = actx.createGain(), dur = beats * BPM_BEAT;
-    src.buffer = buf; src.playbackRate.value = Math.pow(2, semi / 12);
-    g.gain.setValueAtTime(0.9, t); g.gain.setValueAtTime(0.9, t + dur * 0.85); g.gain.exponentialRampToValueAtTime(0.001, t + dur + 0.25);
-    src.connect(g); g.connect(actx.destination); src.start(t); src.stop(t + dur + 0.3); t += dur;
-  }
-  return t;
+async function playRecording(id) {
+  const buf = await getBuffer(`audio/instr/${id}-${rand(1, 2)}.m4a`), t = now();
+  const src = actx.createBufferSource(), g = actx.createGain();
+  src.buffer = buf; g.gain.value = 0.9; src.connect(g); g.connect(actx.destination); src.start(t);
+  const me = session, idx = session.i;
+  const stopper = setInterval(() => { if (session !== me || session.i !== idx || session.locked || !$("#speak")) { try { src.stop(); } catch {} clearInterval(stopper); } }, 200);
+  src.onended = () => clearInterval(stopper);
+  return t + buf.duration;
 }
-const MELODIES = [[[0, 1], [4, 1], [7, 1], [12, 2]], [[0, .5], [2, .5], [4, .5], [5, .5], [7, 2]], [[7, 1], [4, 1], [5, 1], [2, 1], [0, 2]], [[0, 1], [0, 1], [7, 1], [7, 1], [9, 1], [9, 1], [7, 2]]];
 function wait(t) { return new Promise(r => setTimeout(r, Math.max(0, (t - actx.currentTime) * 1000))); }
 async function playNotes(notes) { const t0 = now(); if (!actx) return; notes.forEach((n, k) => tone(n, t0 + k * 0.8, 0.65)); return wait(t0 + notes.length * 0.8); }
 function rhythmOnsets(pattern) { const on = []; let t = 0; for (const p of pattern) { if (p === "ta") on.push([t, p]); if (p === "titi") on.push([t, p], [t + 0.5, p]); t += 1; } return on; }
@@ -466,9 +464,7 @@ async function playMusic(it) {
       session.listening = false; session.taps = []; $("#drum").classList.add("ready");
       if (!S.mute.music) say(["À toi!"]);
     } else {
-      const mel = pick(MELODIES);
-      if (it.ins === "drum") { const t0 = now(); rhythmOnsets(["ta", "titi", "ta", "titi"]).forEach(([b]) => drum(t0 + b * BPM_BEAT)); await wait(t0 + 4 * BPM_BEAT); }
-      else await wait(await sampleNotes(it.ins, mel));
+      await wait(await playRecording(it.ins));
     }
   } catch {}
 }
@@ -940,7 +936,7 @@ function parent() {
     const msg = $("#offMsg"); const m = MANIFEST[S.voice];
     if (!("caches" in window)) { msg.textContent = "Non disponible dans ce navigateur."; return; }
     if (!m) { msg.textContent = "La voix choisie n'a pas de clips à télécharger."; return; }
-    const urls = [...m].map(sl => `audio/${S.voice}/${sl}.mp3`); const cache = await caches.open("zombinettes-v2"); urls.push(...INSTRUMENTS.filter(x => x[0] !== "drum").map(x => `audio/instr/${x[0]}.m4a`)); let done = 0;
+    const urls = [...m].map(sl => `audio/${S.voice}/${sl}.mp3`); const cache = await caches.open("zombinettes-v3"); urls.push(...INSTRUMENTS.flatMap(x => [1, 2].map(k => `audio/instr/${x[0]}-${k}.m4a`))); let done = 0;
     for (let i = 0; i < urls.length; i += 25) {
       const batch = urls.slice(i, i + 25).filter(u => u);
       const existing = await Promise.all(batch.map(u => cache.match(u)));
