@@ -5,12 +5,12 @@ const DEFAULTS = {
   palier: 5, palierAuto: true, mode: "tiles", decoys: 3, pin: "1234", weekly: [], theme: "violet", bg: "dark", avatar: null, custom: null, voice: "sylvie", pitch: 1,
   mute: { word: false, read: false, sound: false, syllab: false, number: false, calc: false, compare: false, clock: false, trace: false, music: false },
   stars: 0, stickers: {}, sessions: 0, progress: {}, sessionLength: 8, newPerSession: 3,
-  math: { numMax: 9999, firstMax: 20, addMax: 10, sub: true, visual: true, length: 8 },
+  math: { numMax: 199, firstMax: 20, addMax: 10, sub: true, visual: true, length: 8 },
   mathStats: { number: { ok: 0, ko: 0 }, calc: { ok: 0, ko: 0 }, trace: { ok: 0, ko: 0 }, read: { ok: 0, ko: 0 }, sound: { ok: 0, ko: 0 }, syllab: { ok: 0, ko: 0 }, compare: { ok: 0, ko: 0 }, clock: { ok: 0, ko: 0 }, music: { ok: 0, ko: 0 } },
   trace: { lower: true, upper: true, digits: true, cursive: true, cwords: true, length: 6 },
   read: { level: 2 }, sound: { rime: true, debut: true }, cmp: { max: 1000 }, clock: { level: 1 }, music: { pitch: true, rhythm: true, instr: true, level: 2 },
   plays: { word: 0, read: 0, sound: 0, syllab: 0, number: 0, calc: 0, compare: 0, clock: 0, trace: 0, music: 0 },
-  boost: 2
+  boost: 3
 };
 const ACTIVITIES = [
   ["word", "Les mots", "🎤", "#7c3aed", "#ec4899", "Dictée · liste du ministère"],
@@ -88,10 +88,10 @@ function load() {
   for (const k of ["read", "sound", "cmp", "clock", "music"]) out[k] = Object.assign({}, DEFAULTS[k], s[k] || {});
   for (const k in DEFAULTS.mathStats) out.mathStats[k] = out.mathStats[k] || { ok: 0, ko: 0 };
   if (s.voiceURI && !s.voice) out.voice = "system:" + s.voiceURI;
-  if (s.palier && (s.boost || 0) < 2) { out.boost = 2; out.clock = { level: 1 }; }
-  if (s.palier && !s.boost) {
-    out.boost = 2; out.palier = Math.max(out.palier, 5);
-    out.math = Object.assign(out.math, { numMax: 9999, firstMax: Math.max(out.math.firstMax, 20), addMax: Math.max(out.math.addMax, 10), sub: true });
+  if (s.palier && (s.boost || 0) < 2) out.clock = { level: 1 };
+  if (s.palier && (s.boost || 0) < 3) { out.boost = 3; out.math.numMax = 199; }
+  if (s.palier && !s.boost) { out.palier = Math.max(out.palier, 5);
+    out.math = Object.assign(out.math, { firstMax: Math.max(out.math.firstMax, 20), addMax: Math.max(out.math.addMax, 10), sub: true });
     out.trace = Object.assign(out.trace, { upper: true, cursive: true, cwords: true });
   }
   return out;
@@ -241,6 +241,7 @@ function buildWordSession() {
 /* ---------- maths ---------- */
 function bigNumber(max) {
   if (max <= 100) return rand(0, max);
+  if (max < 1000) return Math.random() < 0.7 ? rand(0, 99) : rand(100, max);
   const r = Math.random(), bands = [[11, 99], [101, Math.min(999, max)], [1001, max]].filter(b => b[0] <= b[1]);
   const b = max >= 1001 ? bands[r < 0.15 ? 0 : r < 0.6 ? 1 : 2] : bands[r < 0.25 ? 0 : 1];
   return rand(b[0], b[1]);
@@ -893,8 +894,8 @@ function parent() {
     <div class="card">
       <h2>🔢 Les nombres</h2>
       <label>Nombres jusqu'à</label>
-      ${pills("numMax", [20, 100, 1000, 9999], m.numMax, v => v.toLocaleString("fr-CA"))}
-      <p class="muted">Au-delà de 100, surtout des centaines et des milliers.</p>
+      ${pills("numMax", [20, 100, 199, 1000, 9999], m.numMax, v => v.toLocaleString("fr-CA"))}
+      <p class="muted">Jusqu'à 199 : 7 nombres sur 10 sous 100. À 1 000 et plus : surtout des centaines et des milliers.</p>
     </div>
     <div class="card">
       <h2>📖 Lire</h2>

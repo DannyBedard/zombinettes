@@ -2,7 +2,7 @@
 
 Jeu éducatif pour le 1er cycle du primaire (PWA, iPad et iPhone) : dictée de mots basée sur la Liste
 orthographique officielle du ministère de l'Éducation du Québec (1re, 2e et 3e année), lecture (mot → image),
-dictée de nombres jusqu'aux milliers, calculs (additions, soustractions), plus grand / plus petit, lecture de
+dictée de nombres (0 à 199 par défaut, jusqu'à 9999 au besoin), calculs (additions, soustractions), plus grand / plus petit, lecture de
 l'heure, tracé (moulé et attaché) et musique (aigu ou grave, rythme, instrument mystère), avec difficulté
 réglable. Les consignes sont dites à voix haute.
 
