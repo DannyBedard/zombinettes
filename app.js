@@ -38,7 +38,7 @@ const DURATIONS = { ronde: 4, blanche: 2, noire: 1 }, TEMPS = { 1: "un temps", 2
 const FIGURES = [["ronde", "la ronde", "Touche la ronde."], ["blanche", "la blanche", "Touche la blanche."], ["noire", "la noire", "Touche la noire."], ["croches", "les deux croches", "Touche les deux croches."], ["cle-sol", "la clé de sol", "Touche la clé de sol."], ["cle-fa", "la clé de fa", "Touche la clé de fa."]];
 const DECOY = { a: "oeà", à: "a", e: "éèa", é: "eèê", è: "éeê", ê: "èé", i: "ly", o: "au", u: "on", y: "i", s: "zc", c: "sk", k: "c", g: "jq", j: "g", m: "n", n: "mu", b: "dp", d: "bt", p: "qb", q: "pg", t: "df", f: "vt", v: "f", l: "i", r: "l", h: "n", z: "s", x: "s" };
 const THEME_AVATAR = { violet: "🧟‍♀️", zombie: "🧟‍♀️", vampire: "🧛‍♀️", loup: "🐺", licorne: "🦄", ocean: "🐬", chanteuse: "👩‍🎤", sirene: "🧜‍♀️" };
-const STICKERS = ["🧟‍♀️", "🧛‍♀️", "🐺", "👻", "🦇", "🕸️", "🎃", "📣", "🎤", "🎥", "📱", "🔔", "👍", "🎬", "🎮", "💜", "🧸", "🦄", "🌈", "⭐", "🍭", "🎀", "🎸", "🩰", "🎧", "🐱", "🌸", "🍦", "🦋", "🎉", "👑", "🐶", "🍩", "🛼", "🎈", "🌙"];
+const STICKERS = ["🧟‍♀️", "🧛‍♀️", "🐺", "👻", "🦇", "🕸️", "🎃", "📣", "🎤", "🎥", "📱", "🔔", "👍", "🎬", "🎮", "💜", "🧸", "🦄", "🌈", "⭐", "🍭", "🎀", "🎸", "🩰", "🎧", "🐱", "🌸", "🍦", "🦋", "🎉", "👑", "🐶", "🍩", "🛼", "🎈", "🌙", "🧟", "🧟‍♂️", "🧛", "🧛‍♂️", "🧙‍♀️", "🧚‍♀️", "🧜‍♀️", "👸", "🦸‍♀️", "🥷", "💀", "☠️", "🕷️", "🐈‍⬛", "🦉", "🐸", "🐼", "🐨", "🦊", "🐰", "🐹", "🐧", "🐙", "🦈", "🐬", "🦖", "🐉", "🐝", "🐞", "🌺", "🌻", "🍀", "🌵", "🍓", "🍒", "🍉", "🍕", "🧁", "🍪", "🍫", "🍿", "🧋", "🥤", "🎂", "🍰", "💍", "👠", "👗", "👛", "🕶️", "💄", "💅", "🪩", "🎹", "🎷", "🎺", "🥁", "🪇", "🎵", "🎶", "🎙️", "📸", "🎨", "🖍️", "🪄", "🔮", "🪅", "🎁", "🚀", "🛸", "❄️", "⚡", "🥇"];
 const PRAISE = ["Bravo!", "Wow!", "Super!", "Génial!", "Trop fort!", "Yé!", "Championne!", "Parfait!", "Incroyable!"];
 const BOX_GAP = [0, 2, 4, 8];
 const PALIERS = { 1: [1, 2, 3, 4], 2: [5, 6, 7], 3: [8, 9, 10] };
@@ -936,7 +936,7 @@ function markDaily(kind) {
   return { complete: true, n: S.streak.n, sticker: st };
 }
 function endSession() {
-  const sticker = pick(STICKERS);
+  const missing = STICKERS.filter(x => !S.stickers[x]), sticker = missing.length && Math.random() < 0.8 ? pick(missing) : pick(STICKERS);
   S.stickers[sticker] = (S.stickers[sticker] || 0) + 1;
   const daily = markDaily(session.kind);
   const up = maybeLevelUp(); save();
