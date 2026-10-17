@@ -481,7 +481,7 @@ function nextItem() {
   const it = session.items[session.i];
   session.attempt = 0;
   renderItem(it);
-  const prompt = it.kind === "calc" && S.mute.calc ? [] : it.kind === "read" ? [] : promptParts(it);
+  const prompt = it.kind === "calc" && S.mute.calc ? [] : it.kind === "read" ? [] : ["phrase", "money", "clock"].includes(it.kind) && !session.first ? [] : promptParts(it);
   const ann = it.kind === "trace" ? (it.word ? "Voici le mot en lettres attachées :" : it.cursive ? "Voici la lettre attachée :" : it.isDigit ? "Voici le chiffre :" : "Voici la lettre :") : ANNONCE[it.kind];
   const consigne = it.kind === "trace" && it.cursive ? "Trace en lettres attachées avec ton doigt." : CONSIGNE[it.kind];
   const intro = session.first || (it.kind === "trace" && it.cursive !== session.lastCursive);
