@@ -8,9 +8,9 @@ const DEFAULTS = {
   math: { numMax: 9999, firstMax: 20, addMax: 10, sub: true, visual: true, length: 8 },
   mathStats: { number: { ok: 0, ko: 0 }, calc: { ok: 0, ko: 0 }, trace: { ok: 0, ko: 0 }, read: { ok: 0, ko: 0 }, compare: { ok: 0, ko: 0 }, clock: { ok: 0, ko: 0 }, music: { ok: 0, ko: 0 } },
   trace: { lower: true, upper: true, digits: true, cursive: true, cwords: true, length: 6 },
-  read: { level: 2 }, cmp: { max: 1000 }, clock: { level: 2 }, music: { pitch: true, rhythm: true, instr: true, level: 2 },
+  read: { level: 2 }, cmp: { max: 1000 }, clock: { level: 1 }, music: { pitch: true, rhythm: true, instr: true, level: 2 },
   plays: { word: 0, read: 0, number: 0, calc: 0, compare: 0, clock: 0, trace: 0, music: 0 },
-  boost: 1
+  boost: 2
 };
 const ACTIVITIES = [
   ["word", "Les mots", "🎤", "#7c3aed", "#ec4899", "Dictée · liste du ministère"],
@@ -84,8 +84,9 @@ function load() {
   for (const k of ["read", "cmp", "clock", "music"]) out[k] = Object.assign({}, DEFAULTS[k], s[k] || {});
   for (const k in DEFAULTS.mathStats) out.mathStats[k] = out.mathStats[k] || { ok: 0, ko: 0 };
   if (s.voiceURI && !s.voice) out.voice = "system:" + s.voiceURI;
+  if (s.palier && (s.boost || 0) < 2) { out.boost = 2; out.clock = { level: 1 }; }
   if (s.palier && !s.boost) {
-    out.boost = 1; out.palier = Math.max(out.palier, 5);
+    out.boost = 2; out.palier = Math.max(out.palier, 5);
     out.math = Object.assign(out.math, { numMax: 9999, firstMax: Math.max(out.math.firstMax, 20), addMax: Math.max(out.math.addMax, 10), sub: true });
     out.trace = Object.assign(out.trace, { upper: true, cursive: true, cwords: true });
   }
@@ -292,7 +293,7 @@ function buildCompareSession() {
   return items;
 }
 const clockLabel = (h, m) => `${h} h${m ? " " + String(m).padStart(2, "0") : ""}`;
-function clockMinutes(lvl) { return lvl === 1 ? [0] : lvl === 2 ? [0, 30] : lvl === 3 ? [0, 15, 30, 45] : [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]; }
+function clockMinutes(lvl) { return lvl === 1 ? [0] : lvl === 2 ? [0, 30] : [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]; }
 function buildClockSession() {
   const mins = clockMinutes(S.clock.level), items = [];
   for (let i = 0; i < S.math.length; i++) {
@@ -370,7 +371,7 @@ function renderItem(it) {
   } else if (it.kind === "compare") {
     body = `<div class="cmpq">Le plus <b>${it.ask === "grand" ? "GRAND" : "petit"}</b> ${it.ask === "grand" ? "🐘" : "🐭"}</div><div class="choices two">${shuffle([it.a, it.b]).map(n => `<button class="choice num" data-v="${n}">${n}</button>`).join("")}</div>`;
   } else if (it.kind === "clock") {
-    body = `<div class="clockwrap">${clockSvg(it.h, it.m)}</div><div class="choices">${it.choices.map(c => `<button class="choice txt" data-v="${c}">${c}</button>`).join("")}</div>`;
+    body = `<div class="clockwrap">${clockSvg(it.h, it.m, S.clock.level >= 3)}</div><div class="choices">${it.choices.map(c => `<button class="choice txt" data-v="${c}">${c}</button>`).join("")}</div>`;
   } else if (it.kind === "music") {
     if (it.sub === "pitch") body = `<div class="cmpq">Le son le plus <b>${it.ask}</b> ${it.ask === "aigu" ? "🐭" : "🐻"}</div><div class="choices two">${[0, 1].map(k => `<button class="choice num note" data-v="${k}">🔔<small>${k + 1}</small></button>`).join("")}</div>`;
     else if (it.sub === "rhythm") body = `<div class="rhythm" id="rhythm">${it.pattern.map((p, k) => `<span data-k="${k}">${p === "ta" ? "♩" : p === "titi" ? "♫" : "𝄽"}<small>${p}</small></span>`).join("")}</div><button class="drum" id="drum">🥁</button>`;
@@ -402,11 +403,11 @@ function setupChoices(it) {
     check(it, b.dataset.v);
   };
 }
-function clockSvg(h, m) {
+function clockSvg(h, m, minutes) {
   const R = 90, ang = a => (a - 90) * Math.PI / 180, pt = (a, r) => `${(100 + r * Math.cos(ang(a))).toFixed(1)},${(100 + r * Math.sin(ang(a))).toFixed(1)}`;
   const ticks = Array.from({ length: 60 }, (_, k) => `<line x1="${pt(k * 6, R - (k % 5 ? 4 : 9)).replace(",", '" y1="')}" x2="${pt(k * 6, R - 1).replace(",", '" y2="')}" class="${k % 5 ? "tk" : "tk5"}"/>`).join("");
   const nums = Array.from({ length: 12 }, (_, k) => { const [x, y] = pt((k + 1) * 30, R - 22).split(","); return `<text x="${x}" y="${y}">${k + 1}</text>`; }).join("");
-  const mins = Array.from({ length: 12 }, (_, k) => { const [x, y] = pt(k * 30, R - 43).split(","); return `<text x="${x}" y="${y}" class="mn">${String(k * 5).padStart(2, "0")}</text>`; }).join("");
+  const mins = !minutes ? "" : Array.from({ length: 12 }, (_, k) => { const [x, y] = pt(k * 30, R - 43).split(","); return `<text x="${x}" y="${y}" class="mn">${String(k * 5).padStart(2, "0")}</text>`; }).join("");
   return `<svg class="clock" viewBox="0 0 200 200"><circle cx="100" cy="100" r="${R}" class="face"/>${ticks}${nums}
     <line x1="100" y1="100" x2="${pt((h % 12) * 30 + m / 2, 46).replace(",", '" y2="')}" class="hh"/>
     <line x1="100" y1="100" x2="${pt(m * 6, 72).replace(",", '" y2="')}" class="mh"/>${mins}<circle cx="100" cy="100" r="6" class="pin"/></svg>`;
@@ -843,7 +844,7 @@ function parent() {
     </div>
     <div class="card">
       <h2>🕒 L'heure</h2>
-      ${pills("clockLvl", [1, 2, 3, 4], S.clock.level, v => ["", "Heures justes", "+ demies", "+ quarts", "5 minutes"][v])}
+      ${pills("clockLvl", [1, 2, 3], S.clock.level, v => ["", "Heures justes", "+ et 30", "5 minutes (chiffres rouges)"][v])}
     </div>
     <div class="card">
       <h2>🎵 Musique</h2>

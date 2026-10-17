@@ -47,7 +47,7 @@ les images proposées ont des noms qui ressemblent au mot (même début, même f
 Plus grand : deux nombres, « touche le plus grand » ou « le plus petit ». La moitié du temps, les deux nombres ont le
 même premier chiffre.
 
-L'heure : horloge à aiguilles en SVG, 3 choix. Niveaux : heures justes, demies, quarts, 5 minutes. Un des choix
+L'heure : horloge à aiguilles en SVG, 3 choix. Niveaux : heures justes, + les 30, puis 5 minutes avec les minutes écrites en rouge (00 à 55) à l'intérieur du cadran. Un des choix
 inverse souvent les aiguilles (erreur classique).
 
 Musique : aigu ou grave (deux notes, écart plus petit selon le niveau), rythme (ta, ti-ti, chut ; l'enfant tape sur le
