@@ -185,5 +185,11 @@
     "Quel mot commence comme",
     "ou",
     "Écoute bien les mots, puis touche la bonne image."
+  ],
+  "misc4": [
+    "Écoute le mot, puis tape une fois sur le tambour pour chaque syllabe.",
+    "Combien de syllabes?",
+    "syllabe",
+    "syllabes"
   ]
 }

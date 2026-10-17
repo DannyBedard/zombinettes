@@ -1,6 +1,6 @@
-const CACHE = "zombinettes-v4";
+const CACHE = "zombinettes-v5";
 const ASSETS = ["./", "index.html", "styles.css", "app.js", "manifest.webmanifest",
-  "data/mots-1.json", "data/mots-2.json", "data/mots-3.json", "data/lecture.json", "data/sons.json", "fonts/playwrite-ca.woff2",
+  "data/mots-1.json", "data/mots-2.json", "data/mots-3.json", "data/lecture.json", "data/sons.json", "data/syllabes.json", "fonts/playwrite-ca.woff2",
   "icons/icon-180.png", "icons/icon-192.png", "icons/icon-512.png",
   "img/violet.svg", "img/zombie.svg", "img/vampire.svg", "img/loup.svg", "img/licorne.svg", "img/ocean.svg", "img/chanteuse.svg", "img/sirene.svg"];
 

@@ -3,18 +3,19 @@
 const STORE_KEY = "zombinettes.v1";
 const DEFAULTS = {
   palier: 5, palierAuto: true, mode: "tiles", decoys: 3, pin: "1234", weekly: [], theme: "violet", bg: "dark", avatar: null, custom: null, voice: "sylvie", pitch: 1,
-  mute: { word: false, read: false, sound: false, number: false, calc: false, compare: false, clock: false, trace: false, music: false },
+  mute: { word: false, read: false, sound: false, syllab: false, number: false, calc: false, compare: false, clock: false, trace: false, music: false },
   stars: 0, stickers: {}, sessions: 0, progress: {}, sessionLength: 8, newPerSession: 3,
   math: { numMax: 9999, firstMax: 20, addMax: 10, sub: true, visual: true, length: 8 },
-  mathStats: { number: { ok: 0, ko: 0 }, calc: { ok: 0, ko: 0 }, trace: { ok: 0, ko: 0 }, read: { ok: 0, ko: 0 }, sound: { ok: 0, ko: 0 }, compare: { ok: 0, ko: 0 }, clock: { ok: 0, ko: 0 }, music: { ok: 0, ko: 0 } },
+  mathStats: { number: { ok: 0, ko: 0 }, calc: { ok: 0, ko: 0 }, trace: { ok: 0, ko: 0 }, read: { ok: 0, ko: 0 }, sound: { ok: 0, ko: 0 }, syllab: { ok: 0, ko: 0 }, compare: { ok: 0, ko: 0 }, clock: { ok: 0, ko: 0 }, music: { ok: 0, ko: 0 } },
   trace: { lower: true, upper: true, digits: true, cursive: true, cwords: true, length: 6 },
   read: { level: 2 }, sound: { rime: true, debut: true }, cmp: { max: 1000 }, clock: { level: 1 }, music: { pitch: true, rhythm: true, instr: true, level: 2 },
-  plays: { word: 0, read: 0, sound: 0, number: 0, calc: 0, compare: 0, clock: 0, trace: 0, music: 0 },
+  plays: { word: 0, read: 0, sound: 0, syllab: 0, number: 0, calc: 0, compare: 0, clock: 0, trace: 0, music: 0 },
   boost: 2
 };
 const ACTIVITIES = [
   ["word", "Les mots", "🎤", "#7c3aed", "#ec4899", "Dictée · liste du ministère"],
   ["read", "Lire", "📖", "#db2777", "#f59e0b", "Lis le mot, trouve l'image"],
+  ["syllab", "Syllabes", "🥁", "#ea580c", "#facc15", "Un coup de tambour par syllabe"],
   ["sound", "Rimes et sons", "👂", "#0891b2", "#a3e635", "Ça rime? Ça commence pareil?"],
   ["number", "Les nombres", "🔢", "#0ea5e9", "#22c55e", "Écoute et écris le nombre"],
   ["calc", "Les calculs", "➕", "#f97316", "#ef4444", "Additions et soustractions"],
@@ -61,6 +62,7 @@ const CONSIGNE = {
   word: "Écoute bien le mot, puis écris-le avec les lettres.",
   read: "Lis le mot, puis touche la bonne image.",
   sound: "Écoute bien les mots, puis touche la bonne image.",
+  syllab: "Écoute le mot, puis tape une fois sur le tambour pour chaque syllabe.",
   number: "Écoute bien le nombre, puis écris-le avec les chiffres.",
   calc: "Écoute le calcul et écris la réponse.",
   clock: "Regarde bien les aiguilles de l'horloge.",
@@ -173,6 +175,7 @@ function promptParts(it) {
     case "number": return numberParts(it.n);
     case "calc": return [...numberParts(it.a), it.op === "+" ? "plus" : "moins", ...numberParts(it.b)];
     case "read": return [CONSIGNE.read];
+    case "syllab": return [it.mot];
     case "sound": return [it.sub === "rime" ? "Quel mot rime avec" : "Quel mot commence comme", it.target.mot, { pause: 400 }, it.choices[0].mot, it.choices[1].mot, "ou", it.choices[2].mot];
     case "compare": return [it.ask === "grand" ? "Touche le plus grand nombre." : "Touche le plus petit nombre."];
     case "clock": return ["Quelle heure est-il?"];
@@ -283,6 +286,15 @@ function buildReadSession() {
     return { kind: "read", mot: w.mot, emoji: w.emoji, choices, answer: w.mot };
   });
 }
+let SYL_WORDS = [];
+function buildSyllabSession() {
+  const by = n => shuffle(SYL_WORDS.filter(w => w.syl.length === n)), pools = [by(1), by(2), by(3), by(4)], items = [];
+  for (let i = 0; i < S.math.length; i++) {
+    const n = pick([1, 2, 2, 3, 3, ...(i % 4 === 3 ? [4] : [])]), w = pools[n - 1].pop() || pools[1].pop();
+    if (w) items.push({ kind: "syllab", mot: w.mot, emoji: w.emoji, syl: w.syl, answer: String(w.syl.length) });
+  }
+  return items;
+}
 let SOUND_WORDS = [];
 function buildSoundSession() {
   const subs = ["rime", "debut"].filter(k => S.sound[k]), items = [], used = new Set();
@@ -355,7 +367,7 @@ function startSession(kind) {
   if (kind === "word") {
     if (!POOL.length && !S.weekly.length) { view(`${topbar()}<div class="card">Aucun mot chargé.</div>`); $("#back").onclick = home; return; }
     items = buildWordSession();
-  } else items = { number: buildNumberSession, trace: buildTraceSession, calc: buildCalcSession, read: buildReadSession, sound: buildSoundSession, compare: buildCompareSession, clock: buildClockSession, music: buildMusicSession }[kind]();
+  } else items = { number: buildNumberSession, trace: buildTraceSession, calc: buildCalcSession, read: buildReadSession, sound: buildSoundSession, syllab: buildSyllabSession, compare: buildCompareSession, clock: buildClockSession, music: buildMusicSession }[kind]();
   S.plays[kind] = (S.plays[kind] || 0) + 1; save();
   session = { kind, items, i: 0, retry: [], good: 0, total: items.length, s: S.sessions, first: true };
   nextItem();
@@ -389,6 +401,8 @@ function renderItem(it) {
     body = `<div class="tracewrap"><canvas id="trace"></canvas></div><div class="actions"><button class="btn ghost small" id="erase">⌫</button><button class="btn ghost small" id="skip">→</button></div>`;
   } else if (it.kind === "read") {
     body = `<div class="readword">${esc(it.mot)}</div><div class="choices">${it.choices.map(c => `<button class="choice emo" data-v="${esc(c.mot)}">${c.emoji}</button>`).join("")}</div>`;
+  } else if (it.kind === "syllab") {
+    body = `<div class="target">${it.emoji}<small>${esc(it.mot)}</small></div><div class="taps" id="taps"></div><button class="drum ready" id="drum">🥁</button>`;
   } else if (it.kind === "sound") {
     body = `<div class="cmpq">${it.sub === "rime" ? "Ça rime avec" : "Ça commence comme"}</div><div class="target">${it.target.emoji}<small>${esc(it.target.mot)}</small></div><div class="choices">${it.choices.map(c => `<button class="choice emo" data-v="${esc(c.mot)}">${c.emoji}</button>`).join("")}</div>`;
   } else if (it.kind === "compare") {
@@ -415,6 +429,7 @@ function renderItem(it) {
   if (it.kind === "word") { if (S.mode === "tiles") setupTiles(it); else setupTyped(it); }
   else if (it.kind === "trace") setupTrace(it);
   else if (it.kind === "music" && it.sub === "rhythm") setupRhythm(it);
+  else if (it.kind === "syllab") setupSyllab(it);
   else if ($(".choices")) setupChoices(it);
   else setupPad(it);
 }
@@ -490,6 +505,39 @@ async function playMusic(it) {
       await wait(await playRecording(it.ins));
     }
   } catch {}
+}
+function syllabDemo(it) {
+  const me = session, idx = session.i, taps = $("#taps");
+  if (!taps) return;
+  taps.innerHTML = it.syl.map(x => `<span>${esc(x)}</span>`).join("");
+  const spans = taps.querySelectorAll("span"), t0 = now();
+  it.syl.forEach((_, k) => {
+    if (actx) drum(t0 + 0.4 + k * 0.6);
+    setTimeout(() => { if (session === me && session.i === idx) { spans.forEach(x => x.classList.remove("lit")); spans[k] && spans[k].classList.add("lit"); } }, 400 + k * 600);
+  });
+}
+function setupSyllab(it) {
+  const drumBtn = $("#drum"), taps = $("#taps"); let timer = null, retry = false, list = [];
+  const evaluate = () => {
+    if (session.locked) return;
+    const ok = list.length === it.syl.length;
+    if (!ok && !retry) {
+      retry = true; list = []; taps.innerHTML = "";
+      const fb = $("#fb"); fb.className = "feedback"; fb.textContent = "Presque! Écoute encore.";
+      say(["Écoute encore.", it.mot]); return;
+    }
+    check(it, String(list.length));
+    syllabDemo(it);
+  };
+  drumBtn.onpointerdown = e => {
+    e.preventDefault(); if (session.locked) return;
+    const t = performance.now() / 1000; if (list.length && t - list[list.length - 1] < 0.09) return;
+    unlockAudio(); if (actx) drum(actx.currentTime);
+    list.push(t); taps.insertAdjacentHTML("beforeend", "<i></i>");
+    drumBtn.classList.remove("hit"); void drumBtn.offsetWidth; drumBtn.classList.add("hit");
+    const fb = $("#fb"); if (fb.textContent.startsWith("Presque")) fb.textContent = "";
+    clearTimeout(timer); timer = setTimeout(evaluate, 1600);
+  };
 }
 function setupRhythm(it) {
   const expected = rhythmOnsets(it.pattern), drumBtn = $("#drum"); let timer = null;
@@ -652,7 +700,7 @@ function check(it, answer) {
     save();
     fb.className = "feedback ok"; fb.textContent = pick(PRAISE);
     $("#starsN").textContent = `👥 ${S.stars}`;
-    confetti(); chatter(it.kind, [fb.textContent, ...(it.kind === "read" ? [it.mot] : it.kind === "sound" ? [it.target.mot, it.answer] : it.kind === "clock" ? timeParts(it.h, it.m) : it.kind === "music" && it.sub === "instr" ? ["C'est", INSTRUMENTS.find(x => x[0] === it.ins)[1]] : [])]);
+    confetti(); chatter(it.kind, [fb.textContent, ...(it.kind === "read" ? [it.mot] : it.kind === "sound" ? [it.target.mot, it.answer] : it.kind === "syllab" ? [it.mot] : it.kind === "clock" ? timeParts(it.h, it.m) : it.kind === "music" && it.sub === "instr" ? ["C'est", INSTRUMENTS.find(x => x[0] === it.ins)[1]] : [])]);
     $("#slots") && $("#slots").querySelectorAll(".slot").forEach(s => s.classList.add("ok"));
     $("#num") && ($("#num").className = "ok");
     $("#trace") && $("#trace").classList.add("ok");
@@ -670,6 +718,8 @@ function check(it, answer) {
       spoken = ["Le mot est", target, { pause: 300 }, ...spellParts(target)];
     } else if (it.kind === "read") {
       shown = `${it.emoji} ${esc(it.mot)}`; spoken = [it.mot];
+    } else if (it.kind === "syllab") {
+      shown = it.syl.join(" · "); spoken = [it.mot];
     } else if (it.kind === "sound") {
       const a = it.choices.find(c => c.mot === target); shown = `${it.target.emoji} ${esc(it.target.mot)} · ${a.emoji} ${esc(a.mot)}`; spoken = [it.target.mot, { pause: 250 }, a.mot];
     } else if (it.kind === "compare") {
@@ -687,7 +737,7 @@ function check(it, answer) {
     }
     app.querySelectorAll(".choice").forEach(c => { if (c.dataset.v === target) c.classList.add("ok"); });
     fb.insertAdjacentHTML("afterend", `<div class="answer">${shown}</div><div class="actions"><button class="btn small" id="again">🔊 ↻</button><button class="btn ghost small" id="skip">→</button></div>`);
-    if (it.kind === "word" || it.kind === "read" || it.kind === "sound") say(spoken); else chatter(it.kind, spoken);
+    if (it.kind === "word" || it.kind === "read" || it.kind === "sound" || it.kind === "syllab") say(spoken); else chatter(it.kind, spoken);
     if (it.kind === "music" && it.sub === "rhythm") setTimeout(() => { if (session.items[session.i] === it && $("#again")) playMusic(it); }, S.mute.music ? 300 : 1300);
     $("#again").onclick = () => { renderItem(it); replay(it); };
     $("#skip").onclick = () => { session.i++; nextItem(); };
@@ -742,7 +792,7 @@ function topbar(back = true) {
 }
 function home() {
   stopAudio();
-  const mins = { word: S.sessionLength, read: S.sessionLength, sound: S.math.length, number: S.math.length, calc: S.math.length, compare: S.math.length, clock: S.math.length, trace: S.trace.length, music: S.math.length };
+  const mins = { word: S.sessionLength, read: S.sessionLength, sound: S.math.length, syllab: S.math.length, number: S.math.length, calc: S.math.length, compare: S.math.length, clock: S.math.length, trace: S.trace.length, music: S.math.length };
   const cards = ACTIVITIES.map(([id, title, ic, c1, c2, sub]) => `
     <button class="tilecard" id="${id}">
       <div class="thumb" style="--c1:${c1};--c2:${c2}">${ic}<span class="dur">${Math.max(2, Math.round(mins[id] * 0.6))} min</span>${S.weekly.length && id === "word" ? `<span class="live">SEMAINE</span>` : ""}</div>
@@ -898,7 +948,7 @@ function parent() {
     <div class="card">
       <h2>📊 Progrès</h2>
       <table class="stats">
-        <tr><td>Parties (mots / lire / rimes / nombres / calculs / plus grand / heure / tracés / musique)</td><td>${["word", "read", "sound", "number", "calc", "compare", "clock", "trace", "music"].map(k => S.plays[k] || 0).join(" / ")}</td></tr>
+        <tr><td>Parties (mots / lire / rimes / syllabes / nombres / calculs / plus grand / heure / tracés / musique)</td><td>${["word", "read", "sound", "syllab", "number", "calc", "compare", "clock", "trace", "music"].map(k => S.plays[k] || 0).join(" / ")}</td></tr>
         <tr><td>Mots débloqués / total</td><td>${un.length} / ${POOL.length}</td></tr>
         <tr><td>Mots rencontrés</td><td>${seen}</td></tr>
         <tr><td>À apprendre / en cours / presque / acquis</td><td>${boxes.join(" / ")}</td></tr>
@@ -906,7 +956,7 @@ function parent() {
         <tr><td>Nombres réussis / ratés</td><td>${S.mathStats.number.ok} / ${S.mathStats.number.ko}</td></tr>
         <tr><td>Calculs réussis / ratés</td><td>${S.mathStats.calc.ok} / ${S.mathStats.calc.ko}</td></tr>
         <tr><td>Tracés réussis</td><td>${S.mathStats.trace.ok}</td></tr>
-        ${[["read", "Lecture"], ["sound", "Rimes et sons"], ["compare", "Plus grand"], ["clock", "Heure"], ["music", "Musique"]].map(([k, l]) => `<tr><td>${l} réussis / ratés</td><td>${S.mathStats[k].ok} / ${S.mathStats[k].ko}</td></tr>`).join("")}
+        ${[["read", "Lecture"], ["sound", "Rimes et sons"], ["syllab", "Syllabes"], ["compare", "Plus grand"], ["clock", "Heure"], ["music", "Musique"]].map(([k, l]) => `<tr><td>${l} réussis / ratés</td><td>${S.mathStats[k].ok} / ${S.mathStats[k].ko}</td></tr>`).join("")}
         <tr><td>Abonnés</td><td>${S.stars}</td></tr>
       </table>
       ${hard.length ? `<label>Mots difficiles</label><p>${hard.map(([k, p]) => `<span class="pill">${esc(k)} ×${p.ko}</span>`).join("")}</p>` : ""}
@@ -966,7 +1016,7 @@ function parent() {
     const msg = $("#offMsg"); const m = MANIFEST[S.voice];
     if (!("caches" in window)) { msg.textContent = "Non disponible dans ce navigateur."; return; }
     if (!m) { msg.textContent = "La voix choisie n'a pas de clips à télécharger."; return; }
-    const urls = [...m].map(sl => `audio/${S.voice}/${sl}.mp3`); const cache = await caches.open("zombinettes-v4"); urls.push(...INSTRUMENTS.flatMap(x => [1, 2].map(k => `audio/instr/${x[0]}-${k}.m4a`))); let done = 0;
+    const urls = [...m].map(sl => `audio/${S.voice}/${sl}.mp3`); const cache = await caches.open("zombinettes-v5"); urls.push(...INSTRUMENTS.flatMap(x => [1, 2].map(k => `audio/instr/${x[0]}-${k}.m4a`))); let done = 0;
     for (let i = 0; i < urls.length; i += 25) {
       const batch = urls.slice(i, i + 25).filter(u => u);
       const existing = await Promise.all(batch.map(u => cache.match(u)));
@@ -986,6 +1036,7 @@ async function boot() {
   const res = await Promise.all([1, 2, 3].map(l => fetch(`data/mots-${l}.json`).then(r => r.json()).catch(() => [])));
   PACKS = { 1: res[0], 2: res[1], 3: res[2] };
   READ_WORDS = await fetch("data/lecture.json").then(r => r.json()).catch(() => []);
+  SYL_WORDS = await fetch("data/syllabes.json").then(r => r.json()).catch(() => []);
   SOUND_WORDS = await fetch("data/sons.json").then(r => r.json()).catch(() => []);
   try { const m = await fetch("audio/manifest.json").then(r => r.json()); for (const k in m) MANIFEST[k] = new Set(m[k]); } catch {}
   if (!S.voice.startsWith("system:") && !MANIFEST[S.voice]) { const first = Object.keys(MANIFEST)[0]; S.voice = first || "system:"; }

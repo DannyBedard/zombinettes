@@ -1,0 +1,632 @@
+[
+{
+"mot": "chat",
+"emoji": "🐱",
+"syl": [
+"chat"
+]
+},
+{
+"mot": "rat",
+"emoji": "🐀",
+"syl": [
+"rat"
+]
+},
+{
+"mot": "lit",
+"emoji": "🛏️",
+"syl": [
+"lit"
+]
+},
+{
+"mot": "nez",
+"emoji": "👃",
+"syl": [
+"nez"
+]
+},
+{
+"mot": "pain",
+"emoji": "🍞",
+"syl": [
+"pain"
+]
+},
+{
+"mot": "main",
+"emoji": "✋",
+"syl": [
+"main"
+]
+},
+{
+"mot": "train",
+"emoji": "🚂",
+"syl": [
+"train"
+]
+},
+{
+"mot": "loup",
+"emoji": "🐺",
+"syl": [
+"loup"
+]
+},
+{
+"mot": "feu",
+"emoji": "🔥",
+"syl": [
+"feu"
+]
+},
+{
+"mot": "clé",
+"emoji": "🔑",
+"syl": [
+"clé"
+]
+},
+{
+"mot": "dé",
+"emoji": "🎲",
+"syl": [
+"dé"
+]
+},
+{
+"mot": "roi",
+"emoji": "👑",
+"syl": [
+"roi"
+]
+},
+{
+"mot": "pomme",
+"emoji": "🍎",
+"syl": [
+"pomme"
+]
+},
+{
+"mot": "lune",
+"emoji": "🌙",
+"syl": [
+"lune"
+]
+},
+{
+"mot": "fleur",
+"emoji": "🌸",
+"syl": [
+"fleur"
+]
+},
+{
+"mot": "rose",
+"emoji": "🌹",
+"syl": [
+"rose"
+]
+},
+{
+"mot": "robe",
+"emoji": "👗",
+"syl": [
+"robe"
+]
+},
+{
+"mot": "vache",
+"emoji": "🐄",
+"syl": [
+"vache"
+]
+},
+{
+"mot": "singe",
+"emoji": "🐵",
+"syl": [
+"singe"
+]
+},
+{
+"mot": "sac",
+"emoji": "🎒",
+"syl": [
+"sac"
+]
+},
+{
+"mot": "ski",
+"emoji": "⛷️",
+"syl": [
+"ski"
+]
+},
+{
+"mot": "ballon",
+"emoji": "🎈",
+"syl": [
+"bal",
+"lon"
+]
+},
+{
+"mot": "mouton",
+"emoji": "🐑",
+"syl": [
+"mou",
+"ton"
+]
+},
+{
+"mot": "lapin",
+"emoji": "🐰",
+"syl": [
+"la",
+"pin"
+]
+},
+{
+"mot": "sapin",
+"emoji": "🎄",
+"syl": [
+"sa",
+"pin"
+]
+},
+{
+"mot": "cochon",
+"emoji": "🐷",
+"syl": [
+"co",
+"chon"
+]
+},
+{
+"mot": "bateau",
+"emoji": "⛵",
+"syl": [
+"ba",
+"teau"
+]
+},
+{
+"mot": "gâteau",
+"emoji": "🎂",
+"syl": [
+"gâ",
+"teau"
+]
+},
+{
+"mot": "chapeau",
+"emoji": "🎩",
+"syl": [
+"cha",
+"peau"
+]
+},
+{
+"mot": "vélo",
+"emoji": "🚲",
+"syl": [
+"vé",
+"lo"
+]
+},
+{
+"mot": "robot",
+"emoji": "🤖",
+"syl": [
+"ro",
+"bot"
+]
+},
+{
+"mot": "souris",
+"emoji": "🐭",
+"syl": [
+"sou",
+"ris"
+]
+},
+{
+"mot": "fourmi",
+"emoji": "🐜",
+"syl": [
+"four",
+"mi"
+]
+},
+{
+"mot": "café",
+"emoji": "☕",
+"syl": [
+"ca",
+"fé"
+]
+},
+{
+"mot": "bébé",
+"emoji": "👶",
+"syl": [
+"bé",
+"bé"
+]
+},
+{
+"mot": "fusée",
+"emoji": "🚀",
+"syl": [
+"fu",
+"sée"
+]
+},
+{
+"mot": "kiwi",
+"emoji": "🥝",
+"syl": [
+"ki",
+"wi"
+]
+},
+{
+"mot": "tomate",
+"emoji": "🍅",
+"syl": [
+"to",
+"mate"
+]
+},
+{
+"mot": "patate",
+"emoji": "🥔",
+"syl": [
+"pa",
+"tate"
+]
+},
+{
+"mot": "banane",
+"emoji": "🍌",
+"syl": [
+"ba",
+"nane"
+]
+},
+{
+"mot": "carotte",
+"emoji": "🥕",
+"syl": [
+"ca",
+"rotte"
+]
+},
+{
+"mot": "valise",
+"emoji": "🧳",
+"syl": [
+"va",
+"lise"
+]
+},
+{
+"mot": "cerise",
+"emoji": "🍒",
+"syl": [
+"ce",
+"rise"
+]
+},
+{
+"mot": "canard",
+"emoji": "🦆",
+"syl": [
+"ca",
+"nard"
+]
+},
+{
+"mot": "renard",
+"emoji": "🦊",
+"syl": [
+"re",
+"nard"
+]
+},
+{
+"mot": "tortue",
+"emoji": "🐢",
+"syl": [
+"tor",
+"tue"
+]
+},
+{
+"mot": "maison",
+"emoji": "🏠",
+"syl": [
+"mai",
+"son"
+]
+},
+{
+"mot": "poisson",
+"emoji": "🐟",
+"syl": [
+"pois",
+"son"
+]
+},
+{
+"mot": "dauphin",
+"emoji": "🐬",
+"syl": [
+"dau",
+"phin"
+]
+},
+{
+"mot": "requin",
+"emoji": "🦈",
+"syl": [
+"re",
+"quin"
+]
+},
+{
+"mot": "hibou",
+"emoji": "🦉",
+"syl": [
+"hi",
+"bou"
+]
+},
+{
+"mot": "abeille",
+"emoji": "🐝",
+"syl": [
+"a",
+"beille"
+]
+},
+{
+"mot": "citron",
+"emoji": "🍋",
+"syl": [
+"ci",
+"tron"
+]
+},
+{
+"mot": "crayon",
+"emoji": "✏️",
+"syl": [
+"cra",
+"yon"
+]
+},
+{
+"mot": "camion",
+"emoji": "🚚",
+"syl": [
+"ca",
+"mion"
+]
+},
+{
+"mot": "panda",
+"emoji": "🐼",
+"syl": [
+"pan",
+"da"
+]
+},
+{
+"mot": "pizza",
+"emoji": "🍕",
+"syl": [
+"piz",
+"za"
+]
+},
+{
+"mot": "moto",
+"emoji": "🏍️",
+"syl": [
+"mo",
+"to"
+]
+},
+{
+"mot": "gorille",
+"emoji": "🦍",
+"syl": [
+"go",
+"rille"
+]
+},
+{
+"mot": "grenouille",
+"emoji": "🐸",
+"syl": [
+"gre",
+"nouille"
+]
+},
+{
+"mot": "trompette",
+"emoji": "🎺",
+"syl": [
+"trom",
+"pette"
+]
+},
+{
+"mot": "chaussette",
+"emoji": "🧦",
+"syl": [
+"chaus",
+"sette"
+]
+},
+{
+"mot": "pingouin",
+"emoji": "🐧",
+"syl": [
+"pin",
+"gouin"
+]
+},
+{
+"mot": "papillon",
+"emoji": "🦋",
+"syl": [
+"pa",
+"pil",
+"lon"
+]
+},
+{
+"mot": "chocolat",
+"emoji": "🍫",
+"syl": [
+"cho",
+"co",
+"lat"
+]
+},
+{
+"mot": "kangourou",
+"emoji": "🦘",
+"syl": [
+"kan",
+"gou",
+"rou"
+]
+},
+{
+"mot": "escargot",
+"emoji": "🐌",
+"syl": [
+"es",
+"car",
+"got"
+]
+},
+{
+"mot": "éléphant",
+"emoji": "🐘",
+"syl": [
+"é",
+"lé",
+"phant"
+]
+},
+{
+"mot": "parapluie",
+"emoji": "☂️",
+"syl": [
+"pa",
+"ra",
+"pluie"
+]
+},
+{
+"mot": "spaghetti",
+"emoji": "🍝",
+"syl": [
+"spa",
+"ghet",
+"ti"
+]
+},
+{
+"mot": "champignon",
+"emoji": "🍄",
+"syl": [
+"cham",
+"pi",
+"gnon"
+]
+},
+{
+"mot": "araignée",
+"emoji": "🕷️",
+"syl": [
+"a",
+"rai",
+"gnée"
+]
+},
+{
+"mot": "dinosaure",
+"emoji": "🦕",
+"syl": [
+"di",
+"no",
+"saure"
+]
+},
+{
+"mot": "koala",
+"emoji": "🐨",
+"syl": [
+"ko",
+"a",
+"la"
+]
+},
+{
+"mot": "crocodile",
+"emoji": "🐊",
+"syl": [
+"cro",
+"co",
+"dile"
+]
+},
+{
+"mot": "coccinelle",
+"emoji": "🐞",
+"syl": [
+"coc",
+"ci",
+"nelle"
+]
+},
+{
+"mot": "ordinateur",
+"emoji": "💻",
+"syl": [
+"or",
+"di",
+"na",
+"teur"
+]
+},
+{
+"mot": "hippopotame",
+"emoji": "🦛",
+"syl": [
+"hip",
+"po",
+"po",
+"tame"
+]
+},
+{
+"mot": "télévision",
+"emoji": "📺",
+"syl": [
+"té",
+"lé",
+"vi",
+"sion"
+]
+}
+]

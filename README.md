@@ -44,6 +44,10 @@ s'ajoutent aux tuiles (0 à 5, réglable).
 Lire : un mot écrit, 3 ou 4 images emoji (`data/lecture.json`). Le mot n'est jamais dit avant la réponse. Aux niveaux 2 et 3,
 les images proposées ont des noms qui ressemblent au mot (même début, même fin).
 
+Syllabes : une image et un mot dit à voix haute ; l'enfant tape une fois sur le tambour par syllabe orale (le « e » muet
+de la fin ne compte pas : « pomme » = 1, « banane » = 2). Un essai gratuit, puis le découpage s'affiche et le tambour le
+joue (« pa · pil · lon »). Découpage noté à la main dans `data/syllabes.json`.
+
 Rimes et sons : une image cible dite à voix haute, 3 images ; « Quel mot rime avec chat? » ou « Quel mot commence
 comme maison? ». Les mots des choix sont dits aussi. Sons notés à la main dans `data/sons.json` (`r` = son de la fin,
 `d` = premier son), parce que l'orthographe ne suffit pas (citron commence par « s »).
