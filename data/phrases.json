@@ -179,5 +179,11 @@
     "Trace en lettres attachées avec ton doigt.",
     "Voici le mot en lettres attachées :",
     "Voici la lettre attachée :"
+  ],
+  "misc3": [
+    "Quel mot rime avec",
+    "Quel mot commence comme",
+    "ou",
+    "Écoute bien les mots, puis touche la bonne image."
   ]
 }

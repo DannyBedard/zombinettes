@@ -1,0 +1,716 @@
+[
+{
+"mot": "chat",
+"emoji": "🐱",
+"d": "ch",
+"r": "a"
+},
+{
+"mot": "rat",
+"emoji": "🐀",
+"d": "r",
+"r": "a"
+},
+{
+"mot": "panda",
+"emoji": "🐼",
+"d": "p",
+"r": "a"
+},
+{
+"mot": "pizza",
+"emoji": "🍕",
+"d": "p",
+"r": "a"
+},
+{
+"mot": "koala",
+"emoji": "🐨",
+"d": "k",
+"r": "a"
+},
+{
+"mot": "sofa",
+"emoji": "🛋️",
+"d": "s",
+"r": "a"
+},
+{
+"mot": "chocolat",
+"emoji": "🍫",
+"d": "ch",
+"r": "a"
+},
+{
+"mot": "bateau",
+"emoji": "⛵",
+"d": "b",
+"r": "o"
+},
+{
+"mot": "gâteau",
+"emoji": "🎂",
+"d": "g",
+"r": "o"
+},
+{
+"mot": "château",
+"emoji": "🏰",
+"d": "ch",
+"r": "o"
+},
+{
+"mot": "chapeau",
+"emoji": "🎩",
+"d": "ch",
+"r": "o"
+},
+{
+"mot": "vélo",
+"emoji": "🚲",
+"d": "v",
+"r": "o"
+},
+{
+"mot": "piano",
+"emoji": "🎹",
+"d": "p",
+"r": "o"
+},
+{
+"mot": "cadeau",
+"emoji": "🎁",
+"d": "k",
+"r": "o"
+},
+{
+"mot": "robot",
+"emoji": "🤖",
+"d": "r",
+"r": "o"
+},
+{
+"mot": "escargot",
+"emoji": "🐌",
+"d": null,
+"r": "o"
+},
+{
+"mot": "moto",
+"emoji": "🏍️",
+"d": "m",
+"r": "o"
+},
+{
+"mot": "ballon",
+"emoji": "🎈",
+"d": "b",
+"r": "on"
+},
+{
+"mot": "mouton",
+"emoji": "🐑",
+"d": "m",
+"r": "on"
+},
+{
+"mot": "cochon",
+"emoji": "🐷",
+"d": "k",
+"r": "on"
+},
+{
+"mot": "crayon",
+"emoji": "✏️",
+"d": "k",
+"r": "on"
+},
+{
+"mot": "citron",
+"emoji": "🍋",
+"d": "s",
+"r": "on"
+},
+{
+"mot": "lion",
+"emoji": "🦁",
+"d": "l",
+"r": "on"
+},
+{
+"mot": "papillon",
+"emoji": "🦋",
+"d": "p",
+"r": "on"
+},
+{
+"mot": "savon",
+"emoji": "🧼",
+"d": "s",
+"r": "on"
+},
+{
+"mot": "champignon",
+"emoji": "🍄",
+"d": "ch",
+"r": "on"
+},
+{
+"mot": "avion",
+"emoji": "✈️",
+"d": null,
+"r": "on"
+},
+{
+"mot": "camion",
+"emoji": "🚚",
+"d": "k",
+"r": "on"
+},
+{
+"mot": "poisson",
+"emoji": "🐟",
+"d": "p",
+"r": "on"
+},
+{
+"mot": "maison",
+"emoji": "🏠",
+"d": "m",
+"r": "on"
+},
+{
+"mot": "lapin",
+"emoji": "🐰",
+"d": "l",
+"r": "in"
+},
+{
+"mot": "sapin",
+"emoji": "🎄",
+"d": "s",
+"r": "in"
+},
+{
+"mot": "raisin",
+"emoji": "🍇",
+"d": "r",
+"r": "in"
+},
+{
+"mot": "dauphin",
+"emoji": "🐬",
+"d": "d",
+"r": "in"
+},
+{
+"mot": "pingouin",
+"emoji": "🐧",
+"d": "p",
+"r": "in"
+},
+{
+"mot": "requin",
+"emoji": "🦈",
+"d": "r",
+"r": "in"
+},
+{
+"mot": "train",
+"emoji": "🚂",
+"d": "t",
+"r": "in"
+},
+{
+"mot": "main",
+"emoji": "✋",
+"d": "m",
+"r": "in"
+},
+{
+"mot": "pain",
+"emoji": "🍞",
+"d": "p",
+"r": "in"
+},
+{
+"mot": "loup",
+"emoji": "🐺",
+"d": "l",
+"r": "ou"
+},
+{
+"mot": "hibou",
+"emoji": "🦉",
+"d": null,
+"r": "ou"
+},
+{
+"mot": "genou",
+"emoji": "🦵",
+"d": null,
+"r": "ou"
+},
+{
+"mot": "kangourou",
+"emoji": "🦘",
+"d": "k",
+"r": "ou"
+},
+{
+"mot": "souris",
+"emoji": "🐭",
+"d": "s",
+"r": "i"
+},
+{
+"mot": "lit",
+"emoji": "🛏️",
+"d": "l",
+"r": "i"
+},
+{
+"mot": "fourmi",
+"emoji": "🐜",
+"d": "f",
+"r": "i"
+},
+{
+"mot": "parapluie",
+"emoji": "☂️",
+"d": "p",
+"r": "i"
+},
+{
+"mot": "kiwi",
+"emoji": "🥝",
+"d": "k",
+"r": "i"
+},
+{
+"mot": "spaghetti",
+"emoji": "🍝",
+"d": null,
+"r": "i"
+},
+{
+"mot": "ski",
+"emoji": "⛷️",
+"d": null,
+"r": "i"
+},
+{
+"mot": "clé",
+"emoji": "🔑",
+"d": "k",
+"r": "é"
+},
+{
+"mot": "fée",
+"emoji": "🧚",
+"d": "f",
+"r": "é"
+},
+{
+"mot": "fusée",
+"emoji": "🚀",
+"d": "f",
+"r": "é"
+},
+{
+"mot": "café",
+"emoji": "☕",
+"d": "k",
+"r": "é"
+},
+{
+"mot": "bébé",
+"emoji": "👶",
+"d": "b",
+"r": "é"
+},
+{
+"mot": "nez",
+"emoji": "👃",
+"d": "n",
+"r": "é"
+},
+{
+"mot": "dé",
+"emoji": "🎲",
+"d": "d",
+"r": "é"
+},
+{
+"mot": "araignée",
+"emoji": "🕷️",
+"d": null,
+"r": "é"
+},
+{
+"mot": "pied",
+"emoji": "🦶",
+"d": "p",
+"r": "é"
+},
+{
+"mot": "feu",
+"emoji": "🔥",
+"d": "f",
+"r": "eu"
+},
+{
+"mot": "jeu",
+"emoji": "🎮",
+"d": null,
+"r": "eu"
+},
+{
+"mot": "abeille",
+"emoji": "🐝",
+"d": null,
+"r": "eille"
+},
+{
+"mot": "oreille",
+"emoji": "👂",
+"d": null,
+"r": "eille"
+},
+{
+"mot": "bouteille",
+"emoji": "🍾",
+"d": "b",
+"r": "eille"
+},
+{
+"mot": "bouche",
+"emoji": "👄",
+"d": "b",
+"r": "ouche"
+},
+{
+"mot": "mouche",
+"emoji": "🪰",
+"d": "m",
+"r": "ouche"
+},
+{
+"mot": "douche",
+"emoji": "🚿",
+"d": "d",
+"r": "ouche"
+},
+{
+"mot": "fleur",
+"emoji": "🌸",
+"d": "f",
+"r": "eur"
+},
+{
+"mot": "cœur",
+"emoji": "❤️",
+"d": "k",
+"r": "eur"
+},
+{
+"mot": "ordinateur",
+"emoji": "💻",
+"d": null,
+"r": "eur"
+},
+{
+"mot": "tracteur",
+"emoji": "🚜",
+"d": "t",
+"r": "eur"
+},
+{
+"mot": "cerise",
+"emoji": "🍒",
+"d": "s",
+"r": "ise"
+},
+{
+"mot": "chemise",
+"emoji": "👔",
+"d": "ch",
+"r": "ise"
+},
+{
+"mot": "valise",
+"emoji": "🧳",
+"d": "v",
+"r": "ise"
+},
+{
+"mot": "tomate",
+"emoji": "🍅",
+"d": "t",
+"r": "ate"
+},
+{
+"mot": "patate",
+"emoji": "🥔",
+"d": "p",
+"r": "ate"
+},
+{
+"mot": "pirate",
+"emoji": "🏴‍☠️",
+"d": "p",
+"r": "ate"
+},
+{
+"mot": "carotte",
+"emoji": "🥕",
+"d": "k",
+"r": "otte"
+},
+{
+"mot": "botte",
+"emoji": "👢",
+"d": "b",
+"r": "otte"
+},
+{
+"mot": "chaussette",
+"emoji": "🧦",
+"d": "ch",
+"r": "ette"
+},
+{
+"mot": "lunettes",
+"emoji": "👓",
+"d": "l",
+"r": "ette"
+},
+{
+"mot": "fourchette",
+"emoji": "🍴",
+"d": "f",
+"r": "ette"
+},
+{
+"mot": "trompette",
+"emoji": "🎺",
+"d": "t",
+"r": "ette"
+},
+{
+"mot": "canard",
+"emoji": "🦆",
+"d": "k",
+"r": "ard"
+},
+{
+"mot": "renard",
+"emoji": "🦊",
+"d": "r",
+"r": "ard"
+},
+{
+"mot": "homard",
+"emoji": "🦞",
+"d": null,
+"r": "ard"
+},
+{
+"mot": "dent",
+"emoji": "🦷",
+"d": "d",
+"r": "an"
+},
+{
+"mot": "serpent",
+"emoji": "🐍",
+"d": "s",
+"r": "an"
+},
+{
+"mot": "éléphant",
+"emoji": "🐘",
+"d": null,
+"r": "an"
+},
+{
+"mot": "pomme",
+"emoji": "🍎",
+"d": "p",
+"r": null
+},
+{
+"mot": "soleil",
+"emoji": "☀️",
+"d": "s",
+"r": null
+},
+{
+"mot": "lune",
+"emoji": "🌙",
+"d": "l",
+"r": null
+},
+{
+"mot": "singe",
+"emoji": "🐵",
+"d": "s",
+"r": null
+},
+{
+"mot": "robe",
+"emoji": "👗",
+"d": "r",
+"r": null
+},
+{
+"mot": "roi",
+"emoji": "👑",
+"d": "r",
+"r": null
+},
+{
+"mot": "rose",
+"emoji": "🌹",
+"d": "r",
+"r": null
+},
+{
+"mot": "tortue",
+"emoji": "🐢",
+"d": "t",
+"r": null
+},
+{
+"mot": "tigre",
+"emoji": "🐯",
+"d": "t",
+"r": null
+},
+{
+"mot": "fraise",
+"emoji": "🍓",
+"d": "f",
+"r": null
+},
+{
+"mot": "fromage",
+"emoji": "🧀",
+"d": "f",
+"r": null
+},
+{
+"mot": "vache",
+"emoji": "🐄",
+"d": "v",
+"r": null
+},
+{
+"mot": "vampire",
+"emoji": "🧛",
+"d": "v",
+"r": null
+},
+{
+"mot": "guitare",
+"emoji": "🎸",
+"d": "g",
+"r": null
+},
+{
+"mot": "grenouille",
+"emoji": "🐸",
+"d": "g",
+"r": null
+},
+{
+"mot": "gorille",
+"emoji": "🦍",
+"d": "g",
+"r": null
+},
+{
+"mot": "dinosaure",
+"emoji": "🦕",
+"d": "d",
+"r": null
+},
+{
+"mot": "nuage",
+"emoji": "☁️",
+"d": "n",
+"r": null
+},
+{
+"mot": "neige",
+"emoji": "❄️",
+"d": "n",
+"r": null
+},
+{
+"mot": "banane",
+"emoji": "🍌",
+"d": "b",
+"r": null
+},
+{
+"mot": "biscuit",
+"emoji": "🍪",
+"d": "b",
+"r": null
+},
+{
+"mot": "bougie",
+"emoji": "🕯️",
+"d": "b",
+"r": null
+},
+{
+"mot": "cheval",
+"emoji": "🐴",
+"d": "ch",
+"r": null
+},
+{
+"mot": "chien",
+"emoji": "🐶",
+"d": "ch",
+"r": null
+},
+{
+"mot": "montagne",
+"emoji": "⛰️",
+"d": "m",
+"r": null
+},
+{
+"mot": "monstre",
+"emoji": "👹",
+"d": "m",
+"r": null
+},
+{
+"mot": "lettre",
+"emoji": "✉️",
+"d": "l",
+"r": null
+},
+{
+"mot": "livre",
+"emoji": "📖",
+"d": "l",
+"r": null
+},
+{
+"mot": "sac",
+"emoji": "🎒",
+"d": "s",
+"r": null
+},
+{
+"mot": "tableau",
+"emoji": "🖼️",
+"d": "t",
+"r": null
+}
+]

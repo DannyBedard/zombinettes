@@ -44,6 +44,10 @@ s'ajoutent aux tuiles (0 à 5, réglable).
 Lire : un mot écrit, 3 ou 4 images emoji (`data/lecture.json`). Le mot n'est jamais dit avant la réponse. Aux niveaux 2 et 3,
 les images proposées ont des noms qui ressemblent au mot (même début, même fin).
 
+Rimes et sons : une image cible dite à voix haute, 3 images ; « Quel mot rime avec chat? » ou « Quel mot commence
+comme maison? ». Les mots des choix sont dits aussi. Sons notés à la main dans `data/sons.json` (`r` = son de la fin,
+`d` = premier son), parce que l'orthographe ne suffit pas (citron commence par « s »).
+
 Plus grand : deux nombres, « touche le plus grand » ou « le plus petit ». La moitié du temps, les deux nombres ont le
 même premier chiffre.
 

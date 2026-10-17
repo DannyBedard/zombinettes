@@ -223,3 +223,5 @@ table.stats td { padding: 8px 4px; border-bottom: 1px solid var(--line); } table
 .drum.ready { border-color: var(--accent); }
 .drum.hit { animation: hit .15s ease; }
 @keyframes hit { 50% { transform: scale(.9); } }
+.target { display: flex; flex-direction: column; align-items: center; font-size: 4.6rem; margin: -6px 0 14px; }
+.target small { font-size: 1.1rem; font-weight: 700; color: var(--muted); }

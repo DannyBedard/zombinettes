@@ -20,6 +20,8 @@ def items():
     for t in P["bignumbers"] + P["hours"]: out.append((t, "-10%"))
     for w in json.load(open(os.path.join(ROOT, "data/lecture.json"))): out.append((w["mot"], "-15%"))
     for t in P["instruments"] + P["misc2"]: out.append((t, "+0%"))
+    for w in json.load(open(os.path.join(ROOT, "data/sons.json"))): out.append((w["mot"], "-15%"))
+    for t in P["misc3"]: out.append((t, "+0%"))
     for t in list(P["consignes"].values()) + P["praise"] + P["misc"] + list(P["themes"].values()) + list(P["styles"].values()):
         out.append((t, "+0%"))
     seen = set()
