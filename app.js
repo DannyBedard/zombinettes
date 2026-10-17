@@ -462,9 +462,8 @@ async function playMusic(it) {
       await wait(t1 + it.pattern.length * BPM_BEAT);
       spans.forEach(x => x.classList.remove("lit"));
       if (!alive()) return;
-      session.listening = false; session.taps = [];
-      if (!S.mute.music) await say(["À toi!"]);
-      if (alive()) $("#drum").classList.add("ready");
+      session.listening = false; session.taps = []; $("#drum").classList.add("ready");
+      if (!S.mute.music) say(["À toi!"]);
     } else {
       const mel = pick(MELODIES);
       if (it.ins === "drum") { const t0 = now(); rhythmOnsets(["ta", "titi", "ta", "titi"]).forEach(([b]) => drum(t0 + b * BPM_BEAT)); await wait(t0 + 4 * BPM_BEAT); }
@@ -474,19 +473,27 @@ async function playMusic(it) {
 }
 function setupRhythm(it) {
   const expected = rhythmOnsets(it.pattern), drumBtn = $("#drum"); let timer = null;
-  session.taps = []; session.listening = true;
+  session.taps = []; session.listening = true; session.rhythmRetry = false;
   const evaluate = () => {
     const taps = session.taps; if (session.locked) return;
     let ok = taps.length === expected.length;
     if (ok && taps.length > 1) {
-      const ratios = []; for (let k = 1; k < taps.length; k++) ratios.push((taps[k] - taps[k - 1]) / (expected[k][0] - expected[k - 1][0]));
-      const med = ratios.slice().sort((a, b) => a - b)[Math.floor(ratios.length / 2)];
-      ok = ratios.every(r => r / med > 0.6 && r / med < 1.6);
+      const act = [], exp = []; for (let k = 1; k < taps.length; k++) { act.push(taps[k] - taps[k - 1]); exp.push(expected[k][0] - expected[k - 1][0]); }
+      const scale = act.reduce((t, a, k) => t + a * exp[k], 0) / exp.reduce((t, e) => t + e * e, 0);
+      const lo = Math.min(...exp), hi = Math.max(...exp), mean = v => { const x = act.filter((_, k) => exp[k] === v); return x.reduce((t, a) => t + a, 0) / x.length; };
+      ok = act.every((a, k) => Math.abs(a / scale - exp[k]) <= exp[k] * 0.6) && (hi === lo || mean(hi) / mean(lo) >= 1 + (hi / lo - 1) * 0.3);
+    }
+    if (!ok && !session.rhythmRetry) {
+      session.rhythmRetry = true; session.taps = []; drumBtn.classList.remove("ready");
+      const fb = $("#fb"); fb.className = "feedback"; fb.textContent = "Presque! Écoute encore.";
+      chatter("music", ["Écoute encore."]); setTimeout(() => { if (session.items[session.i] === it) playMusic(it); }, S.mute.music ? 300 : 1200);
+      return;
     }
     check(it, ok ? "ok" : "ko");
   };
   drumBtn.onpointerdown = e => {
     e.preventDefault(); if (session.locked || session.listening) return;
+    if (session.taps.length && performance.now() / 1000 - session.taps[session.taps.length - 1] < 0.09) return;
     unlockAudio(); if (actx) drum(actx.currentTime);
     session.taps.push(performance.now() / 1000);
     drumBtn.classList.remove("hit"); void drumBtn.offsetWidth; drumBtn.classList.add("hit");
@@ -494,7 +501,7 @@ function setupRhythm(it) {
     if (on) { spans.forEach(x => x.classList.remove("lit")); spans[Math.floor(on[0])].classList.add("lit"); }
     clearTimeout(timer);
     if (session.taps.length >= expected.length) timer = setTimeout(evaluate, 500);
-    else timer = setTimeout(evaluate, 2600);
+    else timer = setTimeout(evaluate, 3500);
   };
 }
 function dots(it) {
