@@ -82,8 +82,7 @@ const CONSIGNE = {
   number: "Écoute bien le nombre, puis écris-le avec les chiffres.",
   calc: "Écoute le calcul et écris la réponse.",
   clock: "Regarde bien les aiguilles de l'horloge.",
-  trace: "Trace la lettre ou le chiffre avec ton doigt.",
-  music: "Écoute bien la musique."
+  trace: "Trace la lettre ou le chiffre avec ton doigt."
 };
 
 let S = load();
