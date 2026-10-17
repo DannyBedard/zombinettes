@@ -24,6 +24,7 @@ def items():
     for t in P["misc3"]: out.append((t, "+0%"))
     for w in json.load(open(os.path.join(ROOT, "data/syllabes.json"))): out.append((w["mot"], "-15%"))
     for t in P["misc4"]: out.append((t, "+0%"))
+    for t in P["misc6"]: out.append((t, "+0%"))
     for t in P["misc5"] + json.load(open(os.path.join(ROOT, "data/phrases-desordre.json"))): out.append((t, "+0%"))
     for t in list(P["consignes"].values()) + P["praise"] + P["misc"] + list(P["themes"].values()) + list(P["styles"].values()):
         out.append((t, "+0%"))

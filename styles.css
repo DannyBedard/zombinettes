@@ -242,3 +242,20 @@ table.stats td { padding: 8px 4px; border-bottom: 1px solid var(--line); } table
 .dact small { font-size: .78rem; font-weight: 600; color: var(--muted); }
 .dact.done { opacity: .7; }
 .toast.streak { border: 2px solid var(--warn); }
+.kbdwrap { display: flex; justify-content: center; margin: 4px 0 10px; }
+.kbd { width: 100%; max-width: 620px; touch-action: manipulation; }
+.kbd .wk, .hintkbd .wk { fill: #fff; stroke: #333; stroke-width: 2; }
+.kbd .bk, .hintkbd .bk { fill: #111; }
+.kbd .wk.ok { fill: #86efac; } .kbd .wk.bad, .kbd .bk.bad { fill: #fca5a5; }
+.kbd.hinted .bk.g2 { fill: #7c3aed; }
+.hint { text-align: center; margin-top: 6px; }
+.hintbox { background: var(--surface); border-radius: 14px; padding: 10px 14px; margin: 8px auto 0; max-width: 460px; }
+.hintbox p { margin: 6px 0; }
+.hintkbd { width: 180px; height: auto; }
+.hintkbd .bk.g2 { fill: #7c3aed; } .hintkbd .wk.do { fill: #fde68a; }
+.hintkbd .dot { font: 800 16px system-ui; text-anchor: middle; fill: #1f2937; }
+.hintkbd .lbl { font: 700 13px system-ui; text-anchor: middle; fill: var(--ink); }
+.hintkbd .arrow { stroke: #f59e0b; stroke-width: 4; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.choice.fig { background: #fff; padding: 10px; aspect-ratio: 1; }
+.choice.fig img { width: 100%; height: 100%; object-fit: contain; }
+.figans { height: 2.2rem; background: #fff; border-radius: 6px; vertical-align: middle; padding: 2px; }

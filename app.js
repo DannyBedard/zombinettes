@@ -3,13 +3,13 @@
 const STORE_KEY = "zombinettes.v1";
 const DEFAULTS = {
   palier: 5, palierAuto: true, mode: "tiles", decoys: 3, pin: "1234", weekly: [], theme: "violet", bg: "dark", avatar: null, custom: null, voice: "sylvie", pitch: 1,
-  mute: { word: false, read: false, sound: false, syllab: false, phrase: false, money: false, number: false, calc: false, compare: false, clock: false, trace: false, music: false },
+  mute: { word: false, read: false, sound: false, syllab: false, phrase: false, money: false, keys: false, figures: false, number: false, calc: false, compare: false, clock: false, trace: false, music: false },
   stars: 0, stickers: {}, sessions: 0, progress: {}, sessionLength: 8, newPerSession: 3,
   math: { numMax: 199, firstMax: 20, addMax: 10, sub: true, visual: true, length: 8 },
-  mathStats: { number: { ok: 0, ko: 0 }, calc: { ok: 0, ko: 0 }, trace: { ok: 0, ko: 0 }, read: { ok: 0, ko: 0 }, sound: { ok: 0, ko: 0 }, syllab: { ok: 0, ko: 0 }, phrase: { ok: 0, ko: 0 }, money: { ok: 0, ko: 0 }, compare: { ok: 0, ko: 0 }, clock: { ok: 0, ko: 0 }, music: { ok: 0, ko: 0 } },
+  mathStats: { number: { ok: 0, ko: 0 }, calc: { ok: 0, ko: 0 }, trace: { ok: 0, ko: 0 }, read: { ok: 0, ko: 0 }, sound: { ok: 0, ko: 0 }, syllab: { ok: 0, ko: 0 }, phrase: { ok: 0, ko: 0 }, money: { ok: 0, ko: 0 }, keys: { ok: 0, ko: 0 }, figures: { ok: 0, ko: 0 }, compare: { ok: 0, ko: 0 }, clock: { ok: 0, ko: 0 }, music: { ok: 0, ko: 0 } },
   trace: { lower: true, upper: true, digits: true, cursive: true, cwords: true, length: 6 },
-  read: { level: 2 }, sound: { rime: true, debut: true }, phrase: { max: 4 }, money: { level: 1 }, daily: null, streak: { n: 0, last: "" }, cmp: { max: 1000 }, clock: { level: 1 }, music: { pitch: true, rhythm: true, instr: true, level: 2 },
-  plays: { word: 0, read: 0, sound: 0, syllab: 0, phrase: 0, money: 0, number: 0, calc: 0, compare: 0, clock: 0, trace: 0, music: 0 },
+  read: { level: 2 }, sound: { rime: true, debut: true }, phrase: { max: 4 }, money: { level: 1 }, keys: { level: 2 }, daily: null, streak: { n: 0, last: "" }, cmp: { max: 1000 }, clock: { level: 1 }, music: { pitch: true, rhythm: true, instr: true, level: 2 },
+  plays: { word: 0, read: 0, sound: 0, syllab: 0, phrase: 0, money: 0, keys: 0, figures: 0, number: 0, calc: 0, compare: 0, clock: 0, trace: 0, music: 0 },
   boost: 3
 };
 const ACTIVITIES = [
@@ -24,6 +24,8 @@ const ACTIVITIES = [
   ["money", "Les sous", "🪙", "#ca8a04", "#64748b", "Compte l'argent"],
   ["clock", "L'heure", "🕒", "#6366f1", "#06b6d4", "Lis l'heure sur l'horloge"],
   ["trace", "Tracer", "✏️", "#14b8a6", "#8b5cf6", "Lettres, chiffres et attaché"],
+  ["keys", "Piano", "🎹", "#0f172a", "#a855f7", "Trouve la note sur le clavier"],
+  ["figures", "Les notes", "🎼", "#be185d", "#6366f1", "Ronde, blanche, noire…"],
   ["music", "Musique", "🎵", "#a855f7", "#f43f5e", "Aigu, grave, rythme, instruments"]
 ];
 const HUNDREDS = ["", "cent", "deux cents", "trois cents", "quatre cents", "cinq cents", "six cents", "sept cents", "huit cents", "neuf cents"];
@@ -31,6 +33,8 @@ const THOUSANDS = ["", "mille", "deux mille", "trois mille", "quatre mille", "ci
 const HOURS = ["midi", "une heure", "deux heures", "trois heures", "quatre heures", "cinq heures", "six heures", "sept heures", "huit heures", "neuf heures", "dix heures", "onze heures", "midi"];
 const INSTRUMENTS = [["piano", "le piano", "🎹"], ["guitar", "la guitare", "🎸"], ["violin", "le violon", "🎻"], ["trumpet", "la trompette", "🎺"], ["saxophone", "le saxophone", "🎷"], ["flute", "la flûte", "🪈"], ["drum", "le tambour", "🥁"]];
 const CURSIVE_WORDS = ["ami", "chat", "lit", "nez", "eau", "jeu", "lune", "main", "mot", "nuit", "rue", "sac", "vélo", "bébé", "dix", "feu", "loup", "roi", "pain", "pied", "lire", "jour", "soir", "gris", "bleu", "fée", "papa", "maman", "robe", "page"];
+const NOTES = ["do", "ré", "mi", "fa", "sol", "la", "si"], NOTE_SEMI = [0, 2, 4, 5, 7, 9, 11];
+const FIGURES = [["ronde", "la ronde", "Touche la ronde."], ["blanche", "la blanche", "Touche la blanche."], ["noire", "la noire", "Touche la noire."], ["croches", "les deux croches", "Touche les deux croches."], ["cle-sol", "la clé de sol", "Touche la clé de sol."], ["cle-fa", "la clé de fa", "Touche la clé de fa."]];
 const DECOY = { a: "oeà", à: "a", e: "éèa", é: "eèê", è: "éeê", ê: "èé", i: "ly", o: "au", u: "on", y: "i", s: "zc", c: "sk", k: "c", g: "jq", j: "g", m: "n", n: "mu", b: "dp", d: "bt", p: "qb", q: "pg", t: "df", f: "vt", v: "f", l: "i", r: "l", h: "n", z: "s", x: "s" };
 const THEME_AVATAR = { violet: "🧟‍♀️", zombie: "🧟‍♀️", vampire: "🧛‍♀️", loup: "🐺", licorne: "🦄", ocean: "🐬", chanteuse: "👩‍🎤", sirene: "🧜‍♀️" };
 const STICKERS = ["🧟‍♀️", "🧛‍♀️", "🐺", "👻", "🦇", "🕸️", "🎃", "📣", "🎤", "🎥", "📱", "🔔", "👍", "🎬", "🎮", "💜", "🧸", "🦄", "🌈", "⭐", "🍭", "🎀", "🎸", "🩰", "🎧", "🐱", "🌸", "🍦", "🦋", "🎉", "👑", "🐶", "🍩", "🛼", "🎈", "🌙"];
@@ -87,7 +91,7 @@ function load() {
   out.mute = Object.assign({}, DEFAULTS.mute, s.mute || {});
   out.trace = Object.assign({}, DEFAULTS.trace, s.trace || {});
   out.plays = Object.assign({}, DEFAULTS.plays, s.plays || {});
-  for (const k of ["read", "sound", "phrase", "money", "cmp", "clock", "music", "streak"]) out[k] = Object.assign({}, DEFAULTS[k], s[k] || {});
+  for (const k of ["read", "sound", "phrase", "money", "keys", "cmp", "clock", "music", "streak"]) out[k] = Object.assign({}, DEFAULTS[k], s[k] || {});
   for (const k in DEFAULTS.mathStats) out.mathStats[k] = out.mathStats[k] || { ok: 0, ko: 0 };
   if (s.voiceURI && !s.voice) out.voice = "system:" + s.voiceURI;
   if (s.palier && (s.boost || 0) < 2) out.clock = { level: 1 };
@@ -207,6 +211,8 @@ function promptParts(it) {
     case "read": return [CONSIGNE.read];
     case "syllab": return [it.mot];
     case "phrase": return ["Remets les mots dans l'ordre pour faire une phrase."];
+    case "keys": return [`Trouve le ${NOTES[it.note]} sur le clavier.`];
+    case "figures": return [FIGURES.find(x => x[0] === it.answer)[2]];
     case "money": return ["Compte l'argent et écris combien ça fait."];
     case "sound": return [it.sub === "rime" ? "Quel mot rime avec" : "Quel mot commence comme", it.target.mot, { pause: 400 }, it.choices[0].mot, it.choices[1].mot, "ou", it.choices[2].mot];
     case "compare": return [it.ask === "grand" ? "Touche le plus grand nombre." : "Touche le plus petit nombre."];
@@ -350,6 +356,35 @@ function buildMoneySession() {
   }
   return items;
 }
+function buildKeysSession() {
+  const pool = S.keys.level === 1 ? [0] : S.keys.level === 2 ? [0, 1, 2] : [0, 1, 2, 3, 4, 5, 6], items = [];
+  let last = -1;
+  for (let i = 0; i < S.math.length; i++) {
+    let n = pick(pool); if (pool.length > 1) while (n === last) n = pick(pool);
+    last = n; items.push({ kind: "keys", note: n, answer: String(n) });
+  }
+  return items;
+}
+function buildFiguresSession() {
+  const items = []; let bag = [];
+  for (let i = 0; i < S.math.length; i++) {
+    if (!bag.length) bag = shuffle(FIGURES);
+    const f = bag.pop(), others = shuffle(FIGURES.filter(x => x !== f)).slice(0, 2);
+    items.push({ kind: "figures", choices: shuffle([f, ...others]), answer: f[0] });
+  }
+  return items;
+}
+function keyboardSvg() {
+  const W = 40, H = 190, white = Array.from({ length: 14 }, (_, k) => `<rect class="wk" data-n="${k % 7}" data-k="${k}" x="${k * W}" y="0" width="${W}" height="${H}" rx="5"/>`).join("");
+  const blacks = [];
+  for (let o = 0; o < 2; o++) for (const k of [0, 1, 3, 4, 5]) blacks.push(`<rect class="bk ${k < 2 ? "g2" : "g3"}" x="${(o * 7 + k) * W + W * 0.68}" y="0" width="${W * 0.64}" height="${H * 0.6}" rx="3"/>`);
+  return `<svg class="kbd" viewBox="-2 -2 ${14 * W + 4} ${H + 4}">${white}${blacks.join("")}</svg>`;
+}
+function hintSvg() {
+  return `<svg class="hintkbd" viewBox="-2 -34 164 156"><rect x="0" y="0" width="40" height="120" rx="4" class="wk do"/><rect x="40" y="0" width="40" height="120" rx="4" class="wk"/><rect x="80" y="0" width="40" height="120" rx="4" class="wk"/><rect x="120" y="0" width="40" height="120" rx="4" class="wk"/>
+    <rect x="27" y="0" width="26" height="74" rx="3" class="bk g2"/><rect x="67" y="0" width="26" height="74" rx="3" class="bk g2"/>
+    <text x="20" y="104" class="dot">DO</text><path d="M20 -28 L20 -6 M12 -14 L20 -4 L28 -14" class="arrow"/><text x="60" y="-14" class="lbl">2 noires</text></svg>`;
+}
 let SYL_WORDS = [];
 function buildSyllabSession() {
   const by = n => shuffle(SYL_WORDS.filter(w => w.syl.length === n)), pools = [by(1), by(2), by(3), by(4)], items = [];
@@ -433,7 +468,7 @@ function startSession(kind) {
   if (kind === "word") {
     if (!POOL.length && !S.weekly.length) { view(`${topbar()}<div class="card">Aucun mot chargé.</div>`); $("#back").onclick = home; return; }
     items = buildWordSession();
-  } else items = { number: buildNumberSession, trace: buildTraceSession, calc: buildCalcSession, read: buildReadSession, sound: buildSoundSession, syllab: buildSyllabSession, phrase: buildPhraseSession, money: buildMoneySession, compare: buildCompareSession, clock: buildClockSession, music: buildMusicSession }[kind]();
+  } else items = { number: buildNumberSession, trace: buildTraceSession, calc: buildCalcSession, read: buildReadSession, sound: buildSoundSession, syllab: buildSyllabSession, phrase: buildPhraseSession, money: buildMoneySession, keys: buildKeysSession, figures: buildFiguresSession, compare: buildCompareSession, clock: buildClockSession, music: buildMusicSession }[kind]();
   S.plays[kind] = (S.plays[kind] || 0) + 1; save();
   session = { kind, items, i: 0, retry: [], good: 0, total: items.length, s: S.sessions, first: true };
   nextItem();
@@ -467,6 +502,11 @@ function renderItem(it) {
     body = `<div class="tracewrap"><canvas id="trace"></canvas></div><div class="actions"><button class="btn ghost small" id="erase">⌫</button><button class="btn ghost small" id="skip">→</button></div>`;
   } else if (it.kind === "read") {
     body = `<div class="readword">${esc(it.mot)}</div><div class="choices">${it.choices.map(c => `<button class="choice emo" data-v="${esc(c.mot)}">${c.emoji}</button>`).join("")}</div>`;
+  } else if (it.kind === "keys") {
+    body = `<div class="cmpq">Trouve le <b>${NOTES[it.note].toUpperCase()}</b></div><div class="kbdwrap">${keyboardSvg()}</div>
+      <div class="hint" id="hint"><button class="btn ghost small" id="hintBtn">💡 Indice</button><div class="hintbox" id="hintBox" hidden>${hintSvg()}<p>Le <b>DO</b>, c'est la touche blanche juste à <b>gauche</b> du groupe de <b>2 touches noires</b>.</p>${it.note ? `<p>Ensuite, on monte vers la droite : do, ré, mi, fa, sol, la, si.</p>` : ""}</div></div>`;
+  } else if (it.kind === "figures") {
+    body = `<div class="cmpq">Touche <b>${FIGURES.find(x => x[0] === it.answer)[1]}</b></div><div class="choices figs">${it.choices.map(c => `<button class="choice fig" data-v="${c[0]}"><img src="img/music/${c[0]}.svg" alt=""></button>`).join("")}</div>`;
   } else if (it.kind === "phrase") {
     body = `<div class="slots phr" id="slots"></div><div class="tiles phr" id="tiles"></div><div class="actions"><button class="btn ghost small" id="erase">⌫</button></div>`;
   } else if (it.kind === "money") {
@@ -501,6 +541,7 @@ function renderItem(it) {
   else if (it.kind === "music" && it.sub === "rhythm") setupRhythm(it);
   else if (it.kind === "syllab") setupSyllab(it);
   else if (it.kind === "phrase") setupPhrase(it);
+  else if (it.kind === "keys") setupKeys(it);
   else if ($(".choices")) setupChoices(it);
   else setupPad(it);
 }
@@ -669,6 +710,22 @@ function setupTiles(w) {
   slots.onclick = e => { const sl = e.target.closest(".slot"); if (session.locked || !sl || !filled[sl.dataset.i]) return; filled.splice(sl.dataset.i, 1); redraw(); };
   $("#erase").onclick = () => { if (!session.locked) { filled.pop(); redraw(); } };
 }
+function setupKeys(it) {
+  const svg = $(".kbd");
+  svg.onpointerdown = e => {
+    const r = e.target.closest("rect"); if (!r || session.locked) return;
+    unlockAudio();
+    if (r.classList.contains("bk")) { r.classList.add("bad"); setTimeout(() => r.classList.remove("bad"), 400); return; }
+    const n = +r.dataset.n, k = +r.dataset.k;
+    if (actx) tone(NOTE_SEMI[n] + (k >= 7 ? 12 : 0), actx.currentTime, 0.6);
+    r.classList.add(n === it.note ? "ok" : "bad");
+    check(it, String(n));
+  };
+  $("#hintBtn").onclick = () => {
+    const box = $("#hintBox"); box.hidden = !box.hidden; svg.classList.toggle("hinted", !box.hidden);
+    if (!box.hidden) say(["Le do, c'est la touche blanche juste à gauche du groupe de deux touches noires.", ...(it.note ? ["Trouve d'abord le do. Ensuite, on monte vers la droite : do, ré, mi, fa, sol, la, si."] : [])]);
+  };
+}
 function setupPhrase(it) {
   const slots = $("#slots"), tiles = $("#tiles"), n = it.words.length;
   slots.innerHTML = it.words.map((_, i) => `<div class="slot" data-i="${i}"></div>`).join("");
@@ -788,7 +845,7 @@ function check(it, answer) {
     save();
     fb.className = "feedback ok"; fb.textContent = pick(PRAISE);
     $("#starsN").textContent = `👥 ${S.stars}`;
-    confetti(); chatter(it.kind, [fb.textContent, ...(it.kind === "read" ? [it.mot] : it.kind === "sound" ? [it.target.mot, it.answer] : it.kind === "syllab" ? [it.mot] : it.kind === "phrase" ? [it.phrase] : it.kind === "clock" ? timeParts(it.h, it.m) : it.kind === "music" && it.sub === "instr" ? ["C'est", INSTRUMENTS.find(x => x[0] === it.ins)[1]] : [])]);
+    confetti(); chatter(it.kind, [fb.textContent, ...(it.kind === "read" ? [it.mot] : it.kind === "sound" ? [it.target.mot, it.answer] : it.kind === "syllab" ? [it.mot] : it.kind === "phrase" ? [it.phrase] : it.kind === "figures" ? [FIGURES.find(x => x[0] === it.answer)[1]] : it.kind === "clock" ? timeParts(it.h, it.m) : it.kind === "music" && it.sub === "instr" ? ["C'est", INSTRUMENTS.find(x => x[0] === it.ins)[1]] : [])]);
     $("#slots") && $("#slots").querySelectorAll(".slot").forEach(s => s.classList.add("ok"));
     $("#num") && ($("#num").className = "ok");
     $("#trace") && $("#trace").classList.add("ok");
@@ -806,6 +863,11 @@ function check(it, answer) {
       spoken = ["Le mot est", target, { pause: 300 }, ...spellParts(target)];
     } else if (it.kind === "read") {
       shown = `${it.emoji} ${esc(it.mot)}`; spoken = [it.mot];
+    } else if (it.kind === "keys") {
+      shown = NOTES[it.note].toUpperCase(); spoken = [];
+      app.querySelectorAll(`.kbd .wk[data-n="${it.note}"]`).forEach(r => r.classList.add("ok"));
+    } else if (it.kind === "figures") {
+      const f = FIGURES.find(x => x[0] === target); shown = `<img class="figans" src="img/music/${f[0]}.svg" alt=""> ${f[1]}`; spoken = ["C'est", f[1]];
     } else if (it.kind === "phrase") {
       shown = esc(it.phrase); spoken = [it.phrase];
     } else if (it.kind === "money") {
@@ -850,7 +912,7 @@ function dailyState() {
   if (!S.daily || S.daily.date !== t) {
     let h = 0; for (const c of t) h = (h * 31 + c.charCodeAt(0)) >>> 0;
     const r = arr => { h = (h * 1103515245 + 12345) >>> 0; return arr[h % arr.length]; };
-    S.daily = { date: t, acts: [r(["word", "read", "sound", "syllab", "phrase"]), r(["number", "calc", "compare", "money", "clock"]), r(["trace", "music", "read", "sound"])], done: [] };
+    S.daily = { date: t, acts: [r(["word", "read", "sound", "syllab", "phrase"]), r(["number", "calc", "compare", "money", "clock"]), r(["trace", "music", "keys", "figures"])], done: [] };
     if (S.daily.acts[2] === S.daily.acts[0]) S.daily.acts[2] = S.daily.acts[0] === "read" ? "music" : "trace";
     save();
   }
@@ -1036,6 +1098,10 @@ function parent() {
       ${pills("phrMax", [3, 4, 5, 6], S.phrase.max, v => v)}
     </div>
     <div class="card">
+      <h2>🎹 Piano</h2>
+      ${pills("keysLvl", [1, 2, 3], S.keys.level, v => ["", "Do seulement", "Do, ré, mi", "Toutes les notes"][v])}
+    </div>
+    <div class="card">
       <h2>🪙 Les sous</h2>
       ${pills("monLvl", [1, 2, 3], S.money.level, v => ["", "5 ¢ et 10 ¢", "+ 25 ¢ (jusqu'à 1 $)", "1 $ et 2 $"][v])}
     </div>
@@ -1080,7 +1146,7 @@ function parent() {
     <div class="card">
       <h2>📊 Progrès</h2>
       <table class="stats">
-        <tr><td>Parties (mots / lire / rimes / syllabes / phrases / nombres / calculs / plus grand / sous / heure / tracés / musique)</td><td>${["word", "read", "sound", "syllab", "phrase", "number", "calc", "compare", "money", "clock", "trace", "music"].map(k => S.plays[k] || 0).join(" / ")}</td></tr>
+        <tr><td>Parties (mots / lire / rimes / syllabes / phrases / nombres / calculs / plus grand / sous / heure / tracés / piano / notes / musique)</td><td>${["word", "read", "sound", "syllab", "phrase", "number", "calc", "compare", "money", "clock", "trace", "keys", "figures", "music"].map(k => S.plays[k] || 0).join(" / ")}</td></tr>
         <tr><td>Mots débloqués / total</td><td>${un.length} / ${POOL.length}</td></tr>
         <tr><td>Mots rencontrés</td><td>${seen}</td></tr>
         <tr><td>À apprendre / en cours / presque / acquis</td><td>${boxes.join(" / ")}</td></tr>
@@ -1088,7 +1154,7 @@ function parent() {
         <tr><td>Nombres réussis / ratés</td><td>${S.mathStats.number.ok} / ${S.mathStats.number.ko}</td></tr>
         <tr><td>Calculs réussis / ratés</td><td>${S.mathStats.calc.ok} / ${S.mathStats.calc.ko}</td></tr>
         <tr><td>Tracés réussis</td><td>${S.mathStats.trace.ok}</td></tr>
-        ${[["read", "Lecture"], ["sound", "Rimes et sons"], ["syllab", "Syllabes"], ["phrase", "Phrases"], ["money", "Sous"], ["compare", "Plus grand"], ["clock", "Heure"], ["music", "Musique"]].map(([k, l]) => `<tr><td>${l} réussis / ratés</td><td>${S.mathStats[k].ok} / ${S.mathStats[k].ko}</td></tr>`).join("")}
+        ${[["read", "Lecture"], ["sound", "Rimes et sons"], ["syllab", "Syllabes"], ["phrase", "Phrases"], ["money", "Sous"], ["keys", "Piano"], ["figures", "Notes de musique"], ["compare", "Plus grand"], ["clock", "Heure"], ["music", "Musique"]].map(([k, l]) => `<tr><td>${l} réussis / ratés</td><td>${S.mathStats[k].ok} / ${S.mathStats[k].ko}</td></tr>`).join("")}
         <tr><td>Abonnés</td><td>${S.stars}</td></tr>
       </table>
       ${hard.length ? `<label>Mots difficiles</label><p>${hard.map(([k, p]) => `<span class="pill">${esc(k)} ×${p.ko}</span>`).join("")}</p>` : ""}
@@ -1108,7 +1174,7 @@ function parent() {
     <button class="btn mint" id="save">Enregistrer</button>
     <div class="row" style="justify-content:center"><button class="btn ghost small" id="pin">Changer le NIP</button><button class="btn ghost small" id="reset">Réinitialiser les progrès</button></div>
   </div>`, "parent");
-  const sel = { mode: S.mode, decoys: S.decoys, len: S.sessionLength, mlen: m.length, tlen: S.trace.length, numMax: m.numMax, readLvl: S.read.level, cmpMax: S.cmp.max, clockLvl: S.clock.level, muLvl: S.music.level, phrMax: S.phrase.max, monLvl: S.money.level };
+  const sel = { mode: S.mode, decoys: S.decoys, len: S.sessionLength, mlen: m.length, tlen: S.trace.length, numMax: m.numMax, readLvl: S.read.level, cmpMax: S.cmp.max, clockLvl: S.clock.level, muLvl: S.music.level, phrMax: S.phrase.max, monLvl: S.money.level, keysLvl: S.keys.level };
   app.querySelectorAll("[data-group]").forEach(g => g.onclick = e => {
     const b = e.target.closest(".pill"); if (!b) return;
     const v = b.dataset.v; sel[g.dataset.group] = isNaN(v) ? v : +v;
@@ -1118,7 +1184,7 @@ function parent() {
   live("firstMax", v => v); live("addMax", v => "+" + v); live("palier", v => palierLabel(+v));
   $("#save").onclick = () => {
     S.palier = +$("#palier").value; S.palierAuto = $("#auto").checked; S.mode = sel.mode; S.decoys = sel.decoys; S.sessionLength = sel.len;
-    S.read = { level: sel.readLvl }; S.sound = { rime: $("#soRime").checked, debut: $("#soDebut").checked }; S.phrase = { max: sel.phrMax }; S.money = { level: sel.monLvl }; S.cmp = { max: sel.cmpMax }; S.clock = { level: sel.clockLvl };
+    S.read = { level: sel.readLvl }; S.sound = { rime: $("#soRime").checked, debut: $("#soDebut").checked }; S.phrase = { max: sel.phrMax }; S.money = { level: sel.monLvl }; S.keys = { level: sel.keysLvl }; S.cmp = { max: sel.cmpMax }; S.clock = { level: sel.clockLvl };
     S.music = { pitch: $("#muPitch").checked, rhythm: $("#muRhythm").checked, instr: $("#muInstr").checked, level: sel.muLvl };
     S.weekly = [...new Set($("#weekly").value.split(/[\n,;]+/).map(s => s.trim().toLowerCase().replace(/\s+/g, " ")).filter(Boolean))];
     S.trace = { lower: $("#tLower").checked, upper: $("#tUpper").checked, digits: $("#tDigits").checked, cursive: $("#tCursive").checked, cwords: $("#tCwords").checked, length: sel.tlen };
@@ -1148,7 +1214,7 @@ function parent() {
     const msg = $("#offMsg"); const m = MANIFEST[S.voice];
     if (!("caches" in window)) { msg.textContent = "Non disponible dans ce navigateur."; return; }
     if (!m) { msg.textContent = "La voix choisie n'a pas de clips à télécharger."; return; }
-    const urls = [...m].map(sl => `audio/${S.voice}/${sl}.mp3`); const cache = await caches.open("zombinettes-v6"); urls.push(...INSTRUMENTS.flatMap(x => [1, 2].map(k => `audio/instr/${x[0]}-${k}.m4a`))); let done = 0;
+    const urls = [...m].map(sl => `audio/${S.voice}/${sl}.mp3`); const cache = await caches.open("zombinettes-v7"); urls.push(...INSTRUMENTS.flatMap(x => [1, 2].map(k => `audio/instr/${x[0]}-${k}.m4a`))); let done = 0;
     for (let i = 0; i < urls.length; i += 25) {
       const batch = urls.slice(i, i + 25).filter(u => u);
       const existing = await Promise.all(batch.map(u => cache.match(u)));

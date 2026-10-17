@@ -200,5 +200,28 @@
     "Remets les mots dans l'ordre pour faire une phrase.",
     "Défi du jour réussi!",
     "jours de suite"
+  ],
+  "misc6": [
+    "Trouve le do sur le clavier.",
+    "Trouve le ré sur le clavier.",
+    "Trouve le mi sur le clavier.",
+    "Trouve le fa sur le clavier.",
+    "Trouve le sol sur le clavier.",
+    "Trouve le la sur le clavier.",
+    "Trouve le si sur le clavier.",
+    "Le do, c'est la touche blanche juste à gauche du groupe de deux touches noires.",
+    "Trouve d'abord le do. Ensuite, on monte vers la droite : do, ré, mi, fa, sol, la, si.",
+    "Touche la ronde.",
+    "Touche la blanche.",
+    "Touche la noire.",
+    "Touche les deux croches.",
+    "Touche la clé de sol.",
+    "Touche la clé de fa.",
+    "la ronde",
+    "la blanche",
+    "la noire",
+    "les deux croches",
+    "la clé de sol",
+    "la clé de fa"
   ]
 }

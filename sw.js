@@ -1,8 +1,9 @@
-const CACHE = "zombinettes-v6";
+const CACHE = "zombinettes-v7";
 const ASSETS = ["./", "index.html", "styles.css", "app.js", "manifest.webmanifest",
   "data/mots-1.json", "data/mots-2.json", "data/mots-3.json", "data/lecture.json", "data/sons.json", "data/syllabes.json", "data/phrases-desordre.json", "fonts/playwrite-ca.woff2",
   "icons/icon-180.png", "icons/icon-192.png", "icons/icon-512.png",
-  "img/violet.svg", "img/zombie.svg", "img/vampire.svg", "img/loup.svg", "img/licorne.svg", "img/ocean.svg", "img/chanteuse.svg", "img/sirene.svg"];
+  "img/violet.svg", "img/zombie.svg", "img/vampire.svg", "img/loup.svg", "img/licorne.svg", "img/ocean.svg", "img/chanteuse.svg", "img/sirene.svg",
+  "img/music/ronde.svg", "img/music/blanche.svg", "img/music/noire.svg", "img/music/croches.svg", "img/music/cle-sol.svg", "img/music/cle-fa.svg"];
 
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));

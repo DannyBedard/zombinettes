@@ -68,9 +68,16 @@ même premier chiffre.
 L'heure : horloge à aiguilles en SVG, 3 choix. Niveaux : heures justes, + les 30, puis 5 minutes avec les minutes écrites en rouge (00 à 55) à l'intérieur du cadran. Un des choix
 inverse souvent les aiguilles (erreur classique).
 
+Piano : « Trouve le ré » sur un clavier de 2 octaves (les deux do sont acceptés). Bouton 💡 Indice : petit dessin et
+voix qui rappellent que le do est la touche blanche à gauche du groupe de 2 touches noires (les groupes de 2 s'allument
+sur le clavier), puis qu'on monte do, ré, mi… Niveaux : do seulement, do-ré-mi, toutes les notes.
+
+Les notes : « Touche la noire », 3 images (ronde, blanche, noire, deux croches, clé de sol, clé de fa ; SVG de Wikimedia
+Commons dans `img/music/`, crédits dans `img/music/CREDITS.md`). Les silences viendront plus tard.
+
 Musique : aigu ou grave (deux notes, écart plus petit selon le niveau), rythme (ta, ti-ti, chut ; l'enfant tape sur le
 tambour ; très tolérant : réussi si le nombre de coups est bon à un près, raté seulement si elle pitonne au hasard, avec un essai gratuit) et instrument mystère (un vrai enregistrement de 8 secondes,
-2 extraits par instrument). Sons synthétisés en Web Audio, sauf les instruments (`audio/instr/`).
+2 extraits par instrument ; jamais le même instrument deux fois de suite dans une partie). Sons synthétisés en Web Audio, sauf les instruments (`audio/instr/`).
 
 Tracer : un modèle de lettre (minuscule, majuscule) ou de chiffre en gris pâle, l'enfant repasse dessus au doigt.
 Modèle en police scolaire (Chalkboard SE), centré selon la boîte réelle du glyphe. Lettres et petits mots en attaché
