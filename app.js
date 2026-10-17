@@ -3,13 +3,13 @@
 const STORE_KEY = "zombinettes.v1";
 const DEFAULTS = {
   palier: 5, palierAuto: true, mode: "tiles", decoys: 3, pin: "1234", weekly: [], theme: "violet", bg: "dark", avatar: null, custom: null, voice: "sylvie", pitch: 1,
-  mute: { word: false, read: false, sound: false, syllab: false, number: false, calc: false, compare: false, clock: false, trace: false, music: false },
+  mute: { word: false, read: false, sound: false, syllab: false, phrase: false, money: false, number: false, calc: false, compare: false, clock: false, trace: false, music: false },
   stars: 0, stickers: {}, sessions: 0, progress: {}, sessionLength: 8, newPerSession: 3,
   math: { numMax: 199, firstMax: 20, addMax: 10, sub: true, visual: true, length: 8 },
-  mathStats: { number: { ok: 0, ko: 0 }, calc: { ok: 0, ko: 0 }, trace: { ok: 0, ko: 0 }, read: { ok: 0, ko: 0 }, sound: { ok: 0, ko: 0 }, syllab: { ok: 0, ko: 0 }, compare: { ok: 0, ko: 0 }, clock: { ok: 0, ko: 0 }, music: { ok: 0, ko: 0 } },
+  mathStats: { number: { ok: 0, ko: 0 }, calc: { ok: 0, ko: 0 }, trace: { ok: 0, ko: 0 }, read: { ok: 0, ko: 0 }, sound: { ok: 0, ko: 0 }, syllab: { ok: 0, ko: 0 }, phrase: { ok: 0, ko: 0 }, money: { ok: 0, ko: 0 }, compare: { ok: 0, ko: 0 }, clock: { ok: 0, ko: 0 }, music: { ok: 0, ko: 0 } },
   trace: { lower: true, upper: true, digits: true, cursive: true, cwords: true, length: 6 },
-  read: { level: 2 }, sound: { rime: true, debut: true }, cmp: { max: 1000 }, clock: { level: 1 }, music: { pitch: true, rhythm: true, instr: true, level: 2 },
-  plays: { word: 0, read: 0, sound: 0, syllab: 0, number: 0, calc: 0, compare: 0, clock: 0, trace: 0, music: 0 },
+  read: { level: 2 }, sound: { rime: true, debut: true }, phrase: { max: 4 }, money: { level: 1 }, daily: null, streak: { n: 0, last: "" }, cmp: { max: 1000 }, clock: { level: 1 }, music: { pitch: true, rhythm: true, instr: true, level: 2 },
+  plays: { word: 0, read: 0, sound: 0, syllab: 0, phrase: 0, money: 0, number: 0, calc: 0, compare: 0, clock: 0, trace: 0, music: 0 },
   boost: 3
 };
 const ACTIVITIES = [
@@ -17,9 +17,11 @@ const ACTIVITIES = [
   ["read", "Lire", "📖", "#db2777", "#f59e0b", "Lis le mot, trouve l'image"],
   ["syllab", "Syllabes", "🥁", "#ea580c", "#facc15", "Un coup de tambour par syllabe"],
   ["sound", "Rimes et sons", "👂", "#0891b2", "#a3e635", "Ça rime? Ça commence pareil?"],
+  ["phrase", "Phrases", "🧩", "#7c3aed", "#22d3ee", "Remets les mots en ordre"],
   ["number", "Les nombres", "🔢", "#0ea5e9", "#22c55e", "Écoute et écris le nombre"],
   ["calc", "Les calculs", "➕", "#f97316", "#ef4444", "Additions et soustractions"],
   ["compare", "Plus grand?", "🐊", "#16a34a", "#0ea5e9", "Le plus grand, le plus petit"],
+  ["money", "Les sous", "🪙", "#ca8a04", "#64748b", "Compte l'argent"],
   ["clock", "L'heure", "🕒", "#6366f1", "#06b6d4", "Lis l'heure sur l'horloge"],
   ["trace", "Tracer", "✏️", "#14b8a6", "#8b5cf6", "Lettres, chiffres et attaché"],
   ["music", "Musique", "🎵", "#a855f7", "#f43f5e", "Aigu, grave, rythme, instruments"]
@@ -85,7 +87,7 @@ function load() {
   out.mute = Object.assign({}, DEFAULTS.mute, s.mute || {});
   out.trace = Object.assign({}, DEFAULTS.trace, s.trace || {});
   out.plays = Object.assign({}, DEFAULTS.plays, s.plays || {});
-  for (const k of ["read", "sound", "cmp", "clock", "music"]) out[k] = Object.assign({}, DEFAULTS[k], s[k] || {});
+  for (const k of ["read", "sound", "phrase", "money", "cmp", "clock", "music", "streak"]) out[k] = Object.assign({}, DEFAULTS[k], s[k] || {});
   for (const k in DEFAULTS.mathStats) out.mathStats[k] = out.mathStats[k] || { ok: 0, ko: 0 };
   if (s.voiceURI && !s.voice) out.voice = "system:" + s.voiceURI;
   if (s.palier && (s.boost || 0) < 2) out.clock = { level: 1 };
@@ -123,24 +125,51 @@ async function getBuffer(url) {
   const buf = await actx.decodeAudioData(await fetch(url).then(r => r.arrayBuffer()));
   BUFFERS.set(url, buf); return buf;
 }
+const STRETCHED = new Map();
+function stretch(buf, f) {
+  const key = buf.length + ":" + f + ":" + buf.getChannelData(0)[Math.floor(buf.length / 3)];
+  if (STRETCHED.has(key)) return STRETCHED.get(key);
+  const x = buf.getChannelData(0), sr = buf.sampleRate, N = 2 * Math.round(sr * 0.02), Hs = N / 2, Ha = Hs / f, tol = Math.round(sr * 0.008);
+  const len = Math.ceil(x.length * f) + N, y = new Float32Array(len), wsum = new Float32Array(len), w = new Float32Array(N);
+  for (let i = 0; i < N; i++) w[i] = 0.5 - 0.5 * Math.cos(2 * Math.PI * i / N);
+  let nat = 0;
+  for (let k = 0; ; k++) {
+    const target = Math.round(k * Ha); if (target + N + tol >= x.length) break;
+    let best = target;
+    if (k > 0) {
+      let bc = -Infinity;
+      for (let d = -tol; d <= tol; d += 2) {
+        const p = target + d; if (p < 0) continue;
+        let c = 0; for (let i = 0; i < Hs; i += 4) c += x[p + i] * x[nat + i];
+        if (c > bc) { bc = c; best = p; }
+      }
+    }
+    const o = k * Hs; for (let i = 0; i < N; i++) { y[o + i] += x[best + i] * w[i]; wsum[o + i] += w[i]; }
+    nat = best + Hs;
+  }
+  for (let i = 0; i < len; i++) if (wsum[i] > 1e-3) y[i] /= wsum[i];
+  const out = actx.createBuffer(1, len, sr); out.getChannelData(0).set(y);
+  STRETCHED.set(key, out); return out;
+}
 function playClip(url, rate, robot) { return new Promise(async res => {
   try {
     unlockAudio(); if (!actx) return playClipFallback(url, rate).then(res);
-    const buf = await getBuffer(url);
+    let buf = await getBuffer(url);
+    if (rate !== 1) buf = stretch(buf, rate);
     const src = actx.createBufferSource(); src.buffer = buf; src.playbackRate.value = rate;
     let osc = null;
     if (robot) { const ring = actx.createGain(); ring.gain.value = 0; osc = actx.createOscillator(); osc.frequency.value = 45; osc.connect(ring.gain); src.connect(ring); ring.connect(actx.destination); osc.start(); }
     else src.connect(actx.destination);
     src.start();
     current = { pause: () => { try { src.stop(); osc && osc.stop(); } catch {} } };
-    src.onended = () => { try { osc && osc.stop(); } catch {} res(); };
-  } catch { playClipFallback(url, rate).then(res); }
+    src.onended = () => { try { osc && osc.stop(); } catch {} res(true); };
+  } catch { res(false); }
 }); }
 function slug(t) { return Array.from(t.trim().toLowerCase()).map(c => (/[a-z0-9]/.test(c) ? c : "_" + c.codePointAt(0).toString(16))).join(""); }
 function clipUrl(text) { const m = MANIFEST[S.voice]; if (!m) return null; const sl = slug(text); return m.has(sl) ? `audio/${S.voice}/${sl}.mp3` : null; }
 let sayToken = 0, current = null;
 function stopAudio() { sayToken++; if (current) { try { current.pause(); } catch {} current = null; } if ("speechSynthesis" in window) speechSynthesis.cancel(); }
-function playClipFallback(url, rate) { return new Promise(res => { const a = new Audio(url); current = a; a.preservesPitch = false; a.mozPreservesPitch = false; a.playbackRate = rate; a.onended = a.onerror = () => res(); a.play().catch(() => res()); }); }
+function playClipFallback(url, rate) { return new Promise(res => { const a = new Audio(url); current = a; a.preservesPitch = false; a.mozPreservesPitch = false; a.playbackRate = rate; a.onended = () => res(true); a.onerror = () => res(false); a.play().catch(() => res(false)); }); }
 function playTts(text) { return new Promise(res => {
   if (!("speechSynthesis" in window)) return res();
   const u = new SpeechSynthesisUtterance(text);
@@ -155,7 +184,8 @@ async function say(parts) {
     if (tok !== sayToken) return;
     if (typeof parts[i] === "object") { await new Promise(r => setTimeout(r, parts[i].pause)); continue; }
     const url = clipUrl(parts[i]);
-    if (url) await playClip(url, rate, S.pitch === "robot");
+    if (url && await playClip(url, rate, S.pitch === "robot")) {}
+    else if (url) await playTts(parts[i]);
     else { let j = i; let txt = parts[i]; while (j + 1 < parts.length && typeof parts[j + 1] === "string" && !clipUrl(parts[j + 1])) { j++; txt += " " + parts[j]; } i = j; await playTts(txt); }
     if (i < parts.length - 1) await new Promise(r => setTimeout(r, 120));
   }
@@ -176,6 +206,8 @@ function promptParts(it) {
     case "calc": return [...numberParts(it.a), it.op === "+" ? "plus" : "moins", ...numberParts(it.b)];
     case "read": return [CONSIGNE.read];
     case "syllab": return [it.mot];
+    case "phrase": return ["Remets les mots dans l'ordre pour faire une phrase."];
+    case "money": return ["Compte l'argent et écris combien ça fait."];
     case "sound": return [it.sub === "rime" ? "Quel mot rime avec" : "Quel mot commence comme", it.target.mot, { pause: 400 }, it.choices[0].mot, it.choices[1].mot, "ou", it.choices[2].mot];
     case "compare": return [it.ask === "grand" ? "Touche le plus grand nombre." : "Touche le plus petit nombre."];
     case "clock": return ["Quelle heure est-il?"];
@@ -287,6 +319,37 @@ function buildReadSession() {
     return { kind: "read", mot: w.mot, emoji: w.emoji, choices, answer: w.mot };
   });
 }
+let PHRASES = [];
+function buildPhraseSession() {
+  const ok = PHRASES.filter(p => p.replace(".", "").split(" ").length <= S.phrase.max);
+  return shuffle(ok.length ? ok : PHRASES).slice(0, S.math.length).map(p => {
+    const words = p.replace(/\.$/, " .").split(" ");
+    let tiles = shuffle(words.map((_, i) => i)); if (tiles.every((v, i) => v === i)) tiles = tiles.reverse();
+    return { kind: "phrase", phrase: p, words, tiles, answer: words.join(" ") };
+  });
+}
+const COINS = { 5: ["5¢", 21.2], 10: ["10¢", 18], 25: ["25¢", 23.9], 100: ["1$", 26.5], 200: ["2$", 28] };
+function coinSvg(v) {
+  const d = Math.round(COINS[v][1] * 2.7), r = d / 2, lbl = COINS[v][0];
+  let shape;
+  if (v === 100) { const pts = Array.from({ length: 11 }, (_, k) => { const a = -Math.PI / 2 + k * 2 * Math.PI / 11; return `${(r + (r - 1) * Math.cos(a)).toFixed(1)},${(r + (r - 1) * Math.sin(a)).toFixed(1)}`; }).join(" "); shape = `<polygon points="${pts}" fill="#d4a72c" stroke="#a37d16" stroke-width="2"/>`; }
+  else if (v === 200) shape = `<circle cx="${r}" cy="${r}" r="${r - 1}" fill="#c9ccd3" stroke="#8b8f99" stroke-width="2"/><circle cx="${r}" cy="${r}" r="${r * 0.6}" fill="#d4a72c"/>`;
+  else shape = `<circle cx="${r}" cy="${r}" r="${r - 1}" fill="${v === 5 ? "#c7cbd3" : v === 10 ? "#d6d9df" : "#bfc3cc"}" stroke="#8b8f99" stroke-width="2"/><circle cx="${r}" cy="${r}" r="${r - 6}" fill="none" stroke="#9ca0aa" stroke-width="1"/>`;
+  return `<svg class="coin" width="${d}" height="${d}" viewBox="0 0 ${d} ${d}">${shape}<text x="${r}" y="${r}" style="font-size:${Math.round(d * 0.3)}px">${lbl}</text></svg>`;
+}
+function buildMoneySession() {
+  const lvl = S.money.level, set = lvl === 1 ? [5, 10] : lvl === 2 ? [5, 10, 25] : [100, 200], cap = lvl === 1 ? 50 : lvl === 2 ? 100 : 1000, items = [];
+  for (let i = 0; i < S.math.length; i++) {
+    let coins = [];
+    const n = rand(2, lvl === 1 ? 5 : 4);
+    while (coins.length < n) { const c = pick(set); if (coins.reduce((a, b) => a + b, 0) + c <= cap) coins.push(c); else break; }
+    if (coins.length < 2) coins = [set[0], set[set.length - 1]];
+    coins.sort((a, b) => b - a);
+    const total = coins.reduce((a, b) => a + b, 0), unit = lvl === 3 ? "$" : "¢";
+    items.push({ kind: "money", coins, unit, answer: String(unit === "$" ? total / 100 : total) });
+  }
+  return items;
+}
 let SYL_WORDS = [];
 function buildSyllabSession() {
   const by = n => shuffle(SYL_WORDS.filter(w => w.syl.length === n)), pools = [by(1), by(2), by(3), by(4)], items = [];
@@ -343,7 +406,7 @@ function buildClockSession() {
 const RHYTHMS = { 1: ["ta ta ta ta", "ta ta titi ta", "titi ta ta ta", "ta titi ta ta", "ta ta ta titi"], 2: ["titi titi ta ta", "ta titi titi ta", "titi ta titi ta", "ta ta titi titi", "titi titi titi ta", "ta titi ta titi"], 3: ["ta chut ta ta", "titi ta chut ta", "ta titi chut titi", "titi chut titi ta", "ta ta chut titi"] };
 function rhythmPattern(lvl) { return pick([].concat(...[1, 2, 3].filter(l => l <= lvl).map(l => RHYTHMS[l]))).split(" "); }
 function buildMusicSession() {
-  const mu = S.music, subs = ["pitch", "rhythm", "instr"].filter(k => mu[k]), items = [];
+  const mu = S.music, subs = ["pitch", "rhythm", "instr"].filter(k => mu[k]), items = []; let bag = []; const fileOf = {};
   if (!subs.length) subs.push("pitch");
   for (let i = 0; i < S.math.length; i++) {
     const sub = subs[i % subs.length];
@@ -354,8 +417,10 @@ function buildMusicSession() {
       items.push({ kind: "music", sub, notes, ask, answer: String(ask === "aigu" ? hi : 1 - hi) });
     } else if (sub === "rhythm") items.push({ kind: "music", sub, pattern: rhythmPattern(mu.level), answer: "ok" });
     else {
-      const ins = pick(INSTRUMENTS), others = shuffle(INSTRUMENTS.filter(x => x !== ins)).slice(0, mu.level >= 2 ? 3 : 2);
-      items.push({ kind: "music", sub, ins: ins[0], choices: shuffle([ins, ...others]), answer: ins[0] });
+      if (!bag.length) bag = shuffle(INSTRUMENTS);
+      const ins = bag.pop(), others = shuffle(INSTRUMENTS.filter(x => x !== ins)).slice(0, mu.level >= 2 ? 3 : 2);
+      fileOf[ins[0]] = fileOf[ins[0]] ? 3 - fileOf[ins[0]] : rand(1, 2);
+      items.push({ kind: "music", sub, ins: ins[0], file: fileOf[ins[0]], choices: shuffle([ins, ...others]), answer: ins[0] });
     }
   }
   return shuffle(items);
@@ -368,7 +433,7 @@ function startSession(kind) {
   if (kind === "word") {
     if (!POOL.length && !S.weekly.length) { view(`${topbar()}<div class="card">Aucun mot chargé.</div>`); $("#back").onclick = home; return; }
     items = buildWordSession();
-  } else items = { number: buildNumberSession, trace: buildTraceSession, calc: buildCalcSession, read: buildReadSession, sound: buildSoundSession, syllab: buildSyllabSession, compare: buildCompareSession, clock: buildClockSession, music: buildMusicSession }[kind]();
+  } else items = { number: buildNumberSession, trace: buildTraceSession, calc: buildCalcSession, read: buildReadSession, sound: buildSoundSession, syllab: buildSyllabSession, phrase: buildPhraseSession, money: buildMoneySession, compare: buildCompareSession, clock: buildClockSession, music: buildMusicSession }[kind]();
   S.plays[kind] = (S.plays[kind] || 0) + 1; save();
   session = { kind, items, i: 0, retry: [], good: 0, total: items.length, s: S.sessions, first: true };
   nextItem();
@@ -402,6 +467,10 @@ function renderItem(it) {
     body = `<div class="tracewrap"><canvas id="trace"></canvas></div><div class="actions"><button class="btn ghost small" id="erase">⌫</button><button class="btn ghost small" id="skip">→</button></div>`;
   } else if (it.kind === "read") {
     body = `<div class="readword">${esc(it.mot)}</div><div class="choices">${it.choices.map(c => `<button class="choice emo" data-v="${esc(c.mot)}">${c.emoji}</button>`).join("")}</div>`;
+  } else if (it.kind === "phrase") {
+    body = `<div class="slots phr" id="slots"></div><div class="tiles phr" id="tiles"></div><div class="actions"><button class="btn ghost small" id="erase">⌫</button></div>`;
+  } else if (it.kind === "money") {
+    body = `<div class="coins">${it.coins.map(coinSvg).join("")}</div><div class="calc"><span id="num">?</span> ${it.unit}</div><div class="pad numpad">${[1, 2, 3, 4, 5, 6, 7, 8, 9, "⌫", 0, "✓"].map(k => `<button data-k="${k}">${k}</button>`).join("")}</div>`;
   } else if (it.kind === "syllab") {
     body = `<div class="target">${it.emoji}<small>${esc(it.mot)}</small></div><div class="taps" id="taps"></div><button class="drum ready" id="drum">🥁</button>`;
   } else if (it.kind === "sound") {
@@ -431,6 +500,7 @@ function renderItem(it) {
   else if (it.kind === "trace") setupTrace(it);
   else if (it.kind === "music" && it.sub === "rhythm") setupRhythm(it);
   else if (it.kind === "syllab") setupSyllab(it);
+  else if (it.kind === "phrase") setupPhrase(it);
   else if ($(".choices")) setupChoices(it);
   else setupPad(it);
 }
@@ -471,8 +541,8 @@ function drum(t0) {
   for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / d.length);
   const ng = actx.createGain(); ng.gain.value = 0.35; n.buffer = b; n.connect(ng); ng.connect(actx.destination); n.start(t0);
 }
-async function playRecording(id) {
-  const buf = await getBuffer(`audio/instr/${id}-${rand(1, 2)}.m4a`), t = now();
+async function playRecording(id, file) {
+  const buf = await getBuffer(`audio/instr/${id}-${file || rand(1, 2)}.m4a`), t = now();
   const src = actx.createBufferSource(), g = actx.createGain();
   src.buffer = buf; g.gain.value = 0.9; src.connect(g); g.connect(actx.destination); src.start(t);
   const me = session, idx = session.i;
@@ -503,7 +573,7 @@ async function playMusic(it) {
       session.listening = false; session.taps = []; $("#drum").classList.add("ready");
       if (!S.mute.music) say(["À toi!"]);
     } else {
-      await wait(await playRecording(it.ins));
+      await wait(await playRecording(it.ins, it.file));
     }
   } catch {}
 }
@@ -595,6 +665,23 @@ function setupTiles(w) {
     const t = e.target.closest(".tile"); if (session.locked || !t || t.classList.contains("used") || filled.length >= letters.length) return;
     filled.push({ tile: t.dataset.i, letter: t.textContent }); redraw();
     if (filled.length === letters.length) setTimeout(() => check(w, filled.map(f => f.letter).join("")), 250);
+  };
+  slots.onclick = e => { const sl = e.target.closest(".slot"); if (session.locked || !sl || !filled[sl.dataset.i]) return; filled.splice(sl.dataset.i, 1); redraw(); };
+  $("#erase").onclick = () => { if (!session.locked) { filled.pop(); redraw(); } };
+}
+function setupPhrase(it) {
+  const slots = $("#slots"), tiles = $("#tiles"), n = it.words.length;
+  slots.innerHTML = it.words.map((_, i) => `<div class="slot" data-i="${i}"></div>`).join("");
+  tiles.innerHTML = it.tiles.map(i => `<button class="tile" data-i="${i}">${esc(it.words[i])}</button>`).join("");
+  let filled = [];
+  const redraw = () => {
+    slots.querySelectorAll(".slot").forEach((sl, i) => { const f = filled[i]; sl.textContent = f ? f.w : ""; sl.className = "slot" + (f ? " filled" : ""); });
+    tiles.querySelectorAll(".tile").forEach(t => t.classList.toggle("used", filled.some(f => f.tile === t.dataset.i)));
+  };
+  tiles.onclick = e => {
+    const t = e.target.closest(".tile"); if (session.locked || !t || t.classList.contains("used") || filled.length >= n) return;
+    filled.push({ tile: t.dataset.i, w: t.textContent }); redraw();
+    if (filled.length === n) setTimeout(() => check(it, filled.map(f => f.w).join(" ")), 300);
   };
   slots.onclick = e => { const sl = e.target.closest(".slot"); if (session.locked || !sl || !filled[sl.dataset.i]) return; filled.splice(sl.dataset.i, 1); redraw(); };
   $("#erase").onclick = () => { if (!session.locked) { filled.pop(); redraw(); } };
@@ -691,7 +778,7 @@ function check(it, answer) {
   if (session.locked) return;
   session.locked = true;
   const target = it.kind === "word" ? it.mot : it.answer;
-  const ok = it.kind === "word" ? norm(answer) === norm(target) : it.kind === "number" || it.kind === "calc" ? String(parseInt(answer, 10)) === target : String(answer) === target;
+  const ok = it.kind === "word" ? norm(answer) === norm(target) : it.kind === "number" || it.kind === "calc" || it.kind === "money" ? String(parseInt(answer, 10)) === target : String(answer) === target;
   const fb = $("#fb");
   const p = it.kind === "word" ? prog(it.key) : null;
   const ms = it.kind === "word" ? null : S.mathStats[it.kind];
@@ -701,7 +788,7 @@ function check(it, answer) {
     save();
     fb.className = "feedback ok"; fb.textContent = pick(PRAISE);
     $("#starsN").textContent = `👥 ${S.stars}`;
-    confetti(); chatter(it.kind, [fb.textContent, ...(it.kind === "read" ? [it.mot] : it.kind === "sound" ? [it.target.mot, it.answer] : it.kind === "syllab" ? [it.mot] : it.kind === "clock" ? timeParts(it.h, it.m) : it.kind === "music" && it.sub === "instr" ? ["C'est", INSTRUMENTS.find(x => x[0] === it.ins)[1]] : [])]);
+    confetti(); chatter(it.kind, [fb.textContent, ...(it.kind === "read" ? [it.mot] : it.kind === "sound" ? [it.target.mot, it.answer] : it.kind === "syllab" ? [it.mot] : it.kind === "phrase" ? [it.phrase] : it.kind === "clock" ? timeParts(it.h, it.m) : it.kind === "music" && it.sub === "instr" ? ["C'est", INSTRUMENTS.find(x => x[0] === it.ins)[1]] : [])]);
     $("#slots") && $("#slots").querySelectorAll(".slot").forEach(s => s.classList.add("ok"));
     $("#num") && ($("#num").className = "ok");
     $("#trace") && $("#trace").classList.add("ok");
@@ -719,6 +806,11 @@ function check(it, answer) {
       spoken = ["Le mot est", target, { pause: 300 }, ...spellParts(target)];
     } else if (it.kind === "read") {
       shown = `${it.emoji} ${esc(it.mot)}`; spoken = [it.mot];
+    } else if (it.kind === "phrase") {
+      shown = esc(it.phrase); spoken = [it.phrase];
+    } else if (it.kind === "money") {
+      shown = `${target} ${it.unit}`; spoken = ["ça fait", ...numberParts(target), it.unit === "¢" ? "sous" : +target > 1 ? "dollars" : "dollar"];
+      $("#num").textContent = target; $("#num").className = "bad";
     } else if (it.kind === "syllab") {
       shown = it.syl.join(" · "); spoken = [it.mot];
     } else if (it.kind === "sound") {
@@ -738,7 +830,7 @@ function check(it, answer) {
     }
     app.querySelectorAll(".choice").forEach(c => { if (c.dataset.v === target) c.classList.add("ok"); });
     fb.insertAdjacentHTML("afterend", `<div class="answer">${shown}</div><div class="actions"><button class="btn small" id="again">🔊 ↻</button><button class="btn ghost small" id="skip">→</button></div>`);
-    if (it.kind === "word" || it.kind === "read" || it.kind === "sound" || it.kind === "syllab") say(spoken); else chatter(it.kind, spoken);
+    if (it.kind === "word" || it.kind === "read" || it.kind === "sound" || it.kind === "syllab" || it.kind === "phrase") say(spoken); else chatter(it.kind, spoken);
     if (it.kind === "music" && it.sub === "rhythm") setTimeout(() => { if (session.items[session.i] === it && $("#again")) playMusic(it); }, S.mute.music ? 300 : 1300);
     $("#again").onclick = () => { renderItem(it); replay(it); };
     $("#skip").onclick = () => { session.i++; nextItem(); };
@@ -751,9 +843,32 @@ function maybeLevelUp() {
   if (learned / un.length >= 0.7) { S.palier += 1; return true; }
   return false;
 }
+const STREAK_STICKERS = { 3: "🔥", 7: "💎", 14: "🏆", 30: "🌟" };
+function dayStr(d) { return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; }
+function dailyState() {
+  const t = dayStr(new Date());
+  if (!S.daily || S.daily.date !== t) {
+    let h = 0; for (const c of t) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+    const r = arr => { h = (h * 1103515245 + 12345) >>> 0; return arr[h % arr.length]; };
+    S.daily = { date: t, acts: [r(["word", "read", "sound", "syllab", "phrase"]), r(["number", "calc", "compare", "money", "clock"]), r(["trace", "music", "read", "sound"])], done: [] };
+    if (S.daily.acts[2] === S.daily.acts[0]) S.daily.acts[2] = S.daily.acts[0] === "read" ? "music" : "trace";
+    save();
+  }
+  return S.daily;
+}
+function streakNow() { const y = dayStr(new Date(Date.now() - 864e5)), t = dayStr(new Date()); return S.streak.last === t || S.streak.last === y ? S.streak.n : 0; }
+function markDaily(kind) {
+  const d = dailyState(); if (!d.acts.includes(kind) || d.done.includes(kind)) return null;
+  d.done.push(kind); if (d.done.length < d.acts.length) return { partial: true };
+  const t = dayStr(new Date()), y = dayStr(new Date(Date.now() - 864e5));
+  S.streak = { n: S.streak.last === y ? S.streak.n + 1 : S.streak.last === t ? S.streak.n : 1, last: t };
+  const st = STREAK_STICKERS[S.streak.n]; if (st) S.stickers[st] = (S.stickers[st] || 0) + 1;
+  return { complete: true, n: S.streak.n, sticker: st };
+}
 function endSession() {
   const sticker = pick(STICKERS);
   S.stickers[sticker] = (S.stickers[sticker] || 0) + 1;
+  const daily = markDaily(session.kind);
   const up = maybeLevelUp(); save();
   const gained = session.good;
   view(`${topbar()}
@@ -762,12 +877,13 @@ function endSession() {
       <p class="tagline">${gained >= session.total / 2 ? `${gained} sur ${session.total}` : "Tu as travaillé fort!"}</p>
       ${up ? `<div class="levelup">🏅 Niveau ${S.palier} débloqué!</div>` : ""}
       <div class="toast"><span class="ic">${sticker}</span><div><div class="tt">Succès débloqué</div><div class="tn">Nouveau collant${S.stickers[sticker] > 1 ? ` ×${S.stickers[sticker]}` : ""}</div></div></div>
+      ${daily && daily.complete ? `<div class="toast streak"><span class="ic">${daily.sticker || "🔥"}</span><div><div class="tt">Défi du jour réussi!</div><div class="tn">🔥 ${daily.n} jour${daily.n > 1 ? "s" : ""} de suite${daily.sticker ? " · collant spécial!" : ""}</div></div></div>` : daily && daily.partial ? `<div class="toast"><span class="ic">✅</span><div><div class="tt">Défi du jour</div><div class="tn">${S.daily.done.length} sur 3</div></div></div>` : ""}
     </div>
     <button class="btn pink" id="again">Encore une partie</button>
     <button class="btn ghost" id="album">🏆 Mes succès</button>
     <button class="btn ghost" id="home">Accueil</button>`);
   confetti(60);
-  chatter(session.kind, ["Bravo! Tu as gagné un nouveau collant!", ...(gained ? [String(gained), gained > 1 ? "nouveaux abonnés" : "nouvel abonné"] : ["Tu as travaillé fort!"]), ...(up ? ["Et tu passes au niveau", String(S.palier)] : [])]);
+  chatter(session.kind, ["Bravo! Tu as gagné un nouveau collant!", ...(gained ? [String(gained), gained > 1 ? "nouveaux abonnés" : "nouvel abonné"] : ["Tu as travaillé fort!"]), ...(up ? ["Et tu passes au niveau", String(S.palier)] : []), ...(daily && daily.complete ? ["Défi du jour réussi!", String(daily.n), daily.n > 1 ? "jours de suite" : ""] : [])]);
   const k = session.kind;
   $("#back").onclick = home; $("#home").onclick = home; $("#again").onclick = () => startSession(k); $("#album").onclick = album;
 }
@@ -793,22 +909,28 @@ function topbar(back = true) {
 }
 function home() {
   stopAudio();
-  const mins = { word: S.sessionLength, read: S.sessionLength, sound: S.math.length, syllab: S.math.length, number: S.math.length, calc: S.math.length, compare: S.math.length, clock: S.math.length, trace: S.trace.length, music: S.math.length };
   const cards = ACTIVITIES.map(([id, title, ic, c1, c2, sub]) => `
     <button class="tilecard" id="${id}">
-      <div class="thumb" style="--c1:${c1};--c2:${c2}">${ic}<span class="dur">${Math.max(2, Math.round(mins[id] * 0.6))} min</span>${S.weekly.length && id === "word" ? `<span class="live">SEMAINE</span>` : ""}</div>
+      <div class="thumb" style="--c1:${c1};--c2:${c2}">${ic}${S.weekly.length && id === "word" ? `<span class="live">SEMAINE</span>` : ""}</div>
       <div class="info"><div class="mini">${ic}</div><div><div class="t">${title}</div><div class="s">${sub}</div><div class="s">${S.plays[id] ? `${S.plays[id]} partie${S.plays[id] > 1 ? "s" : ""} jouée${S.plays[id] > 1 ? "s" : ""}` : "Jamais joué"}</div></div></div>
     </button>`).join("");
+  const d = dailyState(), sn = streakNow(), all = d.done.length === d.acts.length;
+  const daily = `<div class="daily ${all ? "complete" : ""}"><div class="dh"><b>${all ? "Défi du jour réussi! 🎉" : "Défi du jour"}</b><span class="flame ${sn ? "" : "off"}">🔥 ${sn}</span></div>
+    <div class="dacts">${d.acts.map(id => { const a = ACTIVITIES.find(x => x[0] === id); return `<button class="dact ${d.done.includes(id) ? "done" : ""}" data-d="${id}"><span>${d.done.includes(id) ? "✅" : a[2]}</span><small>${a[1]}</small></button>`; }).join("")}</div></div>`;
   view(`${channelHeader()}
+    ${daily}
     <div class="grid">${cards}</div>`, "home");
   ACTIVITIES.forEach(([id]) => $("#" + id).onclick = () => startSession(id));
+  app.querySelectorAll("[data-d]").forEach(b => b.onclick = () => startSession(b.dataset.d));
 }
 function album() {
   const unlocked = Object.keys(S.stickers).length;
   view(`<div class="section"><h1>Succès</h1>
     <div class="achv-head"><span class="muted">Collants débloqués</span><b>${unlocked} / ${STICKERS.length}</b></div>
     <div class="achv-bar"><div style="width:${Math.round(unlocked / STICKERS.length * 100)}%"></div></div>
-    <div class="album">${STICKERS.map(s => `<div class="sticker ${S.stickers[s] ? "" : "locked"}">${S.stickers[s] ? s : "🔒"}${S.stickers[s] > 1 ? `<span class="count">×${S.stickers[s]}</span>` : ""}</div>`).join("")}</div></div>`, "album");
+    <div class="album">${STICKERS.map(s => `<div class="sticker ${S.stickers[s] ? "" : "locked"}">${S.stickers[s] ? s : "🔒"}${S.stickers[s] > 1 ? `<span class="count">×${S.stickers[s]}</span>` : ""}</div>`).join("")}</div>
+    <div class="achv-head"><span class="muted">Défis du jour de suite · 🔥 ${streakNow()}</span></div>
+    <div class="album">${Object.entries(STREAK_STICKERS).map(([n, s]) => `<div class="sticker ${S.stickers[s] ? "" : "locked"}">${S.stickers[s] ? s : "🔒"}<span class="count">${n} j</span></div>`).join("")}</div></div>`, "album");
 }
 function confetti(n = 30) {
   const box = document.createElement("div"); box.className = "confetti";
@@ -909,6 +1031,15 @@ function parent() {
       <label><input type="checkbox" id="soDebut" ${S.sound.debut ? "checked" : ""}> Quel mot commence comme…</label>
     </div>
     <div class="card">
+      <h2>🧩 Phrases</h2>
+      <label>Mots par phrase (au plus)</label>
+      ${pills("phrMax", [3, 4, 5, 6], S.phrase.max, v => v)}
+    </div>
+    <div class="card">
+      <h2>🪙 Les sous</h2>
+      ${pills("monLvl", [1, 2, 3], S.money.level, v => ["", "5 ¢ et 10 ¢", "+ 25 ¢ (jusqu'à 1 $)", "1 $ et 2 $"][v])}
+    </div>
+    <div class="card">
       <h2>🐊 Plus grand, plus petit</h2>
       <label>Nombres jusqu'à</label>
       ${pills("cmpMax", [20, 100, 1000, 9999], S.cmp.max, v => v.toLocaleString("fr-CA"))}
@@ -949,7 +1080,7 @@ function parent() {
     <div class="card">
       <h2>📊 Progrès</h2>
       <table class="stats">
-        <tr><td>Parties (mots / lire / rimes / syllabes / nombres / calculs / plus grand / heure / tracés / musique)</td><td>${["word", "read", "sound", "syllab", "number", "calc", "compare", "clock", "trace", "music"].map(k => S.plays[k] || 0).join(" / ")}</td></tr>
+        <tr><td>Parties (mots / lire / rimes / syllabes / phrases / nombres / calculs / plus grand / sous / heure / tracés / musique)</td><td>${["word", "read", "sound", "syllab", "phrase", "number", "calc", "compare", "money", "clock", "trace", "music"].map(k => S.plays[k] || 0).join(" / ")}</td></tr>
         <tr><td>Mots débloqués / total</td><td>${un.length} / ${POOL.length}</td></tr>
         <tr><td>Mots rencontrés</td><td>${seen}</td></tr>
         <tr><td>À apprendre / en cours / presque / acquis</td><td>${boxes.join(" / ")}</td></tr>
@@ -957,7 +1088,7 @@ function parent() {
         <tr><td>Nombres réussis / ratés</td><td>${S.mathStats.number.ok} / ${S.mathStats.number.ko}</td></tr>
         <tr><td>Calculs réussis / ratés</td><td>${S.mathStats.calc.ok} / ${S.mathStats.calc.ko}</td></tr>
         <tr><td>Tracés réussis</td><td>${S.mathStats.trace.ok}</td></tr>
-        ${[["read", "Lecture"], ["sound", "Rimes et sons"], ["syllab", "Syllabes"], ["compare", "Plus grand"], ["clock", "Heure"], ["music", "Musique"]].map(([k, l]) => `<tr><td>${l} réussis / ratés</td><td>${S.mathStats[k].ok} / ${S.mathStats[k].ko}</td></tr>`).join("")}
+        ${[["read", "Lecture"], ["sound", "Rimes et sons"], ["syllab", "Syllabes"], ["phrase", "Phrases"], ["money", "Sous"], ["compare", "Plus grand"], ["clock", "Heure"], ["music", "Musique"]].map(([k, l]) => `<tr><td>${l} réussis / ratés</td><td>${S.mathStats[k].ok} / ${S.mathStats[k].ko}</td></tr>`).join("")}
         <tr><td>Abonnés</td><td>${S.stars}</td></tr>
       </table>
       ${hard.length ? `<label>Mots difficiles</label><p>${hard.map(([k, p]) => `<span class="pill">${esc(k)} ×${p.ko}</span>`).join("")}</p>` : ""}
@@ -977,7 +1108,7 @@ function parent() {
     <button class="btn mint" id="save">Enregistrer</button>
     <div class="row" style="justify-content:center"><button class="btn ghost small" id="pin">Changer le NIP</button><button class="btn ghost small" id="reset">Réinitialiser les progrès</button></div>
   </div>`, "parent");
-  const sel = { mode: S.mode, decoys: S.decoys, len: S.sessionLength, mlen: m.length, tlen: S.trace.length, numMax: m.numMax, readLvl: S.read.level, cmpMax: S.cmp.max, clockLvl: S.clock.level, muLvl: S.music.level };
+  const sel = { mode: S.mode, decoys: S.decoys, len: S.sessionLength, mlen: m.length, tlen: S.trace.length, numMax: m.numMax, readLvl: S.read.level, cmpMax: S.cmp.max, clockLvl: S.clock.level, muLvl: S.music.level, phrMax: S.phrase.max, monLvl: S.money.level };
   app.querySelectorAll("[data-group]").forEach(g => g.onclick = e => {
     const b = e.target.closest(".pill"); if (!b) return;
     const v = b.dataset.v; sel[g.dataset.group] = isNaN(v) ? v : +v;
@@ -987,7 +1118,7 @@ function parent() {
   live("firstMax", v => v); live("addMax", v => "+" + v); live("palier", v => palierLabel(+v));
   $("#save").onclick = () => {
     S.palier = +$("#palier").value; S.palierAuto = $("#auto").checked; S.mode = sel.mode; S.decoys = sel.decoys; S.sessionLength = sel.len;
-    S.read = { level: sel.readLvl }; S.sound = { rime: $("#soRime").checked, debut: $("#soDebut").checked }; S.cmp = { max: sel.cmpMax }; S.clock = { level: sel.clockLvl };
+    S.read = { level: sel.readLvl }; S.sound = { rime: $("#soRime").checked, debut: $("#soDebut").checked }; S.phrase = { max: sel.phrMax }; S.money = { level: sel.monLvl }; S.cmp = { max: sel.cmpMax }; S.clock = { level: sel.clockLvl };
     S.music = { pitch: $("#muPitch").checked, rhythm: $("#muRhythm").checked, instr: $("#muInstr").checked, level: sel.muLvl };
     S.weekly = [...new Set($("#weekly").value.split(/[\n,;]+/).map(s => s.trim().toLowerCase().replace(/\s+/g, " ")).filter(Boolean))];
     S.trace = { lower: $("#tLower").checked, upper: $("#tUpper").checked, digits: $("#tDigits").checked, cursive: $("#tCursive").checked, cwords: $("#tCwords").checked, length: sel.tlen };
@@ -1017,7 +1148,7 @@ function parent() {
     const msg = $("#offMsg"); const m = MANIFEST[S.voice];
     if (!("caches" in window)) { msg.textContent = "Non disponible dans ce navigateur."; return; }
     if (!m) { msg.textContent = "La voix choisie n'a pas de clips à télécharger."; return; }
-    const urls = [...m].map(sl => `audio/${S.voice}/${sl}.mp3`); const cache = await caches.open("zombinettes-v5"); urls.push(...INSTRUMENTS.flatMap(x => [1, 2].map(k => `audio/instr/${x[0]}-${k}.m4a`))); let done = 0;
+    const urls = [...m].map(sl => `audio/${S.voice}/${sl}.mp3`); const cache = await caches.open("zombinettes-v6"); urls.push(...INSTRUMENTS.flatMap(x => [1, 2].map(k => `audio/instr/${x[0]}-${k}.m4a`))); let done = 0;
     for (let i = 0; i < urls.length; i += 25) {
       const batch = urls.slice(i, i + 25).filter(u => u);
       const existing = await Promise.all(batch.map(u => cache.match(u)));
@@ -1037,6 +1168,7 @@ async function boot() {
   const res = await Promise.all([1, 2, 3].map(l => fetch(`data/mots-${l}.json`).then(r => r.json()).catch(() => [])));
   PACKS = { 1: res[0], 2: res[1], 3: res[2] };
   READ_WORDS = await fetch("data/lecture.json").then(r => r.json()).catch(() => []);
+  PHRASES = await fetch("data/phrases-desordre.json").then(r => r.json()).catch(() => []);
   SYL_WORDS = await fetch("data/syllabes.json").then(r => r.json()).catch(() => []);
   SOUND_WORDS = await fetch("data/sons.json").then(r => r.json()).catch(() => []);
   try { const m = await fetch("audio/manifest.json").then(r => r.json()); for (const k in m) MANIFEST[k] = new Set(m[k]); } catch {}

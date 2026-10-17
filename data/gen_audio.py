@@ -24,6 +24,7 @@ def items():
     for t in P["misc3"]: out.append((t, "+0%"))
     for w in json.load(open(os.path.join(ROOT, "data/syllabes.json"))): out.append((w["mot"], "-15%"))
     for t in P["misc4"]: out.append((t, "+0%"))
+    for t in P["misc5"] + json.load(open(os.path.join(ROOT, "data/phrases-desordre.json"))): out.append((t, "+0%"))
     for t in list(P["consignes"].values()) + P["praise"] + P["misc"] + list(P["themes"].values()) + list(P["styles"].values()):
         out.append((t, "+0%"))
     seen = set()
@@ -32,18 +33,21 @@ def items():
 async def gen(sem, voice_id, text, rate, path):
     if os.path.exists(path) and os.path.getsize(path) > 0: return
     async with sem:
-        for attempt in range(4):
+        for attempt in range(6):
             try:
-                await edge_tts.Communicate(text, voice_id, rate=rate).save(path); return
+                await edge_tts.Communicate(text, voice_id, rate=rate).save(path + ".tmp")
+                if os.path.getsize(path + ".tmp") > 0: os.replace(path + ".tmp", path); return
+                raise RuntimeError("clip vide")
             except Exception as e:
-                await asyncio.sleep(1.5 * (attempt + 1)); err = e
+                if os.path.exists(path + ".tmp"): os.remove(path + ".tmp")
+                await asyncio.sleep(4 * (attempt + 1)); err = e
         print("ÉCHEC", voice_id, text, err, file=sys.stderr)
 
 async def main():
     args = sys.argv[1:]
     limit = int(args[args.index("--limit") + 1]) if "--limit" in args else None
     voices = args[args.index("--voices") + 1].split(",") if "--voices" in args else list(P["voices"])
-    sem = asyncio.Semaphore(6)
+    sem = asyncio.Semaphore(2)
     tasks, manifest = [], {}
     base = items()[:limit] if limit else items()
     for v in voices:
@@ -56,7 +60,10 @@ async def main():
     await asyncio.gather(*tasks)
     # ne garder dans le manifeste que les fichiers réellement présents
     for v in voices:
-        manifest[v] = sorted(s for s in manifest[v] if os.path.exists(os.path.join(OUT, v, s + ".mp3")))
+        for fn in os.listdir(os.path.join(OUT, v)):
+            fp = os.path.join(OUT, v, fn)
+            if fn.endswith(".mp3") and os.path.getsize(fp) == 0: os.remove(fp)
+        manifest[v] = sorted(s for s in manifest[v] if os.path.isfile(os.path.join(OUT, v, s + ".mp3")) and os.path.getsize(os.path.join(OUT, v, s + ".mp3")) > 0)
     old = {}
     mp = os.path.join(OUT, "manifest.json")
     if os.path.exists(mp): old = json.load(open(mp))

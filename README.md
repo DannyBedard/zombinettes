@@ -52,6 +52,16 @@ Rimes et sons : une image cible dite à voix haute, 3 images ; « Quel mot rime 
 comme maison? ». Les mots des choix sont dits aussi. Sons notés à la main dans `data/sons.json` (`r` = son de la fin,
 `d` = premier son), parce que l'orthographe ne suffit pas (citron commence par « s »).
 
+Phrases : 3 à 6 mots (réglable) et le point à remettre dans l'ordre (`data/phrases-desordre.json`). La phrase est dite
+seulement après la réponse.
+
+Les sous : pièces canadiennes dessinées en SVG (taille relative et couleur réalistes, valeur écrite dessus), à compter au
+pavé numérique. Niveaux : 5 ¢ et 10 ¢, + 25 ¢ jusqu'à 1 $, 1 $ et 2 $.
+
+Défi du jour : 3 activités tirées selon la date (un jeu de français, un de maths, un autre) en haut de l'accueil. Les
+3 finies dans la journée font monter la série 🔥 (remise à 1 si on saute un jour), avec un collant spécial à 3, 7, 14 et
+30 jours.
+
 Plus grand : deux nombres, « touche le plus grand » ou « le plus petit ». La moitié du temps, les deux nombres ont le
 même premier chiffre.
 
@@ -77,10 +87,10 @@ morceau de phrase joue son clip s'il existe, sinon la voix système prend le rel
 
     "$HOME/Library/Application Support/pipx/venvs/edge-tts/bin/python" data/gen_audio.py
 
-(installation : `brew install pipx && pipx install edge-tts`). Les clips existants ne sont pas refaits.
+(installation : `brew install pipx && pipx install edge-tts`). Les clips existants ne sont pas refaits ; un clip refusé par le serveur n'est jamais gardé vide (le jeu passe alors à la voix de l'appareil).
 
 L'écran « Mon style » (pour l'enfant) permet de choisir la voix (Sylvie et Jean livrées avec l'app, plus Amélie et Daniel si l'appareil
-les a), un style de voix (normale, petite, grosse, robot) et un thème de couleurs. Dans chaque
+les a), un style de voix (normale, petite, grosse, robot ; petite et grosse changent la hauteur sans changer la vitesse, par étirement WSOLA) et un thème de couleurs. Dans chaque
 exercice, le bouton 🗣️/🔇 coupe les commentaires (consigne, bravos, explications) pour cet exercice seulement ;
 le mot ou le nombre à écrire est toujours dit.
 
