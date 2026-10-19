@@ -8,7 +8,7 @@ const DEFAULTS = {
   math: { numMax: 199, firstMax: 20, addMax: 10, sub: true, visual: true, length: 8 },
   mathStats: { quiz: { ok: 0, ko: 0 }, number: { ok: 0, ko: 0 }, calc: { ok: 0, ko: 0 }, trace: { ok: 0, ko: 0 }, read: { ok: 0, ko: 0 }, sound: { ok: 0, ko: 0 }, syllab: { ok: 0, ko: 0 }, phrase: { ok: 0, ko: 0 }, money: { ok: 0, ko: 0 }, keys: { ok: 0, ko: 0 }, figures: { ok: 0, ko: 0 }, compare: { ok: 0, ko: 0 }, clock: { ok: 0, ko: 0 }, music: { ok: 0, ko: 0 } },
   trace: { lower: true, upper: true, digits: true, nums: true, cursive: true, cwords: true, length: 6 },
-  read: { level: 2 }, sound: { rime: true, debut: true }, phrase: { max: 4 }, money: { level: 1 }, keys: { level: 3 }, daily: null, days: [], streak: { n: 0, last: "" }, mixCount: {}, cmp: { max: 1000 }, clock: { level: 1 }, music: { pitch: true, rhythm: true, instr: true, level: 2 },
+  read: { level: 2 }, sound: { rime: true, debut: true }, phrase: { max: 4 }, money: { level: 1 }, keys: { level: 3 }, daily: null, days: [], cabin: { items: [], visitors: [] }, streak: { n: 0, last: "" }, mixCount: {}, cmp: { max: 1000 }, clock: { level: 1 }, music: { pitch: true, rhythm: true, instr: true, level: 2 },
   plays: { word: 0, read: 0, sound: 0, syllab: 0, phrase: 0, money: 0, keys: 0, figures: 0, number: 0, calc: 0, compare: 0, clock: 0, trace: 0, music: 0 },
   boost: 5
 };
@@ -109,7 +109,7 @@ function load() {
   out.mute = Object.assign({}, DEFAULTS.mute, s.mute || {});
   out.trace = Object.assign({}, DEFAULTS.trace, s.trace || {});
   out.plays = Object.assign({}, DEFAULTS.plays, s.plays || {});
-  for (const k of ["read", "sound", "phrase", "money", "keys", "cmp", "clock", "music", "streak", "mixCount"]) out[k] = Object.assign({}, DEFAULTS[k], s[k] || {});
+  for (const k of ["read", "sound", "phrase", "money", "keys", "cmp", "clock", "music", "streak", "mixCount", "cabin"]) out[k] = Object.assign({}, DEFAULTS[k], s[k] || {});
   for (const k in DEFAULTS.mathStats) out.mathStats[k] = out.mathStats[k] || { ok: 0, ko: 0 };
   if (s.voiceURI && !s.voice) out.voice = "system:" + s.voiceURI;
   if (s.palier && (s.boost || 0) < 2) out.clock = { level: 1 };
@@ -1054,28 +1054,127 @@ function endSession() {
   const up = maybeLevelUp(); save();
   const gained = session.good;
   view(`${topbar()}
-    <div class="result"><div class="big">🎉</div><h1>Bravo!</h1>
+    <div class="result"><div class="zombres">${zombinette("happy")}</div><h1>Bravo!</h1>
       <div class="score">+${gained} <small>abonné${gained > 1 ? "s" : ""}</small></div>
       <p class="tagline">${gained >= session.total / 2 ? `${gained} sur ${session.total}` : "Tu as travaillé fort!"}</p>
       ${up ? `<div class="levelup">📚 Nouveaux mots débloqués!</div>` : ""}
       <div class="toast"><span class="ic">${sticker}</span><div><div class="tt">Nouveau collant</div><div class="tn">${S.stickers[sticker] > 1 ? `Tu l'as ${S.stickers[sticker]} fois!` : "Il est dans ton album!"}</div></div></div>
       ${daily && daily.complete ? `<div class="toast streak"><span class="ic">${daily.sticker || "⭐"}</span><div><div class="tt">Défi du jour réussi!</div><div class="tn">${daily.n} défi${daily.n > 1 ? "s" : ""} en tout${daily.sticker ? " · collant spécial!" : ""}</div></div></div>${weekHtml()}` : ""}
     </div>
+    <div class="cabinpick" id="cabinPick"></div>
     <button class="btn pink" id="home">🏠 Accueil</button>
     <button class="btn ghost small" id="album">Voir mes collants</button>`);
   confetti(60);
   chatter(session.kind, ["Bravo! Tu as gagné un nouveau collant!", ...(gained ? [String(gained), gained > 1 ? "nouveaux abonnés" : "nouvel abonné"] : ["Tu as travaillé fort!"]), ...(daily && daily.complete ? ["Défi du jour réussi!"] : [])]);
   $("#back").onclick = home; $("#home").onclick = home; $("#album").onclick = album;
+  setTimeout(() => { if ($("#cabinPick")) offerCabin(); }, 2600);
 }
 
+/* ---------- Zombinette et sa cabane (dessins SVG maison) ---------- */
+const OUT = "#2b1d3d";
+function zombinette(pose = "idle") {
+  const arms = pose === "happy"
+    ? `<path d="M28 76 L12 50" class="zl"/><path d="M72 76 L88 50" class="zl"/><circle cx="11" cy="46" r="9" fill="#f472b6" stroke="${OUT}" stroke-width="3"/><circle cx="89" cy="46" r="9" fill="#f472b6" stroke="${OUT}" stroke-width="3"/>`
+    : pose === "think"
+      ? `<path d="M28 78 L20 100" class="zl"/><path d="M72 78 L62 62 L56 58" class="zl"/>`
+      : `<path d="M28 78 L20 100" class="zl"/><path d="M72 76 L86 56" class="zl"/><path d="M86 56 l-4 -9 M86 56 l3 -9 M86 56 l8 -5" stroke="${OUT}" stroke-width="3" stroke-linecap="round"/>`;
+  const mouth = pose === "happy" ? `<path d="M41 50 Q50 61 59 50 Z" fill="#7f1d1d" stroke="${OUT}" stroke-width="2.5"/>`
+    : pose === "think" ? `<path d="M44 53 Q50 50 57 54" fill="none" stroke="${OUT}" stroke-width="3" stroke-linecap="round"/>`
+    : `<path d="M42 51 Q50 58 58 51" fill="none" stroke="${OUT}" stroke-width="3" stroke-linecap="round"/>`;
+  return `<svg class="zomb" viewBox="0 0 100 140">
+    <style>.zl{stroke:#86d49a;stroke-width:9;stroke-linecap:round;fill:none}</style>
+    <rect x="37" y="104" width="9" height="24" rx="4" fill="#86d49a" stroke="${OUT}" stroke-width="3"/><rect x="54" y="104" width="9" height="24" rx="4" fill="#86d49a" stroke="${OUT}" stroke-width="3"/>
+    <path d="M33 130 h15 v-6 h-12 z M52 130 h15 l-3 -6 h-12 z" fill="#7c3aed" stroke="${OUT}" stroke-width="3" stroke-linejoin="round"/>
+    ${arms.replace(/class="zl"/g, `class="zl" style="stroke:${OUT};stroke-width:13"`)}${arms}
+    <path d="M34 66 L66 66 L76 108 L24 108 Z" fill="#ec4899" stroke="${OUT}" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M24 108 L76 108 L72 100 L28 100 Z" fill="#f9a8d4"/><path d="M50 74 l3 6 7 1 -5 5 1 7 -6 -3 -6 3 1 -7 -5 -5 7 -1 z" fill="#fde047" stroke="${OUT}" stroke-width="1.5"/>
+    <circle cx="22" cy="28" r="11" fill="#7c3aed" stroke="${OUT}" stroke-width="3"/><circle cx="78" cy="28" r="11" fill="#7c3aed" stroke="${OUT}" stroke-width="3"/>
+    <path d="M14 19 l8 5 -8 5 z M30 19 l-8 5 8 5 z" fill="#f472b6" stroke="${OUT}" stroke-width="1.5"/>
+    <circle cx="50" cy="40" r="25" fill="#9ae6a6" stroke="${OUT}" stroke-width="3"/>
+    <path d="M25 38 Q27 14 50 14 Q73 14 75 38 Q66 26 52 28 Q44 22 34 30 Q30 33 25 38 Z" fill="#7c3aed" stroke="${OUT}" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M60 30 l8 4 M62 28 l-2 6 M66 30 l-2 6" stroke="${OUT}" stroke-width="1.6"/>
+    <circle cx="41" cy="42" r="6" fill="#fff" stroke="${OUT}" stroke-width="2"/><circle cx="42" cy="43" r="3" fill="${OUT}"/>
+    <circle cx="59" cy="42" r="6" fill="#fff" stroke="${OUT}" stroke-width="2"/><circle cx="58" cy="43" r="3" fill="${OUT}"/>
+    <circle cx="35" cy="50" r="3.5" fill="#f9a8d4" opacity=".8"/><circle cx="65" cy="50" r="3.5" fill="#f9a8d4" opacity=".8"/>
+    ${mouth}${pose === "think" ? `<text x="78" y="20" font-size="18" font-weight="800" fill="#fde047" stroke="${OUT}" stroke-width="1">?</text>` : ""}
+  </svg>`;
+}
+const S_ = (d, f, extra = "") => `<path d="${d}" fill="${f}" stroke="${OUT}" stroke-width="2.5" stroke-linejoin="round" ${extra}/>`;
+const CABIN_ITEMS = [
+  ["guirlande", "la guirlande de lumières", `<path d="M20 22 Q110 48 200 22 Q290 48 380 22" fill="none" stroke="${OUT}" stroke-width="2"/>${[40, 80, 120, 160, 240, 280, 320, 360].map((x, k) => `<circle cx="${x}" cy="${33 + (k % 2) * 4}" r="5" fill="${["#fde047", "#f472b6", "#67e8f9", "#a3e635"][k % 4]}" stroke="${OUT}" stroke-width="1.5"/>`).join("")}`],
+  ["affiche", "l'affiche de K-pop", `<rect x="30" y="60" width="54" height="72" rx="4" fill="#fdf2f8" stroke="${OUT}" stroke-width="2.5"/><circle cx="57" cy="88" r="14" fill="#c084fc" stroke="${OUT}" stroke-width="2"/><path d="M40 122 h34" stroke="#ec4899" stroke-width="5" stroke-linecap="round"/><path d="M57 70 l3 6 6 1 -4 4 1 6 -6 -3 -6 3 1 -6 -4 -4 6 -1 z" fill="#fde047"/>`],
+  ["etagere", "l'étagère de livres", `<rect x="300" y="110" width="80" height="8" fill="#a16207" stroke="${OUT}" stroke-width="2.5"/>${[["#ef4444", 304, 22], ["#3b82f6", 316, 26], ["#22c55e", 328, 20], ["#f59e0b", 340, 24]].map(([c, x, h]) => `<rect x="${x}" y="${110 - h}" width="11" height="${h}" fill="${c}" stroke="${OUT}" stroke-width="2"/>`).join("")}<circle cx="366" cy="100" r="9" fill="#fde047" stroke="${OUT}" stroke-width="2"/>`],
+  ["miroir", "le miroir", `<ellipse cx="120" cy="100" rx="18" ry="26" fill="#bae6fd" stroke="#f472b6" stroke-width="6"/><path d="M112 88 l8 -8 M110 98 l14 -14" stroke="#fff" stroke-width="3" stroke-linecap="round"/>`],
+  ["chauvesouris", "les chauves-souris", [[150, 70], [180, 58], [212, 72]].map(([x, y]) => `<path d="M${x} ${y} q-8 -10 -18 -4 q6 2 6 8 q4 -4 12 -4 q8 0 12 4 q0 -6 6 -8 q-10 -6 -18 4z" fill="#4c1d95" stroke="${OUT}" stroke-width="1.5"/>`).join("")],
+  ["discoball", "la boule disco", `<path d="M200 0 v18" stroke="${OUT}" stroke-width="2"/><circle cx="200" cy="32" r="14" fill="#cbd5e1" stroke="${OUT}" stroke-width="2.5"/><path d="M186 32 h28 M200 18 v28 M190 22 q10 10 0 20 M210 22 q-10 10 0 20" stroke="#94a3b8" stroke-width="1.5" fill="none"/>`],
+  ["lunelampe", "la lampe lune", `<path d="M352 150 a14 14 0 1 1 0 -2 a10 10 0 1 0 0 2z" fill="#fde047" stroke="${OUT}" stroke-width="2"/>`],
+  ["lit", "le lit", `<rect x="10" y="196" width="110" height="40" rx="8" fill="#c084fc" stroke="${OUT}" stroke-width="2.5"/><rect x="10" y="170" width="16" height="70" rx="4" fill="#7c3aed" stroke="${OUT}" stroke-width="2.5"/><rect x="30" y="186" width="32" height="16" rx="7" fill="#fff" stroke="${OUT}" stroke-width="2"/><path d="M62 196 h58 v40 h-58z" fill="#f9a8d4" stroke="${OUT}" stroke-width="2.5"/>`],
+  ["tapis", "le tapis", `<ellipse cx="200" cy="262" rx="80" ry="18" fill="#f472b6" stroke="${OUT}" stroke-width="2.5"/><ellipse cx="200" cy="262" rx="58" ry="11" fill="none" stroke="#fde047" stroke-width="3"/>`],
+  ["plante", "la plante", `<path d="M360 290 l-6 -26 h28 l-6 26z" fill="#ea580c" stroke="${OUT}" stroke-width="2.5"/><path d="M368 264 q-18 -20 -6 -40 q10 16 6 40 q4 -26 22 -34 q0 22 -22 34" fill="#22c55e" stroke="${OUT}" stroke-width="2"/>`],
+  ["pouf", "le pouf", `<path d="M282 288 q-8 -30 26 -36 q34 6 26 36z" fill="#67e8f9" stroke="${OUT}" stroke-width="2.5"/>`],
+  ["ringlight", "la lumière de YouTubeuse", `<g transform="translate(44 0)"><path d="M258 286 l12 -60 l12 60 M270 226 v-12" stroke="${OUT}" stroke-width="3" fill="none"/><circle cx="270" cy="196" r="20" fill="none" stroke="#fef9c3" stroke-width="7"/><circle cx="270" cy="196" r="20" fill="none" stroke="${OUT}" stroke-width="1.5"/></g>`],
+  ["camera", "la caméra", `<path d="M132 288 l10 -44 l10 44" stroke="${OUT}" stroke-width="3" fill="none"/><rect x="128" y="226" width="30" height="20" rx="4" fill="#334155" stroke="${OUT}" stroke-width="2.5"/><circle cx="150" cy="236" r="6" fill="#94a3b8" stroke="${OUT}" stroke-width="2"/><circle cx="133" cy="231" r="2.5" fill="#ef4444"/>`],
+  ["guitare", "la guitare", `<path d="M96 232 l22 -40" stroke="#a16207" stroke-width="5"/><circle cx="92" cy="248" r="14" fill="#f97316" stroke="${OUT}" stroke-width="2.5"/><circle cx="100" cy="236" r="10" fill="#f97316" stroke="${OUT}" stroke-width="2.5"/><circle cx="94" cy="245" r="4" fill="${OUT}"/>`],
+  ["toutou", "le toutou", `<circle cx="72" cy="270" r="14" fill="#d6a46c" stroke="${OUT}" stroke-width="2.5"/><circle cx="72" cy="250" r="11" fill="#d6a46c" stroke="${OUT}" stroke-width="2.5"/><circle cx="63" cy="241" r="4.5" fill="#d6a46c" stroke="${OUT}" stroke-width="2"/><circle cx="81" cy="241" r="4.5" fill="#d6a46c" stroke="${OUT}" stroke-width="2"/><circle cx="68" cy="249" r="1.8" fill="${OUT}"/><circle cx="76" cy="249" r="1.8" fill="${OUT}"/>`],
+  ["citrouille", "la citrouille", `<ellipse cx="236" cy="278" rx="16" ry="12" fill="#f97316" stroke="${OUT}" stroke-width="2.5"/><path d="M236 266 v-6" stroke="#15803d" stroke-width="4"/><path d="M229 276 l3 -4 3 4z M239 276 l3 -4 3 4z M230 282 q6 4 12 0" fill="${OUT}" stroke="${OUT}" stroke-width="1.5"/>`],
+  ["micro", "le micro", `<path d="M330 290 h20 M340 290 v-50" stroke="${OUT}" stroke-width="3"/><rect x="334" y="222" width="12" height="20" rx="6" fill="#64748b" stroke="${OUT}" stroke-width="2.5"/>`],
+  ["trophee", "le trophée étoile", `<path d="M314 100 h20 l-4 -10 h-12z" fill="#fbbf24" stroke="${OUT}" stroke-width="2"/><path d="M324 66 l4 9 10 1 -7 7 2 10 -9 -5 -9 5 2 -10 -7 -7 10 -1z" fill="#fde047" stroke="${OUT}" stroke-width="2"/>`],
+  ["arcenciel", "l'affiche arc-en-ciel", `<rect x="96" y="40" width="44" height="34" rx="3" fill="#fff" stroke="${OUT}" stroke-width="2.5"/>${["#ef4444", "#f59e0b", "#22c55e", "#3b82f6"].map((c, k) => `<path d="M${102 + k * 3} 70 a${16 - k * 3} ${16 - k * 3} 0 0 1 ${32 - k * 6} 0" fill="none" stroke="${c}" stroke-width="3"/>`).join("")}`],
+  ["lampe", "la lampe", `<g transform="translate(-14 0)"><path d="M30 290 h16 M38 290 v-40" stroke="${OUT}" stroke-width="3"/><path d="M26 252 l6 -20 h12 l6 20z" fill="#fde68a" stroke="${OUT}" stroke-width="2.5"/></g>`]
+];
+const CABIN_VISITORS = [
+  ["chat", "un chat noir", `<path d="M166 286 q-4 -22 14 -26 l-2 -8 6 5 6 -5 -1 8 q16 6 10 26z" fill="#1f2937" stroke="#64748b" stroke-width="2"/><circle cx="180" cy="266" r="1.6" fill="#fde047"/><circle cx="188" cy="266" r="1.6" fill="#fde047"/><path d="M196 284 q14 0 10 -14" stroke="#1f2937" stroke-width="4" fill="none" stroke-linecap="round"/>`],
+  ["fantome", "un petit fantôme", `<path d="M84 150 q0 -28 22 -28 q22 0 22 28 v22 l-6 -6 -5 6 -6 -6 -5 6 -6 -6 -5 6 -5 -6 -6 6z" fill="#f8fafc" stroke="${OUT}" stroke-width="2.5" opacity=".9"/><circle cx="99" cy="146" r="3" fill="${OUT}"/><circle cx="113" cy="146" r="3" fill="${OUT}"/>`],
+  ["hibou", "un hibou", `<ellipse cx="280" cy="92" rx="14" ry="17" fill="#a16207" stroke="${OUT}" stroke-width="2.5"/><circle cx="274" cy="88" r="5" fill="#fff" stroke="${OUT}" stroke-width="1.5"/><circle cx="286" cy="88" r="5" fill="#fff" stroke="${OUT}" stroke-width="1.5"/><circle cx="274" cy="88" r="2" fill="${OUT}"/><circle cx="286" cy="88" r="2" fill="${OUT}"/><path d="M278 95 l2 4 2 -4z" fill="#f59e0b"/>`]
+];
+function cabinSvg(withZomb = true) {
+  const own = S.cabin.items, vis = S.cabin.visitors;
+  return `<svg class="cabin" viewBox="0 0 400 300">
+    <rect width="400" height="210" fill="#3b2a5c"/><path d="M0 0 h400 v210 h-400z" fill="url(#wallp)"/>
+    <defs><pattern id="wallp" width="28" height="28" patternUnits="userSpaceOnUse"><circle cx="14" cy="14" r="2" fill="#5b4387"/></pattern></defs>
+    <rect y="210" width="400" height="90" fill="#7c5a3a"/>${[230, 252, 276].map(y => `<path d="M0 ${y} h400" stroke="#6b4b2e" stroke-width="2"/>`).join("")}
+    <rect x="166" y="54" width="70" height="60" rx="6" fill="#1e1b4b" stroke="${OUT}" stroke-width="3"/><path d="M201 54 v60 M166 84 h70" stroke="${OUT}" stroke-width="3"/><circle cx="220" cy="70" r="7" fill="#fde047"/><circle cx="180" cy="100" r="1.5" fill="#fff"/><circle cx="214" cy="104" r="1.2" fill="#fff"/>
+    ${CABIN_ITEMS.filter(([id]) => own.includes(id)).map(x => x[2]).join("")}
+    ${withZomb ? `<g transform="translate(176 150) scale(.95)">${zombinette("idle").replace(/^<svg[^>]*>|<\/svg>$/g, "")}</g>` : ""}
+    ${CABIN_VISITORS.filter(([id]) => vis.includes(id)).map(x => x[2]).join("")}
+  </svg>`;
+}
+function itemThumb(id) { return `<svg class="thumbobj" viewBox="0 0 400 300"><g>${CABIN_ITEMS.find(x => x[0] === id)[2]}</g></svg>`; }
+function fitThumbs() { app.querySelectorAll(".thumbobj").forEach(sv => { const b = sv.querySelector("g").getBBox(), p = 8; sv.setAttribute("viewBox", `${b.x - p} ${b.y - p} ${b.width + 2 * p} ${b.height + 2 * p}`); }); }
+
+function cabinScreen() {
+  const n = S.cabin.items.length;
+  view(`<div class="section"><h1>La cabane de Zombinette</h1>
+    <div class="cabinwrap">${cabinSvg()}</div>
+    <p class="tagline">${n ? `${n} objet${n > 1 ? "s" : ""} sur ${CABIN_ITEMS.length}` : "La cabane est vide… Finis une partie pour choisir un objet!"}</p></div>`, "cabin");
+}
+function offerCabin(after) {
+  const left = CABIN_ITEMS.filter(([id]) => !S.cabin.items.includes(id));
+  if (!left.length) return false;
+  const opts = shuffle(left).slice(0, 3);
+  const box = $("#cabinPick");
+  box.innerHTML = `<h2>Choisis un objet pour la cabane!</h2><div class="choices cabinopts">${opts.map(([id, name]) => `<button class="choice" data-c="${id}">${itemThumb(id)}<small>${name}</small></button>`).join("")}</div>`;
+  fitThumbs();
+  box.querySelectorAll("[data-c]").forEach(b => b.onclick = () => {
+    const it = CABIN_ITEMS.find(x => x[0] === b.dataset.c); S.cabin.items.push(it[0]);
+    const vleft = CABIN_VISITORS.filter(([id]) => !S.cabin.visitors.includes(id)), visit = vleft.length && Math.random() < 0.17 ? pick(vleft) : null;
+    if (visit) S.cabin.visitors.push(visit[0]);
+    save();
+    box.innerHTML = `<div class="cabinwrap small">${cabinSvg()}</div>${visit ? `<div class="toast streak"><span class="ic">✨</span><div><div class="tt">Surprise!</div><div class="tn">${cap(visit[1])} vient visiter la cabane!</div></div></div>` : ""}`;
+    say([it[1], ...(visit ? [{ pause: 400 }, "Surprise! Quelqu'un vient visiter la cabane!"] : [])]);
+    if (after) after();
+  });
+  say(["Choisis un objet pour la cabane!"]);
+  return true;
+}
 /* ---------- écrans ---------- */
 function view(html, tab) {
   app.innerHTML = html + (tab ? tabbar(tab) : "");
   app.classList.toggle("immersive", !tab);
-  if (tab) app.querySelectorAll(".tabbar button").forEach(b => b.onclick = () => ({ home, album, style: styleScreen, parent: pinScreen })[b.dataset.tab]());
+  if (tab) app.querySelectorAll(".tabbar button").forEach(b => b.onclick = () => ({ home, album, cabin: cabinScreen, style: styleScreen, parent: pinScreen })[b.dataset.tab]());
 }
 function tabbar(active) {
-  const tabs = [["home", "🏠", "Accueil"], ["album", "🌟", "Collants"], ["style", "🎨", "Style"], ["parent", "👤", "Parent"]];
+  const tabs = [["home", "🏠", "Accueil"], ["cabin", "🛖", "Cabane"], ["album", "🌟", "Collants"], ["style", "🎨", "Style"], ["parent", "👤", "Parent"]];
   return `<nav class="tabbar">${tabs.map(([id, ic, lb]) => `<button data-tab="${id}" class="${active === id ? "on" : ""}">${ic}<small>${lb}</small></button>`).join("")}</nav>`;
 }
 function channelHeader() {
@@ -1345,7 +1444,7 @@ function parent() {
     msg.textContent = `Prêt : ${urls.length} sons de ${S.voice === "sylvie" ? "Sylvie" : S.voice} disponibles hors ligne.`;
   };
   $("#pin").onclick = () => { const p = prompt("Nouveau NIP (4 chiffres)"); if (p && /^\d{4}$/.test(p)) { S.pin = p; save(); alert("NIP changé"); } };
-  $("#reset").onclick = () => { if (confirm("Effacer tous les progrès, abonnés et collants ?")) { S.progress = {}; S.stars = 0; S.stickers = {}; S.sessions = 0; S.palier = DEFAULTS.palier; S.daily = null; S.days = []; for (const k of ["mathStats", "plays", "mixCount"]) S[k] = JSON.parse(JSON.stringify(DEFAULTS[k])); save(); parent(); } };
+  $("#reset").onclick = () => { if (confirm("Effacer tous les progrès, abonnés et collants ?")) { S.progress = {}; S.stars = 0; S.stickers = {}; S.sessions = 0; S.palier = DEFAULTS.palier; S.daily = null; S.days = []; S.cabin = { items: [], visitors: [] }; for (const k of ["mathStats", "plays", "mixCount"]) S[k] = JSON.parse(JSON.stringify(DEFAULTS[k])); save(); parent(); } };
 }
 
 /* ---------- démarrage ---------- */

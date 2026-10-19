@@ -298,3 +298,11 @@ button.daily { display: block; width: calc(100% - 32px); text-align: left; color
 .mixpaint { display: flex; align-items: center; gap: 10px; font-size: 2rem; font-weight: 800; }
 .mixpaint .paint { width: 64px; height: 64px; }
 .answer .paint { width: 30px; height: 30px; }
+.zomb { width: 100%; height: 100%; }
+.zombres { width: 110px; height: 150px; margin: 0 auto; animation: pop .5s ease; }
+.cabinwrap { border-radius: 16px; overflow: hidden; border: 3px solid var(--line); max-width: 560px; margin: 0 auto; }
+.cabinwrap.small { max-width: 380px; margin-bottom: 10px; }
+.cabin { display: block; width: 100%; height: auto; }
+.cabinpick h2 { text-align: center; font-size: 1.15rem; margin: 14px 0 10px; }
+.cabinopts .choice { aspect-ratio: 1; padding: 8px; background: #3b2a5c; }
+.thumbobj { width: 100%; height: 70%; }

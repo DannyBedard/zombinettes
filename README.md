@@ -43,6 +43,10 @@ vivant ou pas, où vit l'animal, quoi mettre selon la météo, les saisons, avan
 les émotions. Banques de questions dans `app.js` (VIVANT, ANIMAUX, METEO, SCENES, AVANT, MELANGES, SITUATIONS) ; une
 question de Découverte s'ajoute au défi du jour (11 questions).
 
+Zombinette et sa cabane : personnage et cabane dessinés en SVG dans `app.js` (zombinette(pose), CABIN_ITEMS,
+CABIN_VISITORS), sans image externe. À la fin de chaque partie, l'enfant choisit 1 objet sur 3 pour la cabane (20
+objets) ; une fois sur 6, une visite surprise non annoncée s'ajoute (chat noir, fantôme, hibou). Onglet 🛖 Cabane.
+
 ## Comment ça apprend
 
 Chaque mot a une boîte (0 à 3). Un mot réussi monte d'une boîte, un mot raté retombe à 0.
