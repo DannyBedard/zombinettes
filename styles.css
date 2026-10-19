@@ -322,3 +322,8 @@ button.daily { display: block; width: calc(100% - 32px); text-align: left; color
 .readpick small { font-size: 1.05rem; color: var(--ink); }
 .geo { width: 78%; height: 78%; }
 .answer .geo { width: 2.4rem; height: 2.4rem; vertical-align: middle; }
+.prognote { font-size: 1.1rem; margin: 4px 0 10px; }
+.progs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.prog { background: var(--surface); border-radius: 14px; padding: 10px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.prog span { font-size: 1.8rem; } .prog b { font-size: 1.6rem; } .prog small { color: var(--muted); font-size: .75rem; }
+.kwords { margin-top: 10px; }

@@ -47,6 +47,15 @@ Zombinette et sa cabane : personnage et cabane dessinés en SVG dans `app.js` (z
 CABIN_VISITORS), sans image externe. À la fin de chaque partie, l'enfant choisit 1 objet sur 3 pour la cabane (33
 objets : 20 pour la chambre, 13 pour le studio de YouTubeuse, STUDIO_ITEMS) ; une fois sur 6, une visite surprise non annoncée s'ajoute (chat noir, fantôme, hibou). Onglet 🛖 Cabane.
 
+Rétroaction : en dictée, après une erreur, le jeu explique la cause quand il la reconnaît (« Ici, c'est le son de gâteau,
+qui s'écrit e-a-u », lettre muette à la fin, lettre double, accent ; table GRAPHS). Page 🔤 Les sons : les lettres qui
+font un son ensemble (eau/au, an/en, in/ain/ein…) avec deux mots exemples à toucher pour les entendre.
+
+Lire demande au départ « des mots ou des phrases » (READ_SENTENCES : une phrase, 3 images). Géométrie en maths : Les
+formes (carré, rectangle, triangle, cercle, losange) et Les solides (cube, sphère, cylindre, cône, pyramide, prisme),
+dessinés en SVG. Progrès : à la fin d'une partie, « Tu connais maintenant N mots » (mots en boîte 2 ou plus) ou le total
+de bonnes réponses dans ces jeux ; page Mes progrès en haut de l'onglet Collants.
+
 ## Comment ça apprend
 
 Chaque mot a une boîte (0 à 3). Un mot réussi monte d'une boîte, un mot raté retombe à 0.

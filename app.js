@@ -1126,16 +1126,24 @@ function weekHtml() {
   return `<div class="week">${["L", "M", "M", "J", "V", "S", "D"].map((l, k) => { const day = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + k), ds = dayStr(day), done = S.days.includes(ds);
     return `<span class="${done ? "done" : ""} ${ds === dayStr(now) ? "today" : ""}"><i>${done ? "⭐" : ""}</i><small>${l}</small></span>`; }).join("")}</div>`;
 }
+function knownWords() { return POOL.concat(weeklyWords()).filter(w => S.progress[w.key] && S.progress[w.key].box >= 2); }
+function okTotal(kinds) { return kinds.reduce((t, k) => t + (S.mathStats[k] ? S.mathStats[k].ok : 0), 0); }
+function progressNote() {
+  if (session.items.some(x => x.kind === "word")) { const n = knownWords().length; if (n) return { html: `📚 Tu connais maintenant <b>${n}</b> mot${n > 1 ? "s" : ""}!`, say: ["Tu connais maintenant", ...numberParts(n), "mots!"] }; }
+  const kinds = [...new Set(session.items.map(x => x.kind))].filter(k => k !== "word"), n = okTotal(kinds);
+  return n ? { html: `⭐ <b>${n}</b> bonne${n > 1 ? "s" : ""} réponse${n > 1 ? "s" : ""} dans ces jeux depuis le début!`, say: ["Tu as maintenant", ...numberParts(n), "bonnes réponses!"] } : null;
+}
 function endSession() {
   const missing = STICKERS.filter(x => !S.stickers[x]), sticker = missing.length && Math.random() < 0.8 ? pick(missing) : pick(STICKERS);
   S.stickers[sticker] = (S.stickers[sticker] || 0) + 1;
   const daily = markDaily(session.kind);
   if (S.cabin.items.length < ALL_ITEMS().length) S.cabin.pending = Math.min(3, (S.cabin.pending || 0) + 1);
   const up = maybeLevelUp(); save();
-  const gained = session.good;
+  const gained = session.good, note = progressNote();
   view(`${topbar()}
     <div class="result"><div class="zombres">${zombinette("happy")}</div><h1>Bravo!</h1>
       <div class="score">+${gained} <small>abonné${gained > 1 ? "s" : ""}</small></div>
+      ${note ? `<p class="prognote">${note.html}</p>` : ""}
       <p class="tagline">${gained >= session.total / 2 ? `${gained} sur ${session.total}` : "Tu as travaillé fort!"}</p>
       ${up ? `<div class="levelup">📚 Nouveaux mots débloqués!</div>` : ""}
       <div class="toast"><span class="ic">${sticker}</span><div><div class="tt">Nouveau collant</div><div class="tn">${S.stickers[sticker] > 1 ? `Tu l'as ${S.stickers[sticker]} fois!` : "Il est dans ton album!"}</div></div></div>
@@ -1145,7 +1153,7 @@ function endSession() {
     <button class="btn pink" id="home">🏠 Accueil</button>
     <button class="btn ghost small" id="album">Voir mes collants</button>`);
   confetti(60);
-  chatter(session.kind, ["Bravo! Tu as gagné un nouveau collant!", ...(gained ? [String(gained), gained > 1 ? "nouveaux abonnés" : "nouvel abonné"] : ["Tu as travaillé fort!"]), ...(daily && daily.complete ? ["Défi du jour réussi!"] : []), ...(offerCabin($("#cabinPick"), true) ? [{ pause: 300 }, "Choisis un objet pour la cabane!"] : [])]);
+  chatter(session.kind, ["Bravo! Tu as gagné un nouveau collant!", ...(gained ? [String(gained), gained > 1 ? "nouveaux abonnés" : "nouvel abonné"] : ["Tu as travaillé fort!"]), ...(note ? note.say : []), ...(daily && daily.complete ? ["Défi du jour réussi!"] : []), ...(offerCabin($("#cabinPick"), true) ? [{ pause: 300 }, "Choisis un objet pour la cabane!"] : [])]);
   $("#back").onclick = home; $("#home").onclick = home; $("#album").onclick = album;
 }
 
@@ -1319,7 +1327,12 @@ function home() {
 }
 function album() {
   const unlocked = Object.keys(S.stickers).length;
-  view(`<div class="section"><h1>Mes collants</h1>
+  const kw = knownWords(), prog = [["📚", "mots que tu connais", kw.length], ["🔢", "bonnes réponses en maths", okTotal(["number", "calc", "compare", "money", "clock"])], ["🎵", "bonnes réponses en musique", okTotal(["music", "keys", "figures"])],
+    ["✏️", "tracés réussis", okTotal(["trace"])], ["🌍", "bonnes réponses en découverte et géométrie", okTotal(["quiz"])], ["⭐", "défis du jour", S.days.length]];
+  view(`<div class="section"><h1>Mes progrès</h1>
+    <div class="progs">${prog.map(([ic, lb, n]) => `<div class="prog"><span>${ic}</span><b>${n}</b><small>${lb}</small></div>`).join("")}</div>
+    ${kw.length ? `<div class="kwords">${kw.slice(-24).map(w => `<span class="pill">${esc(w.mot)}</span>`).join("")}</div>` : ""}
+    <h1 style="margin-top:22px">Mes collants</h1>
     <div class="achv-head"><span class="muted">Collants débloqués</span><b>${unlocked} / ${STICKERS.length}</b></div>
     <div class="achv-bar"><div style="width:${Math.round(unlocked / STICKERS.length * 100)}%"></div></div>
     <div class="album">${STICKERS.map(s => `<div class="sticker ${S.stickers[s] ? "" : "locked"}">${S.stickers[s] ? s : "🔒"}${S.stickers[s] > 1 ? `<span class="count">×${S.stickers[s]}</span>` : ""}</div>`).join("")}</div>
