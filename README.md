@@ -43,7 +43,8 @@ vivant ou pas, où vit l'animal, quoi mettre selon la météo, les saisons, avan
 les émotions. Banques de questions dans `app.js` (VIVANT, ANIMAUX, METEO, SCENES, AVANT, MELANGES, SITUATIONS) ; une
 question de Découverte s'ajoute au défi du jour (11 questions). À l'accueil, ces jeux sont sous « Autre », sans bouton Mélange.
 
-Zombinette et sa cabane : personnage et cabane dessinés en SVG dans `app.js` (zombinette(pose), CABIN_ITEMS,
+Onglet 🧟‍♀️ Zombinette : personnaliser la Zombinette (coiffure couettes, court ou long et couleur des cheveux ; couleur
+et dessin de la robe ; couleur des souliers et des mains, S.zomb), puis la chambre et le studio de sa cabane. Zombinette et sa cabane : personnage et cabane dessinés en SVG dans `app.js` (zombinette(pose), CABIN_ITEMS,
 CABIN_VISITORS), sans image externe. À la fin de chaque partie, l'enfant choisit 1 objet sur 3 pour la cabane (33
 objets : 20 pour la chambre, 13 pour le studio de YouTubeuse, STUDIO_ITEMS) ; une fois sur 6, une visite surprise non annoncée s'ajoute (chat noir, fantôme, hibou). Onglet 🛖 Cabane.
 

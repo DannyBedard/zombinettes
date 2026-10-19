@@ -8,7 +8,7 @@ const DEFAULTS = {
   math: { numMax: 199, firstMax: 20, addMax: 10, sub: true, visual: true, length: 8 },
   mathStats: { quiz: { ok: 0, ko: 0 }, number: { ok: 0, ko: 0 }, calc: { ok: 0, ko: 0 }, trace: { ok: 0, ko: 0 }, read: { ok: 0, ko: 0 }, sound: { ok: 0, ko: 0 }, syllab: { ok: 0, ko: 0 }, phrase: { ok: 0, ko: 0 }, money: { ok: 0, ko: 0 }, keys: { ok: 0, ko: 0 }, figures: { ok: 0, ko: 0 }, compare: { ok: 0, ko: 0 }, clock: { ok: 0, ko: 0 }, music: { ok: 0, ko: 0 } },
   trace: { lower: true, upper: true, digits: true, nums: true, cursive: true, cwords: true, length: 6 },
-  read: { level: 2 }, sound: { rime: true, debut: true }, phrase: { max: 4 }, money: { level: 1 }, keys: { level: 3 }, daily: null, days: [], cabin: { items: [], visitors: [] }, streak: { n: 0, last: "" }, mixCount: {}, cmp: { max: 1000 }, clock: { level: 1 }, music: { pitch: true, rhythm: true, instr: true, level: 2 },
+  read: { level: 2 }, sound: { rime: true, debut: true }, phrase: { max: 4 }, money: { level: 1 }, keys: { level: 3 }, daily: null, days: [], cabin: { items: [], visitors: [] }, zomb: null, streak: { n: 0, last: "" }, mixCount: {}, cmp: { max: 1000 }, clock: { level: 1 }, music: { pitch: true, rhythm: true, instr: true, level: 2 },
   plays: { word: 0, read: 0, sound: 0, syllab: 0, phrase: 0, money: 0, keys: 0, figures: 0, number: 0, calc: 0, compare: 0, clock: 0, trace: 0, music: 0 },
   boost: 5
 };
@@ -1180,24 +1180,46 @@ function endSession() {
 
 /* ---------- Zombinette et sa cabane (dessins SVG maison) ---------- */
 const OUT = "#2b1d3d";
+const ZOPT = {
+  hair: [["#7c3aed", "violet"], ["#f472b6", "rose"], ["#3b82f6", "bleu"], ["#22c55e", "vert"], ["#ea580c", "roux"], ["#facc15", "blond"], ["#1f2937", "noir"]],
+  style: [["couettes", "🎀", "Couettes"], ["court", "💇‍♀️", "Court"], ["long", "👱‍♀️", "Long"]],
+  dress: [["#ec4899", "rose"], ["#8b5cf6", "violet"], ["#3b82f6", "bleu"], ["#22c55e", "vert"], ["#facc15", "jaune"], ["#ef4444", "rouge"], ["#1f2937", "noir"]],
+  motif: [["etoile", "⭐"], ["coeur", "❤️"], ["eclair", "⚡"], ["note", "🎵"], ["crane", "💀"], ["aucun", "⬜"]],
+  shoes: [["#7c3aed", "violet"], ["#f472b6", "rose"], ["#ef4444", "rouge"], ["#3b82f6", "bleu"], ["#1f2937", "noir"], ["#f8fafc", "blanc"]],
+  hands: [["#86d49a", "peau"], ["#f472b6", "rose"], ["#8b5cf6", "violet"], ["#facc15", "jaune"], ["#f8fafc", "blanc"], ["#1f2937", "noir"]]
+};
+const ZDEF = { hair: "#7c3aed", style: "couettes", dress: "#ec4899", motif: "etoile", shoes: "#7c3aed", hands: "#86d49a" };
+const MOTIFS = {
+  etoile: `<path d="M50 74 l3 6 7 1 -5 5 1 7 -6 -3 -6 3 1 -7 -5 -5 7 -1 z" fill="#fde047" stroke="${OUT}" stroke-width="1.5"/>`,
+  coeur: `<path d="M50 92 l-8 -8 a5 5 0 0 1 8 -6 a5 5 0 0 1 8 6 z" fill="#ef4444" stroke="${OUT}" stroke-width="1.5"/>`,
+  eclair: `<path d="M54 72 l-10 13 h6 l-4 12 l12 -15 h-6 z" fill="#fde047" stroke="${OUT}" stroke-width="1.5" stroke-linejoin="round"/>`,
+  note: `<ellipse cx="46" cy="91" rx="5" ry="4" fill="${OUT}"/><path d="M50 91 v-17 l7 3" stroke="${OUT}" stroke-width="2.5" fill="none" stroke-linecap="round"/>`,
+  crane: `<circle cx="50" cy="83" r="8" fill="#f8fafc" stroke="${OUT}" stroke-width="1.5"/><circle cx="47" cy="82" r="2" fill="${OUT}"/><circle cx="53" cy="82" r="2" fill="${OUT}"/><path d="M47 89 h6" stroke="${OUT}" stroke-width="1.5"/>`,
+  aucun: ""
+};
 function zombinette(pose = "idle") {
-  const arm = d => `<path d="${d}" class="zarm-o"/><path d="${d}" class="zarm"/>`, pom = (x, y) => `<circle cx="${x}" cy="${y}" r="9" fill="#f472b6" stroke="${OUT}" stroke-width="3"/>`;
+  const z = Object.assign({}, ZDEF, S.zomb || {});
+  const arm = d => `<path d="${d}" class="zarm-o"/><path d="${d}" class="zarm"/>`, hand = (x, y) => `<circle cx="${x}" cy="${y}" r="5.5" fill="${z.hands}" stroke="${OUT}" stroke-width="2.5"/>`;
+  const pom = (x, y) => `<circle cx="${x}" cy="${y}" r="9" fill="${z.hands === ZDEF.hands ? "#f472b6" : z.hands}" stroke="${OUT}" stroke-width="3"/>`;
   const arms = pose === "happy" ? arm("M28 76 L12 50") + arm("M72 76 L88 50") + pom(11, 46) + pom(89, 46)
-    : pose === "think" ? arm("M28 78 L20 100") + arm("M72 78 L62 62 L56 58")
-    : arm("M28 78 L20 100") + arm("M72 76 L86 56") + `<path d="M86 56 l-4 -9 M86 56 l3 -9 M86 56 l8 -5" stroke="${OUT}" stroke-width="3" stroke-linecap="round"/>`;
+    : pose === "think" ? arm("M28 78 L20 100") + arm("M72 78 L62 62 L56 58") + hand(20, 100) + hand(56, 58)
+    : arm("M28 78 L20 100") + arm("M72 76 L86 56") + hand(20, 100) + hand(86, 56);
   const mouth = pose === "happy" ? `<path d="M41 50 Q50 61 59 50 Z" fill="#7f1d1d" stroke="${OUT}" stroke-width="2.5"/>`
     : pose === "think" ? `<path d="M44 53 Q50 50 57 54" fill="none" stroke="${OUT}" stroke-width="3" stroke-linecap="round"/>`
     : `<path d="M42 51 Q50 58 58 51" fill="none" stroke="${OUT}" stroke-width="3" stroke-linecap="round"/>`;
+  const hairBack = z.style === "long" ? `<path d="M24 40 Q22 12 50 12 Q78 12 76 40 L80 76 Q68 82 62 68 L38 68 Q32 82 20 76 Z" fill="${z.hair}" stroke="${OUT}" stroke-width="3" stroke-linejoin="round"/>`
+    : z.style === "court" ? `<path d="M23 52 Q16 14 50 12 Q84 14 77 52 Q71 58 66 52 L66 40 L34 40 L34 52 Q29 58 23 52 Z" fill="${z.hair}" stroke="${OUT}" stroke-width="3" stroke-linejoin="round"/>` : "";
+  const tails = z.style === "couettes" ? `<circle cx="22" cy="28" r="11" fill="${z.hair}" stroke="${OUT}" stroke-width="3"/><circle cx="78" cy="28" r="11" fill="${z.hair}" stroke="${OUT}" stroke-width="3"/>
+    <path d="M14 19 l8 5 -8 5 z M30 19 l-8 5 8 5 z" fill="#f472b6" stroke="${OUT}" stroke-width="1.5"/>` : "";
   return `<svg class="zomb" viewBox="0 0 100 140">
     <rect x="37" y="104" width="9" height="24" rx="4" fill="#86d49a" stroke="${OUT}" stroke-width="3"/><rect x="54" y="104" width="9" height="24" rx="4" fill="#86d49a" stroke="${OUT}" stroke-width="3"/>
-    <path d="M33 130 h15 v-6 h-12 z M52 130 h15 l-3 -6 h-12 z" fill="#7c3aed" stroke="${OUT}" stroke-width="3" stroke-linejoin="round"/>
-    ${arms}
-    <path d="M34 66 L66 66 L76 108 L24 108 Z" fill="#ec4899" stroke="${OUT}" stroke-width="3" stroke-linejoin="round"/>
-    <path d="M24 108 L76 108 L72 100 L28 100 Z" fill="#f9a8d4"/><path d="M50 74 l3 6 7 1 -5 5 1 7 -6 -3 -6 3 1 -7 -5 -5 7 -1 z" fill="#fde047" stroke="${OUT}" stroke-width="1.5"/>
-    <circle cx="22" cy="28" r="11" fill="#7c3aed" stroke="${OUT}" stroke-width="3"/><circle cx="78" cy="28" r="11" fill="#7c3aed" stroke="${OUT}" stroke-width="3"/>
-    <path d="M14 19 l8 5 -8 5 z M30 19 l-8 5 8 5 z" fill="#f472b6" stroke="${OUT}" stroke-width="1.5"/>
+    <path d="M33 130 h15 v-6 h-12 z M52 130 h15 l-3 -6 h-12 z" fill="${z.shoes}" stroke="${OUT}" stroke-width="3" stroke-linejoin="round"/>
+    ${hairBack}${arms}
+    <path d="M34 66 L66 66 L76 108 L24 108 Z" fill="${z.dress}" stroke="${OUT}" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M24 108 L76 108 L72 100 L28 100 Z" fill="${shade(z.dress, 255, 0.45)}"/>${MOTIFS[z.motif] || ""}
+    ${tails}
     <circle cx="50" cy="40" r="25" fill="#9ae6a6" stroke="${OUT}" stroke-width="3"/>
-    <path d="M25 38 Q27 14 50 14 Q73 14 75 38 Q66 26 52 28 Q44 22 34 30 Q30 33 25 38 Z" fill="#7c3aed" stroke="${OUT}" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M25 38 Q27 14 50 14 Q73 14 75 38 Q66 26 52 28 Q44 22 34 30 Q30 33 25 38 Z" fill="${z.hair}" stroke="${OUT}" stroke-width="3" stroke-linejoin="round"/>
     <path d="M60 30 l8 4 M62 28 l-2 6 M66 30 l-2 6" stroke="${OUT}" stroke-width="1.6"/>
     <circle cx="41" cy="42" r="6" fill="#fff" stroke="${OUT}" stroke-width="2"/><circle cx="42" cy="43" r="3" fill="${OUT}"/>
     <circle cx="59" cy="42" r="6" fill="#fff" stroke="${OUT}" stroke-width="2"/><circle cx="58" cy="43" r="3" fill="${OUT}"/>
@@ -1275,16 +1297,34 @@ function cabinSvg(withZomb = true, room = "chambre") {
 function itemThumb(id) { return `<svg class="thumbobj" viewBox="0 0 400 300"><g>${ALL_ITEMS().find(x => x[0] === id)[2]}</g></svg>`; }
 function fitThumbs() { app.querySelectorAll(".thumbobj").forEach(sv => { const b = sv.querySelector("g").getBBox(), p = 8; sv.setAttribute("viewBox", `${b.x - p} ${b.y - p} ${b.width + 2 * p} ${b.height + 2 * p}`); }); }
 
-let cabinRoom = "chambre";
+let cabinRoom = "zomb";
 function cabinScreen() {
   const n = S.cabin.items.length, total = ALL_ITEMS().length;
-  view(`<div class="section"><h1>La cabane de Zombinette</h1>
-    <div class="row" style="justify-content:center">${[["chambre", "🛏️ La chambre"], ["studio", "🎥 Le studio"]].map(([id, lb]) => `<button class="pill ${cabinRoom === id ? "on" : ""}" data-room="${id}">${lb}</button>`).join("")}</div>
-    ${S.cabin.pending && S.cabin.items.length < ALL_ITEMS().length ? `<div class="cabinpick" id="cabinPickTab"></div>` : ""}
+  if (S.cabin.pending && n < total && cabinRoom === "zomb") cabinRoom = "chambre";
+  const tabs = `<div class="row" style="justify-content:center">${[["zomb", "👗 Zombinette"], ["chambre", "🛏️ La chambre"], ["studio", "🎥 Le studio"]].map(([id, lb]) => `<button class="pill ${cabinRoom === id ? "on" : ""}" data-room="${id}">${lb}</button>`).join("")}</div>`;
+  if (cabinRoom === "zomb") return zombEditor(tabs);
+  view(`<div class="section"><h1>Zombinette</h1>${tabs}
+    ${S.cabin.pending && n < total ? `<div class="cabinpick" id="cabinPickTab"></div>` : ""}
     <div class="cabinwrap">${cabinSvg(true, cabinRoom)}</div>
     <p class="tagline">${n ? `${n} objet${n > 1 ? "s" : ""} sur ${total}` : "La cabane est vide… Finis une partie pour choisir un objet!"}</p></div>`, "cabin");
   app.querySelectorAll("[data-room]").forEach(b => b.onclick = () => { cabinRoom = b.dataset.room; cabinScreen(); });
   offerCabin($("#cabinPickTab"));
+}
+function zombEditor(tabs) {
+  const z = Object.assign({}, ZDEF, S.zomb || {});
+  const sw = (key, list) => `<div class="zrow"><div class="zopts">${list.map(([v, a]) => key === "style" || key === "motif"
+    ? `<button class="zopt txt ${z[key] === v ? "on" : ""}" data-k="${key}" data-v="${v}">${a}</button>`
+    : `<button class="zopt ${z[key] === v ? "on" : ""}" data-k="${key}" data-v="${v}" style="background:${v}" aria-label="${a}"></button>`).join("")}</div></div>`;
+  const rows = [["💇‍♀️", "Cheveux", sw("style", ZOPT.style) + sw("hair", ZOPT.hair)], ["👗", "Robe", sw("dress", ZOPT.dress) + sw("motif", ZOPT.motif)], ["👟", "Souliers", sw("shoes", ZOPT.shoes)], ["🧤", "Mains", sw("hands", ZOPT.hands)]];
+  view(`<div class="section"><h1>Zombinette</h1>${tabs}
+    <div class="zedit"><div class="zprev" id="zprev">${zombinette("idle")}</div>
+      <div class="zparts">${rows.map(([ic, lb, html]) => `<div class="zpart"><div class="zlab">${ic} ${lb}</div>${html}</div>`).join("")}</div></div></div>`, "cabin");
+  app.querySelectorAll("[data-room]").forEach(b => b.onclick = () => { cabinRoom = b.dataset.room; cabinScreen(); });
+  app.querySelectorAll(".zopt").forEach(b => b.onclick = () => {
+    S.zomb = Object.assign({}, ZDEF, S.zomb || {}, { [b.dataset.k]: b.dataset.v }); save();
+    app.querySelectorAll(`.zopt[data-k="${b.dataset.k}"]`).forEach(x => x.classList.toggle("on", x === b));
+    $("#zprev").innerHTML = zombinette("happy"); clearTimeout(zombEditor.t); zombEditor.t = setTimeout(() => { if ($("#zprev")) $("#zprev").innerHTML = zombinette("idle"); }, 900);
+  });
 }
 function offerCabin(box, silent) {
   const left = ALL_ITEMS().filter(([id]) => !S.cabin.items.includes(id));
@@ -1313,7 +1353,7 @@ function view(html, tab) {
   if (tab) app.querySelectorAll(".tabbar button").forEach(b => b.onclick = () => ({ home, album, cabin: cabinScreen, style: styleScreen, parent: pinScreen })[b.dataset.tab]());
 }
 function tabbar(active) {
-  const tabs = [["home", "🏠", "Accueil"], ["cabin", "🛖", "Cabane"], ["album", "🌟", "Collants"], ["style", "🎨", "Style"], ["parent", "👤", "Parent"]];
+  const tabs = [["home", "🏠", "Accueil"], ["cabin", "🧟‍♀️", "Zombinette"], ["album", "🌟", "Collants"], ["style", "🎨", "Style"], ["parent", "👤", "Parent"]];
   return `<nav class="tabbar">${tabs.map(([id, ic, lb]) => `<button data-tab="${id}" class="${active === id ? "on" : ""}">${ic}${id === "cabin" && S.cabin.pending && S.cabin.items.length < ALL_ITEMS().length ? `<span class="badge">${S.cabin.pending}</span>` : ""}<small>${lb}</small></button>`).join("")}</nav>`;
 }
 function topbar(back = true) {

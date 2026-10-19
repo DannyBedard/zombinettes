@@ -375,3 +375,15 @@ button.daily { display: block; width: calc(100% - 32px); text-align: left; color
 .sky i.c { width: 5px; height: 5px; background: var(--accent); box-shadow: 0 0 10px var(--accent); }
 @keyframes twinkle { 0%, 100% { opacity: .15; transform: scale(.8); } 50% { opacity: .8; transform: scale(1.2); } }
 #app { z-index: 1; }
+
+/* Ma Zombinette */
+.zedit { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; justify-content: center; margin-top: 8px; }
+.zprev { width: 170px; height: 238px; flex: none; background: var(--surface); border-radius: 20px; padding: 12px; }
+.zparts { flex: 1; min-width: 280px; display: grid; gap: 10px; }
+.zpart { background: var(--surface); border-radius: 14px; padding: 10px 12px; }
+.zlab { font-weight: 800; margin-bottom: 6px; }
+.zrow + .zrow { margin-top: 6px; }
+.zopts { display: flex; flex-wrap: wrap; gap: 8px; }
+.zopt { width: 40px; height: 40px; border-radius: 50%; border: 3px solid rgba(255,255,255,.35); }
+.zopt.txt { width: auto; min-width: 44px; height: 40px; border-radius: 12px; padding: 0 10px; background: var(--surface2); font-size: 1.15rem; color: var(--ink); }
+.zopt.on { border-color: #fff; box-shadow: 0 0 0 3px var(--accent); transform: scale(1.08); }
