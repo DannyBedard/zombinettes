@@ -1,4 +1,4 @@
-/* Les Zombinettes — français et maths pour le 1er cycle du primaire */
+/* Zombinette — français et maths pour le 1er cycle du primaire */
 (() => {
 const STORE_KEY = "zombinettes.v1";
 const DEFAULTS = {
@@ -1235,7 +1235,7 @@ const CABIN_VISITORS = [
 ];
 const STUDIO_ITEMS = [
   ["etoilesmur", "les étoiles au mur", [[40, 30], [120, 24], [300, 36], [350, 70], [70, 96], [250, 22]].map(([x, y]) => `<path d="M${x} ${y - 7} l2 5 6 1 -4 4 1 6 -5 -3 -5 3 1 -6 -4 -4 6 -1z" fill="#fef08a" opacity=".9"/>`).join("")],
-  ["banniere", "la bannière Zombinettes", `<path d="M90 44 q110 22 220 0 v26 q-110 22 -220 0z" fill="#ec4899" stroke="${OUT}" stroke-width="2.5"/><text x="200" y="66" text-anchor="middle" font-family="system-ui" font-weight="900" font-size="17" fill="#fff" stroke="${OUT}" stroke-width=".8">ZOMBINETTES</text>`],
+  ["banniere", "la bannière Zombinette", `<path d="M90 44 q110 22 220 0 v26 q-110 22 -220 0z" fill="#ec4899" stroke="${OUT}" stroke-width="2.5"/><text x="200" y="66" text-anchor="middle" font-family="system-ui" font-weight="900" font-size="17" fill="#fff" stroke="${OUT}" stroke-width=".8">ZOMBINETTE</text>`],
   ["neon", "le néon étoile", `<path d="M200 86 l9 18 20 3 -15 14 4 20 -18 -10 -18 10 4 -20 -15 -14 20 -3z" fill="none" stroke="#f0abfc" stroke-width="7" opacity=".5"/><path d="M200 86 l9 18 20 3 -15 14 4 20 -18 -10 -18 10 4 -20 -15 -14 20 -3z" fill="none" stroke="#fff" stroke-width="2.5"/>`],
   ["panneau", "le panneau de lumière", `<path d="M44 290 l0 -110" stroke="${OUT}" stroke-width="3"/><path d="M30 290 l14 -20 14 20" stroke="${OUT}" stroke-width="3" fill="none"/><rect x="18" y="120" width="52" height="64" rx="4" fill="#fef9c3" stroke="${OUT}" stroke-width="3"/><rect x="24" y="126" width="40" height="52" fill="#fffbeb"/>`],
   ["affichezombie", "l'affiche de zombie", `<rect x="326" y="96" width="54" height="66" rx="3" fill="#14532d" stroke="${OUT}" stroke-width="2.5"/><circle cx="353" cy="122" r="13" fill="#86d49a" stroke="${OUT}" stroke-width="2"/><circle cx="348" cy="120" r="2.5" fill="${OUT}"/><circle cx="358" cy="120" r="2.5" fill="${OUT}"/><path d="M346 128 h14" stroke="${OUT}" stroke-width="2"/><path d="M334 152 h38" stroke="#a3e635" stroke-width="5" stroke-linecap="round"/>`],
@@ -1331,7 +1331,7 @@ function home() {
   stopAudio();
   const d = dailyState(), hello = pick(HELLOS), unlocked = Object.keys(S.stickers).length;
   view(`<div class="hello"><div class="hellozomb">${zombinette("idle")}</div><div class="bubble">${hello}</div>
-      <div class="who"><div class="avatar">${avatarHtml()}</div><div><b>Les Zombinettes</b><small>👥 ${S.stars} abonnés · 🌟 ${unlocked} collants</small></div></div></div>
+      <div class="who"><div class="avatar">${avatarHtml()}</div><div><b>Zombinette</b><small>👥 ${S.stars} abonnés · 🌟 ${unlocked} collants</small></div></div></div>
     <button class="daily ${d.done ? "complete" : ""}" data-g="daily"><div class="dh"><b>${d.done ? "Défi du jour réussi! 🎉" : "⭐ Défi du jour"}</b><span class="go">${d.done ? "🔁" : "▶"}</span></div>${weekHtml()}</button>
     <div class="doors">${CATS.map(([id, t, ic, c1, c2]) => `<button class="door" data-cat="${id}" style="--c1:${c1};--c2:${c2}"><span>${ic}</span><b>${t}</b></button>`).join("")}</div>`, "home");
   app.querySelectorAll("[data-g]").forEach(b => b.onclick = () => startSession(b.dataset.g));
@@ -1556,11 +1556,11 @@ function parent() {
     save(); home();
   };
   $("#export").onclick = async () => {
-    const name = `zombinettes-${new Date().toISOString().slice(0, 10)}.json`;
+    const name = `zombinette-${new Date().toISOString().slice(0, 10)}.json`;
     const json = JSON.stringify(Object.assign({}, S, { pin: undefined, avatar: undefined, exportedAt: new Date().toISOString() }), null, 1);
     const file = new File([json], name, { type: "application/json" });
     try {
-      if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: "Progrès Zombinettes" }); $("#ioMsg").textContent = "Fichier partagé."; return; }
+      if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: "Progrès Zombinette" }); $("#ioMsg").textContent = "Fichier partagé."; return; }
     } catch (e) { if (e.name === "AbortError") return; }
     const a = document.createElement("a"); a.href = URL.createObjectURL(file); a.download = name; document.body.appendChild(a); a.click(); a.remove();
     $("#ioMsg").textContent = `Fichier ${name} téléchargé.`;
@@ -1597,7 +1597,7 @@ async function boot() {
   const sky = document.createElement("div"); sky.className = "sky";
   sky.innerHTML = Array.from({ length: 26 }, (_, k) => `<i class="${k % 5 === 0 ? "b" : k % 4 === 0 ? "c" : ""}" style="left:${rand(0, 100)}%;top:${rand(0, 100)}%;animation-delay:${(Math.random() * 3).toFixed(2)}s;animation-duration:${(2.5 + Math.random() * 3).toFixed(2)}s"></i>`).join("");
   document.body.prepend(sky);
-  view(`<div class="splash"><div class="splashzomb">${zombinette("happy")}</div><h1>Les Zombinettes</h1></div>`);
+  view(`<div class="splash"><div class="splashzomb">${zombinette("happy")}</div><h1>Zombinette</h1></div>`);
   const shown = Date.now();
   const res = await Promise.all([1, 2, 3].map(l => fetch(`data/mots-${l}.json`).then(r => r.json()).catch(() => [])));
   PACKS = { 1: res[0], 2: res[1], 3: res[2] };
