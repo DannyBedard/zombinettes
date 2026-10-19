@@ -709,6 +709,7 @@ function renderItem(it) {
   else if ($(".choices")) setupChoices(it);
   else setupPad(it);
 }
+function thinkFb(cls, text) { const fb = $("#fb"); fb.className = `feedback ${cls} think`; fb.innerHTML = `<span class="zthink">${zombinette("think")}</span><span>${text}</span>`; }
 function cmpSentence(it) { return [...numberParts(it.a), { gt: "est plus grand que", lt: "est plus petit que", eq: "est égal à" }[it.answer], ...numberParts(it.b)]; }
 function setupChoices(it) {
   $(".choices").onclick = e => {
@@ -802,7 +803,7 @@ function setupSyllab(it) {
     const ok = list.length === it.syl.length;
     if (!ok && !retry) {
       retry = true; list = []; taps.innerHTML = "";
-      const fb = $("#fb"); fb.className = "feedback"; fb.textContent = "Presque! Écoute encore.";
+      thinkFb("", "Presque! Écoute encore.");
       say(["Écoute encore.", it.mot]); return;
     }
     check(it, String(list.length));
@@ -814,7 +815,7 @@ function setupSyllab(it) {
     unlockAudio(); if (actx) drum(actx.currentTime);
     list.push(t); taps.insertAdjacentHTML("beforeend", "<i></i>");
     drumBtn.classList.remove("hit"); void drumBtn.offsetWidth; drumBtn.classList.add("hit");
-    const fb = $("#fb"); if (fb.textContent.startsWith("Presque")) fb.textContent = "";
+    const fb = $("#fb"); if (fb.querySelector(".zthink")) { fb.className = "feedback"; fb.textContent = ""; }
     clearTimeout(timer); timer = setTimeout(evaluate, 1600);
   };
 }
@@ -827,7 +828,7 @@ function setupRhythm(it) {
     const ok = Math.abs(taps.length - expected.length) <= 1 && taps.length >= 2 && gaps[Math.floor(gaps.length / 2)] >= 0.12;
     if (!ok && !session.rhythmRetry) {
       session.rhythmRetry = true; session.taps = []; drumBtn.classList.remove("ready");
-      const fb = $("#fb"); fb.className = "feedback"; fb.textContent = "Presque! Écoute encore.";
+      thinkFb("", "Presque! Écoute encore.");
       chatter("music", ["Écoute encore."]); setTimeout(() => { if (session.items[session.i] === it) playMusic(it); }, S.mute.music ? 300 : 1200);
       return;
     }
@@ -965,7 +966,7 @@ async function setupTrace(it) {
       oc.drawImage(ink, 0, 0); oc.globalCompositeOperation = "destination-out"; oc.drawImage(zoneFull, 0, 0, over.width, over.height);
       oc.globalCompositeOperation = "source-in"; oc.fillStyle = "#f43f5e"; oc.fillRect(0, 0, over.width, over.height);
       redraw(); ctx.drawImage(over, 0, 0, W, H);
-      const fb = $("#fb"); fb.className = "feedback bad"; fb.textContent = "Oups! Reste sur le modèle.";
+      thinkFb("bad", "Oups! Reste sur le modèle.");
       if (!failed) { failed = true; S.mathStats.trace.ko++; save(); }
       chatter("trace", ["Oups! Reste sur le modèle."]);
       return;
@@ -1011,7 +1012,7 @@ function check(it, answer) {
     save();
     if (session.attempt === 0 && !it.requeued) session.retry.push(Object.assign({}, it, { requeued: true }));
     session.attempt++;
-    fb.className = "feedback bad"; fb.textContent = "Oups!";
+    thinkFb("bad", "Oups!");
     $("#slots") && $("#slots").querySelectorAll(".slot").forEach(s => s.classList.add("bad"));
     const { shown, spoken } = GAMES[it.kind].reveal ? GAMES[it.kind].reveal(it, target, answer) : { shown: "", spoken: [] };
     app.querySelectorAll(".choice").forEach(c => { if (c.dataset.v === target) c.classList.add("ok"); });
