@@ -262,7 +262,7 @@ function padBad(t) { const n = $("#num"); if (n) { n.textContent = t; n.classNam
 const GAMES = {
   word: { prompt: it => [it.mot], speakReveal: true,
     reveal: (it, t, a) => { const ex = explainWord(t, a); return { shown: Array.from(t).map((ch, i) => (norm(a)[i] === ch ? esc(ch) : `<span class="diff">${esc(ch)}</span>`)).join("") + (ex ? `<div class="explain">${ex.shown}</div>` : ""), spoken: ["Le mot est", t, { pause: 300 }, ...spellParts(t), ...(ex ? [{ pause: 400 }, ...ex.spoken] : [])] }; } },
-  read: { prompt: () => [CONSIGNE.read], silent: true, speakReveal: true, praise: it => [it.mot], reveal: it => ({ shown: `${it.emoji} ${esc(it.mot)}`, spoken: [it.mot] }) },
+  read: { prompt: it => [it.sentence ? "Lis la phrase, puis touche la bonne image." : CONSIGNE.read], silent: true, speakReveal: true, praise: it => [it.mot], reveal: it => ({ shown: `${it.emoji} ${esc(it.mot)}`, spoken: [it.mot] }) },
   syllab: { prompt: it => [it.mot], speakReveal: true, praise: it => [it.mot], reveal: it => ({ shown: it.syl.join(" · "), spoken: [it.mot] }) },
   sound: { prompt: it => [it.sub === "rime" ? "Quel mot rime avec" : "Quel mot commence comme", it.target.mot, { pause: 400 }, it.choices[0].mot, it.choices[1].mot, "ou", it.choices[2].mot], speakReveal: true, praise: it => [it.target.mot, it.answer],
     reveal: (it, t) => { const a = it.choices.find(c => c.mot === t); return { shown: `${it.target.emoji} ${esc(it.target.mot)} · ${a.emoji} ${esc(a.mot)}`, spoken: [it.target.mot, { pause: 250 }, a.mot] }; } },
@@ -410,8 +410,16 @@ function buildCalcSession() {
 }
 let READ_WORDS = [];
 function similarity(a, b) { let p = 0; while (p < a.length && p < b.length && a[p] === b[p]) p++; return p * 2 + (a.slice(-2) === b.slice(-2) ? 1 : 0) - Math.abs(a.length - b.length) * 0.3; }
-function buildReadSession() {
+const READ_SENTENCES = [["Le chat dort.", "🐱💤"], ["Le chat boit du lait.", "🐱🥛"], ["Le chien court vite.", "🐶💨"], ["Le chien joue au ballon.", "🐶⚽"], ["Maman lit un livre.", "👩📖"], ["Papa mange une pomme.", "👨🍎"],
+  ["Le soleil est jaune.", "☀️"], ["La lune brille la nuit.", "🌙"], ["Le lapin mange une carotte.", "🐰🥕"], ["Il pleut beaucoup.", "🌧️"], ["Le bébé dort.", "👶💤"], ["Le poisson nage dans l'eau.", "🐟💧"],
+  ["La fille porte une robe rouge.", "👧👗"], ["J'aime le chocolat.", "🍫"], ["Le train roule vite.", "🚂"], ["Il fait froid en hiver.", "❄️🧣"], ["Le zombie danse à l'école.", "🧟🕺"], ["La sirène nage dans la mer.", "🧜‍♀️🌊"],
+  ["L'oiseau chante dans l'arbre.", "🐦🌳"], ["Je mange du pain.", "🍞"], ["La neige est blanche.", "⛄"]];
+function buildReadSession(mode) {
   const lvl = S.read.level, n = S.sessionLength;
+  if (mode === "phrases") return shuffle(READ_SENTENCES).slice(0, n).map(([p, e]) => {
+    const others = shuffle(READ_SENTENCES.filter(x => x[0] !== p)).slice(0, 2);
+    return { kind: "read", sentence: true, mot: p, emoji: e, choices: shuffle([[p, e], ...others]).map(([m, em]) => ({ mot: m, emoji: em })), answer: p };
+  });
   const pool = lvl === 1 ? READ_WORDS.filter(w => difficulty(w.mot) < 4.5) : READ_WORDS;
   return shuffle(pool).slice(0, n).map(w => {
     const others = READ_WORDS.filter(o => o !== w);
@@ -619,8 +627,9 @@ function buildMusicSession(sub) {
   return items;
 }
 const BUILDERS = { ...Object.fromEntries(Object.keys(QUIZ).map(k => [k, () => QUIZ[k]().slice(0, S.math.length)])), number: buildNumberSession, trace: buildTraceSession, traceNum: buildTraceNumSession, calc: buildCalcSession, read: buildReadSession, sound: buildSoundSession, syllab: buildSyllabSession, phrase: buildPhraseSession, money: buildMoneySession, keys: buildKeysSession, figures: buildFiguresSession, traceMus: buildTraceMusSession, compare: buildCompareSession, clock: buildClockSession, pitch: () => buildMusicSession("pitch"), rhythm: () => buildMusicSession("rhythm"), instr: () => buildMusicSession("instr") };
-function gameItems(id) {
+function gameItems(id, opt) {
   if (id === "word") return POOL.length || S.weekly.length ? buildWordSession() : [];
+  if (id === "read") return buildReadSession(opt);
   return BUILDERS[id]();
 }
 function allocate(cat, n) {
@@ -645,13 +654,21 @@ function mixItems(plan) {
 }
 
 /* ---------- moteur de session ---------- */
-function startSession(kind) {
+function readChooser() {
+  view(`${topbar()}<div class="section"><h1>📖 Lire</h1><p class="tagline">Veux-tu lire des mots ou des phrases?</p>
+    <div class="choices two readpick"><button class="choice" data-m="mots">🔤<small>Des mots</small></button><button class="choice" data-m="phrases">📝<small>Des phrases</small></button></div></div>`);
+  $("#back").onclick = home;
+  app.querySelectorAll("[data-m]").forEach(b => b.onclick = () => startSession("read", b.dataset.m));
+  say(["Veux-tu lire des mots ou des phrases?"]);
+}
+function startSession(kind, opt) {
   stopAudio();
+  if (kind === "read" && !opt) return readChooser();
   if (kind === "sonsref") { S.plays.sonsref = (S.plays.sonsref || 0) + 1; save(); return soundsScreen(); }
   let items;
   if (kind === "daily") items = mixItems(Object.entries(DAILY_MIX));
   else if (kind.startsWith("mix:")) items = mixItems([[kind.slice(4), 10]]);
-  else items = gameItems(kind);
+  else items = gameItems(kind, opt);
   if (!items.length) { view(`${topbar()}<div class="card">Aucun mot chargé.</div>`); $("#back").onclick = home; return; }
   S.plays[kind] = (S.plays[kind] || 0) + 1; save();
   session = { kind, items, i: 0, retry: [], good: 0, total: items.length, s: S.sessions, seen: new Set() };
@@ -671,7 +688,7 @@ function nextItem() {
   const ann = it.kind === "trace" ? (it.fig ? "Voici la note :" : it.num ? "Voici le nombre :" : it.word ? "Voici le mot en lettres attachées :" : it.cursive ? "Voici la lettre attachée :" : it.isDigit ? "Voici le chiffre :" : "Voici la lettre :") : ANNONCE[it.kind];
   const consigne = it.kind === "trace" && it.fig ? "Trace la note avec ton doigt. Quand la tête est pleine, remplis-la." : it.kind === "trace" && it.cursive ? "Trace en lettres attachées avec ton doigt." : CONSIGNE[it.kind];
   const intro = first || (it.kind === "trace" && !it.fig && it.cursive !== session.lastCursive);
-  const parts = intro && !S.mute[it.kind] && consigne ? [consigne, { pause: 700 }, ...(ann ? [ann, { pause: 350 }] : []), ...prompt] : it.kind === "read" ? (first ? [CONSIGNE.read] : []) : prompt;
+  const parts = intro && !S.mute[it.kind] && consigne ? [consigne, { pause: 700 }, ...(ann ? [ann, { pause: 350 }] : []), ...prompt] : it.kind === "read" ? (first ? GAMES.read.prompt(it) : []) : prompt;
   session.seen.add(key); session.lastCursive = it.cursive;
   const me = session, idx = session.i;
   setTimeout(() => { if (session === me && session.i === idx && $("#speak")) say(parts).then(() => { if (it.kind === "music" && session === me && session.i === idx && !session.locked && $("#speak")) playMusic(it); }); }, 300);
@@ -687,7 +704,7 @@ function renderItem(it) {
   } else if (it.kind === "trace") {
     body = `<div class="tracewrap"><canvas id="trace"></canvas></div><div class="actions"><button class="btn ghost small" id="erase">⌫</button><button class="btn ghost small" id="skip">→</button></div>`;
   } else if (it.kind === "read") {
-    body = `<div class="readword">${esc(it.mot)}</div><div class="choices">${it.choices.map(c => `<button class="choice emo" data-v="${esc(c.mot)}">${c.emoji}</button>`).join("")}</div>`;
+    body = `<div class="readword ${it.sentence ? "sentence" : ""}">${esc(it.mot)}</div><div class="choices">${it.choices.map(c => `<button class="choice emo" data-v="${esc(c.mot)}">${c.emoji}</button>`).join("")}</div>`;
   } else if (it.kind === "quiz") {
     body = `<div class="cmpq quizq">${esc(it.text)}</div>${it.visual ? `<div class="quizvis">${it.visual}</div>` : ""}<div class="choices ${it.choices.length === 2 ? "two" : it.choices.length === 4 ? "four" : ""} quizc">${it.choices.map(c => `<button class="choice" data-v="${esc(c.v)}">${c.html}</button>`).join("")}</div>`;
   } else if (it.kind === "keys") {
