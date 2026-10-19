@@ -117,6 +117,7 @@ function load() {
   if (s.palier && (s.boost || 0) < 4) out.keys = { level: 3 };
   if (s.palier && (s.boost || 0) < 5) { out.boost = 5; out.money = { level: 1 }; }
   out.days = (s.days || []).slice();
+  out.cabin = { items: [...(out.cabin.items || [])], visitors: [...(out.cabin.visitors || [])], pending: out.cabin.pending || 0 };
   if (!s.days && s.streak && s.streak.last) { const [y, m, d] = s.streak.last.split("-").map(Number); out.days = Array.from({ length: s.streak.n || 1 }, (_, k) => dayStr(new Date(y, m - 1, d - k))); }
   if (s.palier && !s.boost) { out.palier = Math.max(out.palier, 5);
     out.math = Object.assign(out.math, { firstMax: Math.max(out.math.firstMax, 20), addMax: Math.max(out.math.addMax, 10), sub: true });
@@ -478,7 +479,7 @@ const SCENES = [["⛄🛷", "hiver"], ["❄️🧤", "hiver"], ["🌷🐣", "pri
 const AVANT = [["☎️", "le vieux téléphone", "📱", "le cellulaire"], ["🕯️", "la chandelle", "💡", "l'ampoule"], ["🐴", "le cheval", "🚗", "l'auto"], ["✉️", "la lettre", "💬", "le texto"], ["📻", "la radio", "📺", "la télé"], ["🪶", "la plume", "🖊️", "le stylo"]];
 const COULEURS = { rouge: "#ef4444", jaune: "#facc15", bleu: "#3b82f6", orange: "#f97316", vert: "#22c55e", violet: "#8b5cf6", blanc: "#ffffff", rose: "#f9a8d4", noir: "#111111", gris: "#9ca3af" };
 const MELANGES = [["rouge", "jaune", "orange"], ["bleu", "jaune", "vert"], ["rouge", "bleu", "violet"], ["rouge", "blanc", "rose"], ["noir", "blanc", "gris"]];
-const EMOTIONS = { content: ["😄", "content"], triste: ["😢", "triste"], fache: ["😠", "fâché"], peur: ["😨", "peur"], surpris: ["😲", "surpris"] };
+const EMOTIONS = { content: ["😄", "content", "On se sent content."], triste: ["😢", "triste", "On se sent triste."], fache: ["😠", "fâché", "On se sent fâché."], peur: ["😨", "peur", "On a peur."], surpris: ["😲", "surpris", "On est surpris."] };
 const SITUATIONS = [["C'est ta fête et tu reçois un cadeau.", "content"], ["Tu as réussi ton beau dessin.", "content"], ["Ton ami ne veut plus jouer avec toi.", "triste"], ["Tu as perdu ton toutou.", "triste"],
   ["Ton frère a brisé ton bricolage.", "fache"], ["Quelqu'un prend ta place sans demander.", "fache"], ["Il y a un gros orage pendant la nuit.", "peur"], ["Un gros chien aboie très fort.", "peur"], ["Un clown sort d'une boîte!", "surpris"]];
 const blob = c => `<span class="paint" style="background:${COULEURS[c]}"></span>`;
@@ -500,7 +501,7 @@ const QUIZ = {
     return quiz("couleurs", { visual: `<span class="mixpaint">${blob(a)} + ${blob(b)} = ?</span>`, text: `${cap(a)} et ${b}, ça donne quelle couleur?`, prompt: [`${cap(a)} et ${b}, ça donne quelle couleur?`],
       choices: opts.map(x => ({ v: x, html: `${blob(x)}<small>${x}</small>` })), answer: r, say: [`${cap(a)} et ${b}, ça donne`, r], shown: `${blob(a)} + ${blob(b)} = ${blob(r)} ${r}` }); }),
   emotions: () => shuffle(SITUATIONS).map(([phrase, em]) => { const opts = shuffle([em, ...shuffle(Object.keys(EMOTIONS).filter(x => x !== em)).slice(0, 2)]);
-    return quiz("emotions", { visual: "", text: phrase, prompt: [phrase, "Comment tu te sens?"], choices: opts.map(x => ({ v: x, html: `${EMOTIONS[x][0]}<small>${EMOTIONS[x][1]}</small>` })), answer: em, say: ["On se sent", EMOTIONS[em][1]], shown: `${EMOTIONS[em][0]} ${EMOTIONS[em][1]}` }); })
+    return quiz("emotions", { visual: "", text: phrase, prompt: [phrase, "Comment tu te sens?"], choices: opts.map(x => ({ v: x, html: `${EMOTIONS[x][0]}<small>${EMOTIONS[x][1]}</small>` })), answer: em, say: [EMOTIONS[em][2]], shown: `${EMOTIONS[em][0]} ${EMOTIONS[em][1]}` }); })
 };
 let SYL_WORDS = [];
 function buildSyllabSession() {
@@ -1040,7 +1041,8 @@ function dailyState() {
 function markDaily(kind) {
   const d = dailyState(); if (kind !== "daily" || d.done) return null;
   d.done = true; S.days.push(d.date);
-  const st = DAY_STICKERS[S.days.length]; if (st) S.stickers[st] = (S.stickers[st] || 0) + 1;
+  let st = null;
+  for (const [n, e] of Object.entries(DAY_STICKERS)) if (S.days.length >= +n && !S.stickers[e]) { S.stickers[e] = 1; st = e; }
   return { complete: true, n: S.days.length, sticker: st };
 }
 function weekHtml() {
@@ -1052,6 +1054,7 @@ function endSession() {
   const missing = STICKERS.filter(x => !S.stickers[x]), sticker = missing.length && Math.random() < 0.8 ? pick(missing) : pick(STICKERS);
   S.stickers[sticker] = (S.stickers[sticker] || 0) + 1;
   const daily = markDaily(session.kind);
+  if (S.cabin.items.length < ALL_ITEMS().length) S.cabin.pending = Math.min(3, (S.cabin.pending || 0) + 1);
   const up = maybeLevelUp(); save();
   const gained = session.good;
   view(`${topbar()}
@@ -1066,9 +1069,8 @@ function endSession() {
     <button class="btn pink" id="home">🏠 Accueil</button>
     <button class="btn ghost small" id="album">Voir mes collants</button>`);
   confetti(60);
-  chatter(session.kind, ["Bravo! Tu as gagné un nouveau collant!", ...(gained ? [String(gained), gained > 1 ? "nouveaux abonnés" : "nouvel abonné"] : ["Tu as travaillé fort!"]), ...(daily && daily.complete ? ["Défi du jour réussi!"] : [])]);
+  chatter(session.kind, ["Bravo! Tu as gagné un nouveau collant!", ...(gained ? [String(gained), gained > 1 ? "nouveaux abonnés" : "nouvel abonné"] : ["Tu as travaillé fort!"]), ...(daily && daily.complete ? ["Défi du jour réussi!"] : []), ...(offerCabin($("#cabinPick"), true) ? [{ pause: 300 }, "Choisis un objet pour la cabane!"] : [])]);
   $("#back").onclick = home; $("#home").onclick = home; $("#album").onclick = album;
-  setTimeout(() => { if ($("#cabinPick")) offerCabin(); }, 2600);
 }
 
 /* ---------- Zombinette et sa cabane (dessins SVG maison) ---------- */
@@ -1175,27 +1177,29 @@ function cabinScreen() {
   const n = S.cabin.items.length, total = ALL_ITEMS().length;
   view(`<div class="section"><h1>La cabane de Zombinette</h1>
     <div class="row" style="justify-content:center">${[["chambre", "🛏️ La chambre"], ["studio", "🎥 Le studio"]].map(([id, lb]) => `<button class="pill ${cabinRoom === id ? "on" : ""}" data-room="${id}">${lb}</button>`).join("")}</div>
+    ${S.cabin.pending && S.cabin.items.length < ALL_ITEMS().length ? `<div class="cabinpick" id="cabinPickTab"></div>` : ""}
     <div class="cabinwrap">${cabinSvg(true, cabinRoom)}</div>
     <p class="tagline">${n ? `${n} objet${n > 1 ? "s" : ""} sur ${total}` : "La cabane est vide… Finis une partie pour choisir un objet!"}</p></div>`, "cabin");
   app.querySelectorAll("[data-room]").forEach(b => b.onclick = () => { cabinRoom = b.dataset.room; cabinScreen(); });
+  offerCabin($("#cabinPickTab"));
 }
-function offerCabin(after) {
+function offerCabin(box, silent) {
   const left = ALL_ITEMS().filter(([id]) => !S.cabin.items.includes(id));
-  if (!left.length) return false;
+  if (!left.length || !S.cabin.pending || !box) return false;
   const opts = shuffle(left).slice(0, 3);
-  const box = $("#cabinPick");
   box.innerHTML = `<h2>Choisis un objet pour la cabane!</h2><div class="choices cabinopts">${opts.map(([id, name]) => `<button class="choice" data-c="${id}">${itemThumb(id)}<small>${name}</small></button>`).join("")}</div>`;
   fitThumbs();
   box.querySelectorAll("[data-c]").forEach(b => b.onclick = () => {
-    const it = ALL_ITEMS().find(x => x[0] === b.dataset.c); S.cabin.items.push(it[0]); cabinRoom = roomOf(it[0]);
+    if (!S.cabin.pending) return;
+    const it = ALL_ITEMS().find(x => x[0] === b.dataset.c); S.cabin.items.push(it[0]); S.cabin.pending--; cabinRoom = roomOf(it[0]);
     const vleft = CABIN_VISITORS.filter(([id]) => !S.cabin.visitors.includes(id)), visit = vleft.length && Math.random() < 0.17 ? pick(vleft) : null;
     if (visit) S.cabin.visitors.push(visit[0]);
     save();
     box.innerHTML = `<div class="cabinwrap small">${cabinSvg(true, cabinRoom)}</div>${visit ? `<div class="toast streak"><span class="ic">✨</span><div><div class="tt">Surprise!</div><div class="tn">${cap(visit[1])} vient visiter la cabane!</div></div></div>` : ""}`;
     say([it[1], ...(visit ? [{ pause: 400 }, "Surprise! Quelqu'un vient visiter la cabane!"] : [])]);
-    if (after) after();
+    if (box.id === "cabinPickTab") setTimeout(() => { if ($("#cabinPickTab")) cabinScreen(); }, 2500);
   });
-  say(["Choisis un objet pour la cabane!"]);
+  if (!silent) say(["Choisis un objet pour la cabane!"]);
   return true;
 }
 /* ---------- écrans ---------- */
@@ -1206,7 +1210,7 @@ function view(html, tab) {
 }
 function tabbar(active) {
   const tabs = [["home", "🏠", "Accueil"], ["cabin", "🛖", "Cabane"], ["album", "🌟", "Collants"], ["style", "🎨", "Style"], ["parent", "👤", "Parent"]];
-  return `<nav class="tabbar">${tabs.map(([id, ic, lb]) => `<button data-tab="${id}" class="${active === id ? "on" : ""}">${ic}<small>${lb}</small></button>`).join("")}</nav>`;
+  return `<nav class="tabbar">${tabs.map(([id, ic, lb]) => `<button data-tab="${id}" class="${active === id ? "on" : ""}">${ic}${id === "cabin" && S.cabin.pending && S.cabin.items.length < ALL_ITEMS().length ? `<span class="badge">${S.cabin.pending}</span>` : ""}<small>${lb}</small></button>`).join("")}</nav>`;
 }
 function channelHeader() {
   const unlocked = Object.keys(S.stickers).length;

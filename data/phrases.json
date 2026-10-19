@@ -352,7 +352,12 @@
     "le vieux téléphone",
     "l'ampoule",
     "la radio",
-    "la plume"
+    "la plume",
+    "On se sent content.",
+    "On se sent triste.",
+    "On se sent fâché.",
+    "On a peur.",
+    "On est surpris."
   ],
   "cabane": [
     "Choisis un objet pour la cabane!",
