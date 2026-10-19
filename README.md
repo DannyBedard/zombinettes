@@ -41,7 +41,7 @@ dit sa consigne la première fois seulement.
 Découverte (sciences, univers social, arts, citoyenneté), très facile, une question à la fois avec choix d'images :
 vivant ou pas, où vit l'animal, quoi mettre selon la météo, les saisons, avant ou aujourd'hui, mélanger deux couleurs,
 les émotions. Banques de questions dans `app.js` (VIVANT, ANIMAUX, METEO, SCENES, AVANT, MELANGES, SITUATIONS) ; une
-question de Découverte s'ajoute au défi du jour (11 questions).
+question de Découverte s'ajoute au défi du jour (11 questions). À l'accueil, ces jeux sont sous « Autre », sans bouton Mélange.
 
 Zombinette et sa cabane : personnage et cabane dessinés en SVG dans `app.js` (zombinette(pose), CABIN_ITEMS,
 CABIN_VISITORS), sans image externe. À la fin de chaque partie, l'enfant choisit 1 objet sur 3 pour la cabane (33

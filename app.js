@@ -43,7 +43,7 @@ const CATS = [
   ["fr", "Français", "📚", "#7c3aed", "#ec4899", ["word", "read", "syllab", "sound", "phrase", "trace"]],
   ["math", "Maths", "🧮", "#0ea5e9", "#22c55e", ["number", "calc", "compare", "money", "clock", "traceNum"]],
   ["mus", "Musique", "🎵", "#a855f7", "#f43f5e", ["pitch", "rhythm", "instr", "keys", "figures", "traceMus"]],
-  ["dec", "Découverte", "🌍", "#16a34a", "#f59e0b", ["vivant", "habitat", "meteo", "saisons", "avant", "couleurs", "emotions"]]
+  ["dec", "Autre", "🌍", "#16a34a", "#f59e0b", ["vivant", "habitat", "meteo", "saisons", "avant", "couleurs", "emotions"]]
 ];
 const DAILY_MIX = { fr: 4, math: 4, mus: 2, dec: 1 }, NO_MIX = ["trace", "traceNum", "traceMus"], MIX_WEIGHT = { word: 3, read: 3 };
 const HUNDREDS = ["", "cent", "deux cents", "trois cents", "quatre cents", "cinq cents", "six cents", "sept cents", "huit cents", "neuf cents"];
@@ -1232,7 +1232,7 @@ function home() {
   const d = dailyState();
   const daily = `<button class="daily ${d.done ? "complete" : ""}" data-g="daily"><div class="dh"><b>${d.done ? "Défi du jour réussi! 🎉" : "⭐ Défi du jour"}</b></div>
     <div class="ds">${d.done ? "Tu peux le rejouer pour le plaisir." : "10 questions : français, maths et musique"}</div>${weekHtml()}</button>`;
-  const mixes = `<div class="mixes">${CATS.map(([id, t, ic, c1, c2]) => `<button class="mix" data-g="mix:${id}" style="--c1:${c1};--c2:${c2}"><span>${ic}</span><b>${t}</b><small>Mélange</small></button>`).join("")}</div>`;
+  const mixes = `<div class="mixes">${CATS.filter(c => c[0] !== "dec").map(([id, t, ic, c1, c2]) => `<button class="mix" data-g="mix:${id}" style="--c1:${c1};--c2:${c2}"><span>${ic}</span><b>${t}</b><small>Mélange</small></button>`).join("")}</div>`;
   const lists = CATS.map(([id, t, ic, , , games]) => `<h2 class="cathead"><span>${ic}</span>${t}</h2><div class="grid">${games.map(g => tileCard(ACTIVITIES.find(a => a[0] === g))).join("")}</div>`).join("");
   view(`${channelHeader()}
     ${daily}
