@@ -1128,7 +1128,34 @@ const CABIN_VISITORS = [
   ["fantome", "un petit fantôme", `<path d="M84 150 q0 -28 22 -28 q22 0 22 28 v22 l-6 -6 -5 6 -6 -6 -5 6 -6 -6 -5 6 -5 -6 -6 6z" fill="#f8fafc" stroke="${OUT}" stroke-width="2.5" opacity=".9"/><circle cx="99" cy="146" r="3" fill="${OUT}"/><circle cx="113" cy="146" r="3" fill="${OUT}"/>`],
   ["hibou", "un hibou", `<ellipse cx="280" cy="92" rx="14" ry="17" fill="#a16207" stroke="${OUT}" stroke-width="2.5"/><circle cx="274" cy="88" r="5" fill="#fff" stroke="${OUT}" stroke-width="1.5"/><circle cx="286" cy="88" r="5" fill="#fff" stroke="${OUT}" stroke-width="1.5"/><circle cx="274" cy="88" r="2" fill="${OUT}"/><circle cx="286" cy="88" r="2" fill="${OUT}"/><path d="M278 95 l2 4 2 -4z" fill="#f59e0b"/>`]
 ];
-function cabinSvg(withZomb = true) {
+const STUDIO_ITEMS = [
+  ["etoilesmur", "les étoiles au mur", [[40, 30], [120, 24], [300, 36], [350, 70], [70, 96], [250, 22]].map(([x, y]) => `<path d="M${x} ${y - 7} l2 5 6 1 -4 4 1 6 -5 -3 -5 3 1 -6 -4 -4 6 -1z" fill="#fef08a" opacity=".9"/>`).join("")],
+  ["banniere", "la bannière Zombinettes", `<path d="M90 44 q110 22 220 0 v26 q-110 22 -220 0z" fill="#ec4899" stroke="${OUT}" stroke-width="2.5"/><text x="200" y="66" text-anchor="middle" font-family="system-ui" font-weight="900" font-size="17" fill="#fff" stroke="${OUT}" stroke-width=".8">ZOMBINETTES</text>`],
+  ["neon", "le néon étoile", `<path d="M200 86 l9 18 20 3 -15 14 4 20 -18 -10 -18 10 4 -20 -15 -14 20 -3z" fill="none" stroke="#f0abfc" stroke-width="7" opacity=".5"/><path d="M200 86 l9 18 20 3 -15 14 4 20 -18 -10 -18 10 4 -20 -15 -14 20 -3z" fill="none" stroke="#fff" stroke-width="2.5"/>`],
+  ["panneau", "le panneau de lumière", `<path d="M44 290 l0 -110" stroke="${OUT}" stroke-width="3"/><path d="M30 290 l14 -20 14 20" stroke="${OUT}" stroke-width="3" fill="none"/><rect x="18" y="120" width="52" height="64" rx="4" fill="#fef9c3" stroke="${OUT}" stroke-width="3"/><rect x="24" y="126" width="40" height="52" fill="#fffbeb"/>`],
+  ["affichezombie", "l'affiche de zombie", `<rect x="326" y="96" width="54" height="66" rx="3" fill="#14532d" stroke="${OUT}" stroke-width="2.5"/><circle cx="353" cy="122" r="13" fill="#86d49a" stroke="${OUT}" stroke-width="2"/><circle cx="348" cy="120" r="2.5" fill="${OUT}"/><circle cx="358" cy="120" r="2.5" fill="${OUT}"/><path d="M346 128 h14" stroke="${OUT}" stroke-width="2"/><path d="M334 152 h38" stroke="#a3e635" stroke-width="5" stroke-linecap="round"/>`],
+  ["bureau", "le bureau et l'ordinateur", `<rect x="226" y="208" width="150" height="10" rx="2" fill="#a16207" stroke="${OUT}" stroke-width="2.5"/><path d="M236 218 v70 M366 218 v70" stroke="${OUT}" stroke-width="5"/><rect x="262" y="150" width="80" height="50" rx="5" fill="#1e293b" stroke="${OUT}" stroke-width="3"/><rect x="268" y="156" width="68" height="38" fill="#7dd3fc"/><path d="M296 168 l12 7 -12 7z" fill="#fff"/><path d="M296 200 h12 l4 8 h-20z" fill="#475569" stroke="${OUT}" stroke-width="2"/>`],
+  ["clavier", "le clavier lumineux", `<rect x="262" y="200" width="62" height="9" rx="2" fill="#1e293b" stroke="${OUT}" stroke-width="2"/>${["#ef4444", "#f59e0b", "#22c55e", "#3b82f6", "#a855f7", "#ec4899"].map((c, k) => `<rect x="${265 + k * 10}" y="202" width="7" height="5" fill="${c}"/>`).join("")}`],
+  ["casque", "le casque d'écoute", `<path d="M348 206 q0 -26 18 -26 q18 0 18 26" fill="none" stroke="#c026d3" stroke-width="5"/><rect x="342" y="196" width="12" height="14" rx="5" fill="#f0abfc" stroke="${OUT}" stroke-width="2"/><rect x="378" y="196" width="12" height="14" rx="5" fill="#f0abfc" stroke="${OUT}" stroke-width="2"/>`],
+  ["lavelampe", "la lampe à lave", `<path d="M236 206 l4 -34 h12 l4 34z" fill="#c084fc" stroke="${OUT}" stroke-width="2"/><circle cx="246" cy="196" r="4" fill="#f472b6"/><circle cx="243" cy="184" r="3" fill="#f472b6"/><path d="M238 172 l2 -6 h12 l2 6z" fill="#475569" stroke="${OUT}" stroke-width="2"/>`],
+  ["chaise", "la chaise de gamer", `<rect x="282" y="226" width="44" height="40" rx="10" fill="#ec4899" stroke="${OUT}" stroke-width="2.5"/><rect x="286" y="262" width="36" height="12" rx="4" fill="#be185d" stroke="${OUT}" stroke-width="2.5"/><path d="M304 274 v12 M290 290 h28" stroke="${OUT}" stroke-width="4"/><path d="M296 236 h16" stroke="#fff" stroke-width="3" stroke-linecap="round"/>`],
+  ["coussin", "le coussin cœur", `<path transform="translate(262 0)" d="M112 290 q-26 -14 -22 -30 q4 -12 22 -2 q18 -10 22 2 q4 16 -22 30z" fill="#f43f5e" stroke="${OUT}" stroke-width="2.5"/>`],
+  ["aquarium", "l'aquarium", `<g transform="translate(-74 0)"><rect x="150" y="248" width="52" height="38" rx="4" fill="#bae6fd" stroke="${OUT}" stroke-width="3" opacity=".95"/><path d="M168 266 q8 -8 16 0 q-8 8 -16 0z M184 266 l6 -5 v10z" fill="#f97316" stroke="${OUT}" stroke-width="1.2"/><path d="M158 286 q4 -14 0 -22 M194 286 q-4 -12 2 -20" stroke="#16a34a" stroke-width="3" fill="none"/></g>`],
+  ["ballons", "les ballons", [["#f472b6", 368, 70], ["#a855f7", 384, 92], ["#facc15", 360, 100]].map(([c, x, y]) => `<path d="M${x} ${y + 16} q4 40 -6 80" stroke="${OUT}" stroke-width="1.2" fill="none"/><ellipse cx="${x}" cy="${y}" rx="13" ry="16" fill="${c}" stroke="${OUT}" stroke-width="2"/>`).join("")]
+];
+const ALL_ITEMS = () => CABIN_ITEMS.concat(STUDIO_ITEMS);
+const roomOf = id => STUDIO_ITEMS.some(x => x[0] === id) ? "studio" : "chambre";
+function studioSvg() {
+  const own = S.cabin.items;
+  return `<svg class="cabin" viewBox="0 0 400 300">
+    <rect width="400" height="210" fill="#15384d"/>${[60, 140, 220, 300, 380].map(x => `<path d="M${x} 0 v210" stroke="#1d4a63" stroke-width="10"/>`).join("")}
+    <rect y="210" width="400" height="90" fill="#475569"/><path d="M0 210 h400" stroke="#334155" stroke-width="4"/>
+    ${STUDIO_ITEMS.filter(([id]) => own.includes(id)).map(x => x[2]).join("")}
+    <g transform="translate(140 150) scale(.95)">${zombinette("idle").replace(/^<svg[^>]*>|<\/svg>$/g, "")}</g>
+  </svg>`;
+}
+function cabinSvg(withZomb = true, room = "chambre") {
+  if (room === "studio") return studioSvg();
   const own = S.cabin.items, vis = S.cabin.visitors;
   return `<svg class="cabin" viewBox="0 0 400 300">
     <rect width="400" height="210" fill="#3b2a5c"/><path d="M0 0 h400 v210 h-400z" fill="url(#wallp)"/>
@@ -1140,28 +1167,31 @@ function cabinSvg(withZomb = true) {
     ${CABIN_VISITORS.filter(([id]) => vis.includes(id)).map(x => x[2]).join("")}
   </svg>`;
 }
-function itemThumb(id) { return `<svg class="thumbobj" viewBox="0 0 400 300"><g>${CABIN_ITEMS.find(x => x[0] === id)[2]}</g></svg>`; }
+function itemThumb(id) { return `<svg class="thumbobj" viewBox="0 0 400 300"><g>${ALL_ITEMS().find(x => x[0] === id)[2]}</g></svg>`; }
 function fitThumbs() { app.querySelectorAll(".thumbobj").forEach(sv => { const b = sv.querySelector("g").getBBox(), p = 8; sv.setAttribute("viewBox", `${b.x - p} ${b.y - p} ${b.width + 2 * p} ${b.height + 2 * p}`); }); }
 
+let cabinRoom = "chambre";
 function cabinScreen() {
-  const n = S.cabin.items.length;
+  const n = S.cabin.items.length, total = ALL_ITEMS().length;
   view(`<div class="section"><h1>La cabane de Zombinette</h1>
-    <div class="cabinwrap">${cabinSvg()}</div>
-    <p class="tagline">${n ? `${n} objet${n > 1 ? "s" : ""} sur ${CABIN_ITEMS.length}` : "La cabane est vide… Finis une partie pour choisir un objet!"}</p></div>`, "cabin");
+    <div class="row" style="justify-content:center">${[["chambre", "🛏️ La chambre"], ["studio", "🎥 Le studio"]].map(([id, lb]) => `<button class="pill ${cabinRoom === id ? "on" : ""}" data-room="${id}">${lb}</button>`).join("")}</div>
+    <div class="cabinwrap">${cabinSvg(true, cabinRoom)}</div>
+    <p class="tagline">${n ? `${n} objet${n > 1 ? "s" : ""} sur ${total}` : "La cabane est vide… Finis une partie pour choisir un objet!"}</p></div>`, "cabin");
+  app.querySelectorAll("[data-room]").forEach(b => b.onclick = () => { cabinRoom = b.dataset.room; cabinScreen(); });
 }
 function offerCabin(after) {
-  const left = CABIN_ITEMS.filter(([id]) => !S.cabin.items.includes(id));
+  const left = ALL_ITEMS().filter(([id]) => !S.cabin.items.includes(id));
   if (!left.length) return false;
   const opts = shuffle(left).slice(0, 3);
   const box = $("#cabinPick");
   box.innerHTML = `<h2>Choisis un objet pour la cabane!</h2><div class="choices cabinopts">${opts.map(([id, name]) => `<button class="choice" data-c="${id}">${itemThumb(id)}<small>${name}</small></button>`).join("")}</div>`;
   fitThumbs();
   box.querySelectorAll("[data-c]").forEach(b => b.onclick = () => {
-    const it = CABIN_ITEMS.find(x => x[0] === b.dataset.c); S.cabin.items.push(it[0]);
+    const it = ALL_ITEMS().find(x => x[0] === b.dataset.c); S.cabin.items.push(it[0]); cabinRoom = roomOf(it[0]);
     const vleft = CABIN_VISITORS.filter(([id]) => !S.cabin.visitors.includes(id)), visit = vleft.length && Math.random() < 0.17 ? pick(vleft) : null;
     if (visit) S.cabin.visitors.push(visit[0]);
     save();
-    box.innerHTML = `<div class="cabinwrap small">${cabinSvg()}</div>${visit ? `<div class="toast streak"><span class="ic">✨</span><div><div class="tt">Surprise!</div><div class="tn">${cap(visit[1])} vient visiter la cabane!</div></div></div>` : ""}`;
+    box.innerHTML = `<div class="cabinwrap small">${cabinSvg(true, cabinRoom)}</div>${visit ? `<div class="toast streak"><span class="ic">✨</span><div><div class="tt">Surprise!</div><div class="tn">${cap(visit[1])} vient visiter la cabane!</div></div></div>` : ""}`;
     say([it[1], ...(visit ? [{ pause: 400 }, "Surprise! Quelqu'un vient visiter la cabane!"] : [])]);
     if (after) after();
   });
