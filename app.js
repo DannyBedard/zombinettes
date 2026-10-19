@@ -8,7 +8,7 @@ const DEFAULTS = {
   math: { numMax: 199, firstMax: 20, addMax: 10, sub: true, visual: true, length: 8 },
   mathStats: { number: { ok: 0, ko: 0 }, calc: { ok: 0, ko: 0 }, trace: { ok: 0, ko: 0 }, read: { ok: 0, ko: 0 }, sound: { ok: 0, ko: 0 }, syllab: { ok: 0, ko: 0 }, phrase: { ok: 0, ko: 0 }, money: { ok: 0, ko: 0 }, keys: { ok: 0, ko: 0 }, figures: { ok: 0, ko: 0 }, compare: { ok: 0, ko: 0 }, clock: { ok: 0, ko: 0 }, music: { ok: 0, ko: 0 } },
   trace: { lower: true, upper: true, digits: true, nums: true, cursive: true, cwords: true, length: 6 },
-  read: { level: 2 }, sound: { rime: true, debut: true }, phrase: { max: 4 }, money: { level: 1 }, keys: { level: 3 }, daily: null, streak: { n: 0, last: "" }, mixCount: {}, cmp: { max: 1000 }, clock: { level: 1 }, music: { pitch: true, rhythm: true, instr: true, level: 2 },
+  read: { level: 2 }, sound: { rime: true, debut: true }, phrase: { max: 4 }, money: { level: 1 }, keys: { level: 3 }, daily: null, days: [], streak: { n: 0, last: "" }, mixCount: {}, cmp: { max: 1000 }, clock: { level: 1 }, music: { pitch: true, rhythm: true, instr: true, level: 2 },
   plays: { word: 0, read: 0, sound: 0, syllab: 0, phrase: 0, money: 0, keys: 0, figures: 0, number: 0, calc: 0, compare: 0, clock: 0, trace: 0, music: 0 },
   boost: 5
 };
@@ -108,6 +108,8 @@ function load() {
   if (s.palier && (s.boost || 0) < 3) out.math.numMax = 199;
   if (s.palier && (s.boost || 0) < 4) out.keys = { level: 3 };
   if (s.palier && (s.boost || 0) < 5) { out.boost = 5; out.money = { level: 1 }; }
+  out.days = (s.days || []).slice();
+  if (!s.days && s.streak && s.streak.last) { const [y, m, d] = s.streak.last.split("-").map(Number); out.days = Array.from({ length: s.streak.n || 1 }, (_, k) => dayStr(new Date(y, m - 1, d - k))); }
   if (s.palier && !s.boost) { out.palier = Math.max(out.palier, 5);
     out.math = Object.assign(out.math, { firstMax: Math.max(out.math.firstMax, 20), addMax: Math.max(out.math.addMax, 10), sub: true });
     out.trace = Object.assign(out.trace, { upper: true, cursive: true, cwords: true });
@@ -978,22 +980,23 @@ function maybeLevelUp() {
   if (learned / un.length >= 0.7) { S.palier += 1; return true; }
   return false;
 }
-const STREAK_STICKERS = { 3: "🔥", 7: "💎", 14: "🏆", 30: "🌟" };
+const DAY_STICKERS = { 3: "🔥", 7: "💎", 14: "🏆", 30: "🌟" };
 function dayStr(d) { return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; }
 function dailyState() {
   const t = dayStr(new Date());
-  if (!S.daily || S.daily.date !== t) S.daily = { date: t, done: false };
-  else if (S.daily.acts) S.daily = { date: t, done: S.daily.done.length >= S.daily.acts.length };
+  if (!S.daily || S.daily.date !== t) S.daily = { date: t, done: S.days.includes(t) };
   return S.daily;
 }
-function streakNow() { const y = dayStr(new Date(Date.now() - 864e5)), t = dayStr(new Date()); return S.streak.last === t || S.streak.last === y ? S.streak.n : 0; }
 function markDaily(kind) {
   const d = dailyState(); if (kind !== "daily" || d.done) return null;
-  d.done = true;
-  const t = dayStr(new Date()), y = dayStr(new Date(Date.now() - 864e5));
-  S.streak = { n: S.streak.last === y ? S.streak.n + 1 : S.streak.last === t ? S.streak.n : 1, last: t };
-  const st = STREAK_STICKERS[S.streak.n]; if (st) S.stickers[st] = (S.stickers[st] || 0) + 1;
-  return { complete: true, n: S.streak.n, sticker: st };
+  d.done = true; S.days.push(d.date);
+  const st = DAY_STICKERS[S.days.length]; if (st) S.stickers[st] = (S.stickers[st] || 0) + 1;
+  return { complete: true, n: S.days.length, sticker: st };
+}
+function weekHtml() {
+  const now = new Date(), monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - (now.getDay() + 6) % 7);
+  return `<div class="week">${["L", "M", "M", "J", "V", "S", "D"].map((l, k) => { const day = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + k), ds = dayStr(day), done = S.days.includes(ds);
+    return `<span class="${done ? "done" : ""} ${ds === dayStr(now) ? "today" : ""}"><i>${done ? "⭐" : ""}</i><small>${l}</small></span>`; }).join("")}</div>`;
 }
 function endSession() {
   const missing = STICKERS.filter(x => !S.stickers[x]), sticker = missing.length && Math.random() < 0.8 ? pick(missing) : pick(STICKERS);
@@ -1005,18 +1008,15 @@ function endSession() {
     <div class="result"><div class="big">🎉</div><h1>Bravo!</h1>
       <div class="score">+${gained} <small>abonné${gained > 1 ? "s" : ""}</small></div>
       <p class="tagline">${gained >= session.total / 2 ? `${gained} sur ${session.total}` : "Tu as travaillé fort!"}</p>
-      ${up ? `<div class="levelup">🏅 Niveau ${S.palier} débloqué!</div>` : ""}
-      <div class="toast"><span class="ic">${sticker}</span><div><div class="tt">Succès débloqué</div><div class="tn">Nouveau collant${S.stickers[sticker] > 1 ? ` ×${S.stickers[sticker]}` : ""}</div></div></div>
-      ${daily && daily.complete ? `<div class="toast streak"><span class="ic">${daily.sticker || "🔥"}</span><div><div class="tt">Défi du jour réussi!</div><div class="tn">🔥 ${daily.n} jour${daily.n > 1 ? "s" : ""} de suite${daily.sticker ? " · collant spécial!" : ""}</div></div></div>` : ""}
+      ${up ? `<div class="levelup">📚 Nouveaux mots débloqués!</div>` : ""}
+      <div class="toast"><span class="ic">${sticker}</span><div><div class="tt">Nouveau collant</div><div class="tn">${S.stickers[sticker] > 1 ? `Tu l'as ${S.stickers[sticker]} fois!` : "Il est dans ton album!"}</div></div></div>
+      ${daily && daily.complete ? `<div class="toast streak"><span class="ic">${daily.sticker || "⭐"}</span><div><div class="tt">Défi du jour réussi!</div><div class="tn">${daily.n} défi${daily.n > 1 ? "s" : ""} en tout${daily.sticker ? " · collant spécial!" : ""}</div></div></div>${weekHtml()}` : ""}
     </div>
-    <button class="btn pink" id="again">Encore une partie</button>
-    <button class="btn ghost" id="album">🏆 Mes succès</button>
-    <button class="btn ghost" id="home">Accueil</button>`);
+    <button class="btn pink" id="home">🏠 Accueil</button>
+    <button class="btn ghost small" id="album">Voir mes collants</button>`);
   confetti(60);
-  chatter(session.kind, ["Bravo! Tu as gagné un nouveau collant!", ...(gained ? [String(gained), gained > 1 ? "nouveaux abonnés" : "nouvel abonné"] : ["Tu as travaillé fort!"]), ...(up ? ["Et tu passes au niveau", String(S.palier)] : []), ...(daily && daily.complete ? ["Défi du jour réussi!", String(daily.n), daily.n > 1 ? "jours de suite" : ""] : [])]);
-  const k = session.kind;
-  if (k === "daily") $("#again").textContent = "Rejouer le défi";
-  $("#back").onclick = home; $("#home").onclick = home; $("#again").onclick = () => startSession(k); $("#album").onclick = album;
+  chatter(session.kind, ["Bravo! Tu as gagné un nouveau collant!", ...(gained ? [String(gained), gained > 1 ? "nouveaux abonnés" : "nouvel abonné"] : ["Tu as travaillé fort!"]), ...(daily && daily.complete ? ["Défi du jour réussi!"] : [])]);
+  $("#back").onclick = home; $("#home").onclick = home; $("#album").onclick = album;
 }
 
 /* ---------- écrans ---------- */
@@ -1026,17 +1026,17 @@ function view(html, tab) {
   if (tab) app.querySelectorAll(".tabbar button").forEach(b => b.onclick = () => ({ home, album, style: styleScreen, parent: pinScreen })[b.dataset.tab]());
 }
 function tabbar(active) {
-  const tabs = [["home", "🏠", "Accueil"], ["album", "🏆", "Succès"], ["style", "🎨", "Style"], ["parent", "👤", "Parent"]];
+  const tabs = [["home", "🏠", "Accueil"], ["album", "🌟", "Collants"], ["style", "🎨", "Style"], ["parent", "👤", "Parent"]];
   return `<nav class="tabbar">${tabs.map(([id, ic, lb]) => `<button data-tab="${id}" class="${active === id ? "on" : ""}">${ic}<small>${lb}</small></button>`).join("")}</nav>`;
 }
 function channelHeader() {
   const unlocked = Object.keys(S.stickers).length;
   return `<div class="banner"></div>
     <div class="channel"><div class="avatar">${avatarHtml()}</div>
-      <div class="channel-meta"><h1>Les Zombinettes</h1><p>@zombinettes · <b>${S.stars}</b> abonnés · Niveau <b>${S.palier}</b> · ${unlocked} succès</p></div></div>`;
+      <div class="channel-meta"><h1>Les Zombinettes</h1><p>@zombinettes · <b>${S.stars}</b> abonnés · ${unlocked} collants</p></div></div>`;
 }
 function topbar(back = true) {
-  return `<div class="topbar">${back ? `<button class="back" id="back">←</button>` : "<span></span>"}<span><span class="stars" title="niveau">🏅 ${S.palier}</span> <span class="stars" id="starsN" title="abonnés">👥 ${S.stars}</span></span></div>`;
+  return `<div class="topbar">${back ? `<button class="back" id="back">←</button>` : "<span></span>"}<span class="stars" id="starsN" title="abonnés">👥 ${S.stars}</span></div>`;
 }
 function tileCard([id, title, ic, c1, c2, sub]) {
   return `<button class="tilecard" data-g="${id}">
@@ -1046,9 +1046,9 @@ function tileCard([id, title, ic, c1, c2, sub]) {
 }
 function home() {
   stopAudio();
-  const d = dailyState(), sn = streakNow();
-  const daily = `<button class="daily ${d.done ? "complete" : ""}" data-g="daily"><div class="dh"><b>${d.done ? "Défi du jour réussi! 🎉" : "🔥 Défi du jour"}</b><span class="flame ${sn ? "" : "off"}">🔥 ${sn}</span></div>
-    <div class="ds">${d.done ? "Tu peux le rejouer pour le plaisir." : "10 questions : français, maths et musique"}</div></button>`;
+  const d = dailyState();
+  const daily = `<button class="daily ${d.done ? "complete" : ""}" data-g="daily"><div class="dh"><b>${d.done ? "Défi du jour réussi! 🎉" : "⭐ Défi du jour"}</b></div>
+    <div class="ds">${d.done ? "Tu peux le rejouer pour le plaisir." : "10 questions : français, maths et musique"}</div>${weekHtml()}</button>`;
   const mixes = `<div class="mixes">${CATS.map(([id, t, ic, c1, c2]) => `<button class="mix" data-g="mix:${id}" style="--c1:${c1};--c2:${c2}"><span>${ic}</span><b>${t}</b><small>Mélange</small></button>`).join("")}</div>`;
   const lists = CATS.map(([id, t, ic, , , games]) => `<h2 class="cathead"><span>${ic}</span>${t}</h2><div class="grid">${games.map(g => tileCard(ACTIVITIES.find(a => a[0] === g))).join("")}</div>`).join("");
   view(`${channelHeader()}
@@ -1060,12 +1060,12 @@ function home() {
 }
 function album() {
   const unlocked = Object.keys(S.stickers).length;
-  view(`<div class="section"><h1>Succès</h1>
+  view(`<div class="section"><h1>Mes collants</h1>
     <div class="achv-head"><span class="muted">Collants débloqués</span><b>${unlocked} / ${STICKERS.length}</b></div>
     <div class="achv-bar"><div style="width:${Math.round(unlocked / STICKERS.length * 100)}%"></div></div>
     <div class="album">${STICKERS.map(s => `<div class="sticker ${S.stickers[s] ? "" : "locked"}">${S.stickers[s] ? s : "🔒"}${S.stickers[s] > 1 ? `<span class="count">×${S.stickers[s]}</span>` : ""}</div>`).join("")}</div>
-    <div class="achv-head"><span class="muted">Défis du jour de suite · 🔥 ${streakNow()}</span></div>
-    <div class="album">${Object.entries(STREAK_STICKERS).map(([n, s]) => `<div class="sticker ${S.stickers[s] ? "" : "locked"}">${S.stickers[s] ? s : "🔒"}<span class="count">${n} j</span></div>`).join("")}</div></div>`, "album");
+    <div class="achv-head"><span class="muted">Collants des défis du jour · ${S.days.length} défi${S.days.length > 1 ? "s" : ""} faits</span></div>
+    <div class="album">${Object.entries(DAY_STICKERS).map(([n, st]) => `<div class="sticker ${S.stickers[st] ? "" : "locked"}">${S.stickers[st] ? st : "🔒"}<span class="count">${n} défis</span></div>`).join("")}</div></div>`, "album");
 }
 function confetti(n = 30) {
   const box = document.createElement("div"); box.className = "confetti";
@@ -1296,7 +1296,7 @@ function parent() {
     msg.textContent = `Prêt : ${urls.length} sons de ${S.voice === "sylvie" ? "Sylvie" : S.voice} disponibles hors ligne.`;
   };
   $("#pin").onclick = () => { const p = prompt("Nouveau NIP (4 chiffres)"); if (p && /^\d{4}$/.test(p)) { S.pin = p; save(); alert("NIP changé"); } };
-  $("#reset").onclick = () => { if (confirm("Effacer tous les progrès, abonnés et collants ?")) { S.progress = {}; S.stars = 0; S.stickers = {}; S.sessions = 0; S.palier = DEFAULTS.palier; S.daily = null; for (const k of ["mathStats", "plays", "streak", "mixCount"]) S[k] = JSON.parse(JSON.stringify(DEFAULTS[k])); save(); parent(); } };
+  $("#reset").onclick = () => { if (confirm("Effacer tous les progrès, abonnés et collants ?")) { S.progress = {}; S.stars = 0; S.stickers = {}; S.sessions = 0; S.palier = DEFAULTS.palier; S.daily = null; S.days = []; for (const k of ["mathStats", "plays", "mixCount"]) S[k] = JSON.parse(JSON.stringify(DEFAULTS[k])); save(); parent(); } };
 }
 
 /* ---------- démarrage ---------- */

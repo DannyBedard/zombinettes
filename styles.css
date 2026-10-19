@@ -236,7 +236,6 @@ table.stats td { padding: 8px 4px; border-bottom: 1px solid var(--line); } table
 .daily { margin: 4px 16px 10px; padding: 12px 14px; border-radius: 14px; background: var(--surface); border: 2px solid var(--accent); }
 .daily.complete { border-color: var(--ok); }
 .daily .dh { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-.daily .flame { font-weight: 800; font-size: 1.1rem; } .daily .flame.off { opacity: .45; }
 .dacts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
 .dact { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 4px; border-radius: 12px; background: var(--surface2); font-size: 1.8rem; }
 .dact small { font-size: .78rem; font-weight: 600; color: var(--muted); }
@@ -283,3 +282,10 @@ button.daily { display: block; width: calc(100% - 32px); text-align: left; color
 .croc .eye { fill: #fef08a; stroke: #14532d; stroke-width: 2; } .croc .pupil { fill: #111; }
 .croc .nostril { fill: #14532d; } .croc .scale { fill: #15803d; }
 .croc .bar { fill: #22c55e; stroke: #14532d; stroke-width: 2.5; }
+.week { display: flex; gap: 6px; justify-content: space-between; margin-top: 10px; max-width: 360px; }
+.result .week { margin: 10px auto 0; }
+.week span { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.week i { width: 34px; height: 34px; border-radius: 50%; border: 2px dashed var(--line); display: flex; align-items: center; justify-content: center; font-style: normal; font-size: 1.2rem; }
+.week span.done i { border: 2px solid var(--warn); background: color-mix(in srgb, var(--warn) 22%, transparent); }
+.week span.today i { border-color: var(--accent); }
+.week small { font-size: .7rem; color: var(--muted); font-weight: 700; }

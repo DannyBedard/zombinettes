@@ -21,7 +21,7 @@ ouvrir l'URL dans Safari, Partager, « Sur l'écran d'accueil ». L'app fonction
 
 Fond sombre, une couleur d'accent et une scène illustrée par thème (8 thèmes : violet, zombie, vampire, loup-garou, licorne, océan, chanteuse, sirène ; `img/*.svg`, dessinées à la main, pas d'assets externes) en bannière (ratio 3:1) et en fond de page assombri. En mode Couleur, six duos de couleurs prêts à l'emploi (plus le duo du thème). Deux fonds au choix dans Mon style : sombre, ou dégradé tiré des couleurs du thème avec surfaces translucides. La photo de profil peut être remplacée par une photo de l'appareil (recadrée en 256×256, stockée en base64 dans le localStorage). Accueil = page de chaîne (bannière, avatar, abonnés, niveau,
 succès) et grille de vignettes par activité avec badge de durée ; barre d'onglets en bas (Accueil, Succès, Style,
-Parent) ; progression segmentée dans les exercices ; fin de partie avec score et toast « Succès débloqué ».
+Parent) ; progression segmentée dans les exercices ; fin de partie avec abonnés gagnés et nouveau collant, puis retour à l'accueil (bouton secondaire pour voir les collants).
 
 ## Structure
 
@@ -68,7 +68,7 @@ Les sous : pièces canadiennes dessinées en SVG (taille relative et couleur ré
 pavé numérique. Niveaux : 1 reconnaître la pièce (« Touche la pièce de 10 ¢ »), 2 compter des pièces pareilles (choix de
 réponses), 3 5 ¢ et 10 ¢ mêlées (choix), 4 + 25 ¢ jusqu'à 1 $ (pavé), 5 1 $ et 2 $ (pavé).
 
-Défi du jour : voir Organisation. Série 🔥 remise à 1 si on saute un jour, collant spécial à 3, 7, 14 et 30 jours.
+Défi du jour : voir Organisation. Calendrier de la semaine avec une étoile par défi réussi (une journée manquée ne fait rien perdre) ; collant spécial à 3, 7, 14 et 30 défis au total.
 
 Plus grand? : deux nombres et une case vide ; l'enfant choisit la bouche du crocodile (qui mange toujours le plus grand)
 ou le signe égal. Crocodiles dessinés en SVG. Une fois sur 5, les deux nombres sont égaux ; souvent, ils ont le même
