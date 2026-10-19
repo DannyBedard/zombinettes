@@ -31,13 +31,12 @@ Parent) ; progression segmentée dans les exercices ; fin de partie avec abonné
 
 ## Organisation
 
-Accueil (tient sur un écran) : la Zombinette qui salue dans la bannière, le défi du jour, puis 4 portes
-(Français, Maths, Musique, Autre) qui mènent à la page de la matière (Mélange + ses jeux, nom seulement). Avant : 🔥 Défi du jour (une partie de 10 questions : 4 de français, 4 de maths, 2 de musique, piochées dans des jeux
-différents ; la réussir une fois par jour fait monter la série), puis un bouton « Mélange » par catégorie (10 questions
-de la catégorie ; en français, les mots et Lire pèsent 3 fois plus que les autres jeux ; dans chaque catégorie, les jeux
-les moins vus dans les mélanges passent en premier), puis tous les jeux sous des sous-titres 📚 Français, 🧮 Maths, 🎵 Musique. Le tracé (lettres en
-français, chiffres et nombres en maths) n'entre pas dans les mélanges. Dans une partie mélangée, chaque type de question
-dit sa consigne la première fois seulement.
+Accueil (tient sur un écran) : la Zombinette qui salue dans la bannière, le défi du jour (11 questions : 4 de
+français, 4 de maths, 2 de musique, 1 autre, piochées dans des jeux différents ; le réussir une fois par jour met une
+étoile au calendrier), puis 4 portes (Français, Maths, Musique, Autre). Chaque porte ouvre la page de la matière : un
+bouton Mélange (10 questions ; en français, les mots et Lire pèsent 3 fois plus ; les jeux les moins vus passent en
+premier ; pas de Mélange pour Autre) et ses jeux, avec seulement leur nom. Le tracé et la page Les sons n'entrent pas dans
+les mélanges. Dans une partie mélangée, chaque type de question dit sa consigne la première fois seulement.
 
 Découverte (sciences, univers social, arts, citoyenneté), très facile, une question à la fois avec choix d'images :
 vivant ou pas, où vit l'animal, quoi mettre selon la météo, les saisons, avant ou aujourd'hui, mélanger deux couleurs,
