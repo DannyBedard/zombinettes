@@ -781,9 +781,9 @@ function renderItem(it) {
   const body = VIEWS[it.kind](it);
   view(`${topbar()}
     <div class="progress">${segs}</div>
-    <div class="speakrow">${it.kind === "calc" ? `<button class="mute eye ${S.math.visual ? "" : "on"}" id="eye">${S.math.visual ? "👀" : "🙈"}</button>` : ""}<button class="speak" id="speak">🔊</button><button class="mute ${S.mute[it.kind] ? "on" : ""}" id="mute">${S.mute[it.kind] ? "🔇" : "🗣️"}</button></div>
+    <div class="stage"><div class="speakrow"><button class="mute ${S.mute[it.kind] ? "on" : ""}" id="mute">${S.mute[it.kind] ? "🔇" : "🗣️"}</button><button class="speak" id="speak">🔊</button>${it.kind === "calc" ? `<button class="mute eye ${S.math.visual ? "" : "on"}" id="eye">${S.math.visual ? "👀" : "🙈"}</button>` : `<span class="mute-spacer"></span>`}</div>
     ${body}
-    <div class="feedback" id="fb"></div>`);
+    <div class="feedback" id="fb"></div></div>`);
   $("#back").onclick = home;
   $("#speak").onclick = () => replay(it);
   if ($("#eye")) $("#eye").onclick = () => { S.math.visual = !S.math.visual; save(); $("#eye").textContent = S.math.visual ? "👀" : "🙈"; $("#eye").classList.toggle("on", !S.math.visual); $("#dots").innerHTML = dots(it); };
@@ -1314,33 +1314,34 @@ function tabbar(active) {
   const tabs = [["home", "🏠", "Accueil"], ["cabin", "🛖", "Cabane"], ["album", "🌟", "Collants"], ["style", "🎨", "Style"], ["parent", "👤", "Parent"]];
   return `<nav class="tabbar">${tabs.map(([id, ic, lb]) => `<button data-tab="${id}" class="${active === id ? "on" : ""}">${ic}${id === "cabin" && S.cabin.pending && S.cabin.items.length < ALL_ITEMS().length ? `<span class="badge">${S.cabin.pending}</span>` : ""}<small>${lb}</small></button>`).join("")}</nav>`;
 }
-function channelHeader() {
-  const unlocked = Object.keys(S.stickers).length;
-  return `<div class="banner"></div>
-    <div class="channel"><div class="avatar">${avatarHtml()}</div>
-      <div class="channel-meta"><h1>Les Zombinettes</h1><p>@zombinettes · <b>${S.stars}</b> abonnés · ${unlocked} collants</p></div></div>`;
-}
 function topbar(back = true) {
   return `<div class="topbar">${back ? `<button class="back" id="back">←</button>` : "<span></span>"}<span class="stars" id="starsN" title="abonnés">👥 ${S.stars}</span></div>`;
 }
-function tileCard([id, title, ic, c1, c2, sub]) {
+function tileCard([id, title, ic, c1, c2]) {
   return `<button class="tilecard" data-g="${id}">
       <div class="thumb" style="--c1:${c1};--c2:${c2}">${ic}${S.weekly.length && id === "word" ? `<span class="live">SEMAINE</span>` : ""}</div>
-      <div class="info"><div class="mini">${ic}</div><div><div class="t">${title}</div><div class="s">${sub}</div><div class="s">${S.plays[id] ? `${S.plays[id]} partie${S.plays[id] > 1 ? "s" : ""} jouée${S.plays[id] > 1 ? "s" : ""}` : "Jamais joué"}</div></div></div>
+      <div class="t">${title}</div>
     </button>`;
 }
+const HELLOS = ["Allô! On joue?", "Coucou! C'est moi!", "Bonjour toi!"];
+let greeted = false;
 function home() {
   stopAudio();
-  const d = dailyState();
-  const daily = `<button class="daily ${d.done ? "complete" : ""}" data-g="daily"><div class="dh"><b>${d.done ? "Défi du jour réussi! 🎉" : "⭐ Défi du jour"}</b></div>
-    <div class="ds">${d.done ? "Tu peux le rejouer pour le plaisir." : `${Object.values(DAILY_MIX).reduce((a, b) => a + b, 0)} questions : français, maths, musique et plus`}</div>${weekHtml()}</button>`;
-  const mixes = `<div class="mixes">${CATS.filter(c => !(c[6] && c[6].noMix)).map(([id, t, ic, c1, c2]) => `<button class="mix" data-g="mix:${id}" style="--c1:${c1};--c2:${c2}"><span>${ic}</span><b>${t}</b><small>Mélange</small></button>`).join("")}</div>`;
-  const lists = CATS.map(([id, t, ic, , , games]) => `<h2 class="cathead"><span>${ic}</span>${t}</h2><div class="grid">${games.map(g => tileCard(ACTIVITIES.find(a => a[0] === g))).join("")}</div>`).join("");
-  view(`${channelHeader()}
-    ${daily}
-    ${mixes}
-    <h2 class="cathead all">Tous les jeux</h2>
-    ${lists}`, "home");
+  const d = dailyState(), hello = pick(HELLOS), unlocked = Object.keys(S.stickers).length;
+  view(`<div class="hello"><div class="hellozomb">${zombinette("idle")}</div><div class="bubble">${hello}</div>
+      <div class="who"><div class="avatar">${avatarHtml()}</div><div><b>Les Zombinettes</b><small>👥 ${S.stars} abonnés · 🌟 ${unlocked} collants</small></div></div></div>
+    <button class="daily ${d.done ? "complete" : ""}" data-g="daily"><div class="dh"><b>${d.done ? "Défi du jour réussi! 🎉" : "⭐ Défi du jour"}</b><span class="go">${d.done ? "🔁" : "▶"}</span></div>${weekHtml()}</button>
+    <div class="doors">${CATS.map(([id, t, ic, c1, c2]) => `<button class="door" data-cat="${id}" style="--c1:${c1};--c2:${c2}"><span>${ic}</span><b>${t}</b></button>`).join("")}</div>`, "home");
+  app.querySelectorAll("[data-g]").forEach(b => b.onclick = () => startSession(b.dataset.g));
+  app.querySelectorAll("[data-cat]").forEach(b => b.onclick = () => catScreen(b.dataset.cat));
+  if (!greeted) { greeted = true; setTimeout(() => { if ($(".hello")) say([hello]); }, 400); }
+}
+function catScreen(id) {
+  stopAudio();
+  const [, t, ic, c1, c2, games, opt] = CATS.find(c => c[0] === id);
+  view(`${topbar()}<div class="section"><h1>${ic} ${t}</h1></div>
+    <div class="grid">${opt && opt.noMix ? "" : `<button class="tilecard mixtile" data-g="mix:${id}"><div class="thumb" style="--c1:${c1};--c2:${c2}">🎲</div><div class="t">Mélange</div></button>`}${games.map(g => tileCard(ACTIVITIES.find(a => a[0] === g))).join("")}</div>`, "home");
+  $("#back").onclick = home;
   app.querySelectorAll("[data-g]").forEach(b => b.onclick = () => startSession(b.dataset.g));
 }
 function album() {

@@ -91,12 +91,12 @@ h1 { font-size: 1.5rem; margin: 8px 0 4px; font-weight: 700; }
 .progress i.done { background: var(--ink); } .progress i.cur { background: var(--accent); }
 
 /* exercices */
-.speakrow { position: relative; display: flex; justify-content: center; align-items: center; margin: 6px 0; }
+.speakrow { display: flex; justify-content: center; align-items: center; gap: 22px; margin: 6px 0; }
 .speak { width: 104px; height: 104px; border-radius: 50%; background: var(--accent); color: var(--on-accent); font-size: 2.8rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 0 10px color-mix(in srgb, var(--accent) 18%, transparent); }
 .speak:active { transform: scale(.95); }
-.mute { position: absolute; right: 0; top: 50%; transform: translateY(-50%); width: 48px; height: 48px; border-radius: 50%; background: var(--surface); font-size: 1.3rem; display: flex; align-items: center; justify-content: center; }
+.mute { width: 52px; height: 48px; border-radius: 50%; background: var(--surface); font-size: 1.3rem; display: flex; align-items: center; justify-content: center; }
 .mute.on { background: var(--surface2); opacity: .7; }
-.mute.eye { right: auto; left: 0; }
+.mute-spacer { width: 52px; }
 .slots { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; min-height: 64px; margin: 14px 0; }
 .slot { width: 50px; height: 60px; border-radius: 10px; border: 2px solid var(--line); display: flex; align-items: center; justify-content: center; font-size: 1.9rem; font-weight: 700; background: var(--surface); }
 .slot.filled { border-color: var(--ink); }
@@ -194,12 +194,12 @@ table.stats td { padding: 8px 4px; border-bottom: 1px solid var(--line); } table
 .readword { text-align: center; font-size: 3.4rem; font-weight: 800; letter-spacing: .03em; margin: 10px 0 18px; }
 .cmpq { text-align: center; font-size: 1.5rem; margin: 6px 0 16px; color: var(--muted); }
 .cmpq b { color: var(--ink); font-size: 1.9rem; }
-.choices { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: 100%; max-width: 460px; margin: 0 auto; }
+.choices { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; width: 100%; max-width: 640px; margin: 0 auto; }
 .choices.two { grid-template-columns: repeat(2, 1fr); max-width: 380px; }
 .choices.four { grid-template-columns: repeat(2, 1fr); max-width: 340px; }
 .choice { aspect-ratio: 1; border-radius: 16px; background: var(--surface2); border: 3px solid transparent; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; transition: transform .1s; }
 .choice:active { transform: scale(.95); }
-.choice.emo { font-size: 3.4rem; }
+.choice.emo { font-size: clamp(3.4rem, 12vw, 6.8rem); }
 .choice.num { font-size: 2.4rem; font-weight: 800; aspect-ratio: 4 / 3; }
 .choice.txt { font-size: 1.6rem; font-weight: 700; aspect-ratio: 3 / 2; }
 .choice small { font-size: .8rem; color: var(--muted); font-weight: 600; }
@@ -292,7 +292,7 @@ button.daily { display: block; width: calc(100% - 32px); text-align: left; color
 .quizq { font-size: 1.35rem; color: var(--ink); font-weight: 700; padding: 0 12px; }
 .quizvis { display: flex; justify-content: center; margin: 0 0 14px; }
 .bigemo { font-size: 5rem; line-height: 1.1; letter-spacing: .1em; }
-.quizc .choice { font-size: 2.6rem; }
+.quizc .choice { font-size: clamp(2.6rem, 10vw, 5.6rem); }
 .paint { display: inline-block; width: 44px; height: 44px; border-radius: 50% 46% 52% 44%; border: 3px solid rgba(255,255,255,.55); vertical-align: middle; }
 .mixpaint { display: flex; align-items: center; gap: 10px; font-size: 2rem; font-weight: 800; }
 .mixpaint .paint { width: 64px; height: 64px; }
@@ -330,3 +330,25 @@ button.daily { display: block; width: calc(100% - 32px); text-align: left; color
 .zarm { stroke: #86d49a; stroke-width: 9; stroke-linecap: round; fill: none; }
 .zarm-o { stroke: #2b1d3d; stroke-width: 13; stroke-linecap: round; fill: none; }
 .choice.gone { opacity: .15; pointer-events: none; transform: scale(.9); transition: opacity .3s, transform .3s; }
+
+/* accueil sur un écran */
+.hello { position: relative; margin: 8px 16px 10px; border-radius: 18px; min-height: 190px; background: var(--scene) center bottom / cover no-repeat, var(--surface); overflow: hidden; display: flex; align-items: flex-end; }
+.hellozomb { width: 120px; height: 168px; margin: 0 0 -6px 14px; flex: none; animation: pop .5s ease; }
+.bubble { position: absolute; left: 130px; top: 22px; background: #fff; color: #1f1430; font-weight: 800; font-size: 1.15rem; padding: 10px 14px; border-radius: 16px 16px 16px 4px; box-shadow: 0 4px 14px rgba(0,0,0,.3); }
+.who { position: absolute; right: 12px; bottom: 12px; display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,.55); padding: 6px 12px 6px 6px; border-radius: 999px; backdrop-filter: blur(6px); }
+.who .avatar { width: 46px; height: 46px; font-size: 1.5rem; border-width: 2px; margin: 0; }
+.who b { display: block; font-size: .95rem; } .who small { color: #e5e7eb; font-size: .8rem; }
+.daily .dh { margin-bottom: 4px; } .daily .dh b { font-size: 1.25rem; } .daily .go { font-size: 1.4rem; }
+.doors { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin: 4px 16px 10px; }
+@media (min-width: 700px) and (orientation: landscape) { .doors { grid-template-columns: repeat(4, 1fr); } }
+.door { aspect-ratio: 16 / 11; border-radius: 20px; background: linear-gradient(135deg, var(--c1), var(--c2)); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 6px 18px rgba(0,0,0,.35); transition: transform .12s; }
+.door:active { transform: scale(.96); }
+.door span { font-size: clamp(3rem, 9vw, 4.4rem); } .door b { font-size: 1.35rem; }
+.tilecard .t { padding: 10px 12px 12px; font-weight: 700; font-size: 1.05rem; text-align: center; }
+.mixtile .thumb { font-size: 3.6rem; }
+/* écran de jeu qui remplit l'iPad */
+#app.immersive .stage { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 6px; border-radius: 22px; margin: 8px 0 0; padding: 18px 12px 22px; position: relative; overflow: hidden;
+  background: radial-gradient(120% 70% at 50% 0%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 70%), var(--surface); }
+#app.immersive .stage::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 38%; background: var(--scene) center bottom / cover no-repeat; opacity: .18; pointer-events: none; }
+#app.immersive .stage > * { position: relative; z-index: 1; }
+.target { font-size: clamp(4.6rem, 13vw, 7rem); }

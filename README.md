@@ -31,7 +31,8 @@ Parent) ; progression segmentée dans les exercices ; fin de partie avec abonné
 
 ## Organisation
 
-Accueil : 🔥 Défi du jour (une partie de 10 questions : 4 de français, 4 de maths, 2 de musique, piochées dans des jeux
+Accueil (tient sur un écran) : la Zombinette qui salue dans la bannière, le défi du jour, puis 4 portes
+(Français, Maths, Musique, Autre) qui mènent à la page de la matière (Mélange + ses jeux, nom seulement). Avant : 🔥 Défi du jour (une partie de 10 questions : 4 de français, 4 de maths, 2 de musique, piochées dans des jeux
 différents ; la réussir une fois par jour fait monter la série), puis un bouton « Mélange » par catégorie (10 questions
 de la catégorie ; en français, les mots et Lire pèsent 3 fois plus que les autres jeux ; dans chaque catégorie, les jeux
 les moins vus dans les mélanges passent en premier), puis tous les jeux sous des sous-titres 📚 Français, 🧮 Maths, 🎵 Musique. Le tracé (lettres en
