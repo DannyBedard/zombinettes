@@ -18,6 +18,7 @@ const ACTIVITIES = [
   ["syllab", "Syllabes", "🥁", "#ea580c", "#facc15", "Un coup de tambour par syllabe"],
   ["sound", "Rimes et sons", "👂", "#0891b2", "#a3e635", "Ça rime? Ça commence pareil?"],
   ["phrase", "Phrases", "🧩", "#7c3aed", "#22d3ee", "Remets les mots en ordre"],
+  ["sonsref", "Les sons", "🔤", "#0e7490", "#f472b6", "Les lettres qui font un son"],
   ["trace", "Tracer les lettres", "✏️", "#14b8a6", "#8b5cf6", "Lettres, mots et attaché"],
   ["number", "Les nombres", "🔢", "#0ea5e9", "#22c55e", "Écoute et écris le nombre"],
   ["calc", "Les calculs", "➕", "#f97316", "#ef4444", "Additions et soustractions"],
@@ -40,12 +41,12 @@ const ACTIVITIES = [
   ["emotions", "Les émotions", "😊", "#f472b6", "#f59e0b", "Comment tu te sens?"]
 ];
 const CATS = [
-  ["fr", "Français", "📚", "#7c3aed", "#ec4899", ["word", "read", "syllab", "sound", "phrase", "trace"]],
+  ["fr", "Français", "📚", "#7c3aed", "#ec4899", ["word", "read", "syllab", "sound", "phrase", "sonsref", "trace"]],
   ["math", "Maths", "🧮", "#0ea5e9", "#22c55e", ["number", "calc", "compare", "money", "clock", "traceNum"]],
   ["mus", "Musique", "🎵", "#a855f7", "#f43f5e", ["pitch", "rhythm", "instr", "keys", "figures", "traceMus"]],
   ["dec", "Autre", "🌍", "#16a34a", "#f59e0b", ["vivant", "habitat", "meteo", "saisons", "avant", "couleurs", "emotions"]]
 ];
-const DAILY_MIX = { fr: 4, math: 4, mus: 2, dec: 1 }, NO_MIX = ["trace", "traceNum", "traceMus"], MIX_WEIGHT = { word: 3, read: 3 };
+const DAILY_MIX = { fr: 4, math: 4, mus: 2, dec: 1 }, NO_MIX = ["trace", "traceNum", "traceMus", "sonsref"], MIX_WEIGHT = { word: 3, read: 3 };
 const HUNDREDS = ["", "cent", "deux cents", "trois cents", "quatre cents", "cinq cents", "six cents", "sept cents", "huit cents", "neuf cents"];
 const THOUSANDS = ["", "mille", "deux mille", "trois mille", "quatre mille", "cinq mille", "six mille", "sept mille", "huit mille", "neuf mille"];
 const HOURS = ["midi", "une heure", "deux heures", "trois heures", "quatre heures", "cinq heures", "six heures", "sept heures", "huit heures", "neuf heures", "dix heures", "onze heures", "midi"];
@@ -225,6 +226,33 @@ function numberParts(n) {
 }
 function timeParts(h, m) { return ["Il est", HOURS[h], ...(m ? numberParts(m) : [])]; }
 const cap = t => t[0].toUpperCase() + t.slice(1);
+/* Graphèmes et un mot exemple du même son (avec clip de voix) pour expliquer une erreur de dictée et pour la page Les sons */
+const GRAPHS = [["eau", "bateau", "gâteau"], ["ain", "pain", "main"], ["ein", "peinture", "ceinture"], ["oin", "pingouin", "foin"], ["ill", "abeille", "feuille"], ["ou", "loup", "hibou"], ["on", "ballon", "mouton"], ["om", "nom", "pompier"],
+  ["an", "maman", "éléphant"], ["am", "chambre", "lampe"], ["en", "dent", "serpent"], ["em", "temps", "tempête"], ["in", "lapin", "sapin"], ["un", "lundi", "brun"], ["oi", "roi", "poisson"], ["eu", "feu", "jeu"], ["au", "auto", "chaud"],
+  ["ai", "maison", "fraise"], ["ei", "neige", "baleine"], ["er", "chanter", "manger"], ["ez", "nez", "chez"], ["ch", "chat", "cheval"], ["gn", "montagne", "champignon"], ["ph", "éléphant", "phoque"], ["qu", "requin", "quatre"], ["gu", "guitare", "bague"]];
+const SOUND_GROUPS = [["o", ["eau", "au"]], ["an", ["an", "am", "en", "em"]], ["in", ["in", "ain", "ein"]], ["on", ["on", "om"]], ["è", ["ai", "ei"]], ["é", ["er", "ez"]], ["ou", ["ou"]], ["oi", ["oi"]], ["eu", ["eu"]],
+  ["oin", ["oin"]], ["un", ["un"]], ["ill", ["ill"]], ["ch", ["ch"]], ["gn", ["gn"]], ["f", ["ph"]], ["k", ["qu"]], ["g", ["gu"]]];
+const EMOJI_EXTRA = { chaud: "☀️", maman: "👩", chambre: "🛏️", lampe: "💡", temps: "⏰", "tempête": "⛈️", peinture: "🎨", ceinture: "🥋", nom: "📛", pompier: "👨‍🚒", chanter: "🎤", manger: "🍽️", chez: "🏡", foin: "🌾", lundi: "📅", brun: "🟤", phoque: "🦭", quatre: "4️⃣", bague: "💍" };
+function emojiOf(w) { const x = READ_WORDS.concat(SOUND_WORDS, SYL_WORDS).find(o => o.mot === w); return x ? x.emoji : EMOJI_EXTRA[w] || ""; }
+function soundsScreen() {
+  stopAudio();
+  const hl = (w, g) => { const p = w.indexOf(g); return p < 0 ? esc(w) : `${esc(w.slice(0, p))}<b>${esc(g)}</b>${esc(w.slice(p + g.length))}`; };
+  view(`${topbar()}<div class="section"><h1>🔤 Les sons</h1><p class="tagline">Touche un mot pour l'entendre.</p>
+    <div class="sounds">${SOUND_GROUPS.map(([, gs]) => `<div class="sgroup"><div class="sg">${gs.join(" · ")}</div><div class="sex">${gs.map(g => GRAPHS.find(x => x[0] === g).slice(1).map(w => `<button class="sw" data-w="${esc(w)}" data-g="${g}"><span>${emojiOf(w)}</span><span class="swt">${hl(w, g)}</span></button>`).join("")).join("")}</div></div>`).join("")}</div></div>`);
+  $("#back").onclick = home;
+  app.querySelectorAll(".sw").forEach(b => b.onclick = () => say([b.dataset.w, { pause: 300 }, ...spellParts(b.dataset.g)]));
+  say(["Voici les lettres qui font un son ensemble. Touche un mot pour l'entendre."]);
+}
+function explainWord(t, a) {
+  t = norm(t); a = norm(a); let i = 0; while (i < t.length && t[i] === a[i]) i++;
+  if (i >= t.length) return null;
+  for (const [g, ex1, ex2] of GRAPHS) for (let p = t.indexOf(g); p >= 0; p = t.indexOf(g, p + 1))
+    if (p <= i && i < p + g.length) { const ex = ex1 !== t ? ex1 : ex2; return { shown: `Ici, c'est le son de <b>${esc(ex)}</b>, qui s'écrit <b>${esc(g)}</b>.`, spoken: ["Ici, c'est le son de", ex, "qui s'écrit", ...spellParts(g)] }; }
+  if (i === t.length - 1 && /[tdsxpzg]/.test(t[i]) && t.length > 2) return { shown: `La lettre <b>${t[i]}</b> à la fin ne s'entend pas.`, spoken: ["La dernière lettre", t[i], "ne s'entend pas."] };
+  if (t[i] === t[i + 1] || t[i] === t[i - 1]) return { shown: `Il y a deux <b>${t[i]}</b>.`, spoken: ["Il y a deux", t[i]] };
+  if (/[éèêàâùûîôë]/.test(t[i])) return { shown: `Attention à l'accent : <b>${t[i]}</b>.`, spoken: ["Attention à l'accent!"] };
+  return null;
+}
 const figOf = id => FIGURES.find(x => x[0] === id), insOf = id => INSTRUMENTS.find(x => x[0] === id);
 const tempsLine = (fig, n) => `${cap(fig[1])} vaut ${TEMPS[n]}.`;
 function padBad(t) { const n = $("#num"); if (n) { n.textContent = t; n.className = "bad"; } }
@@ -233,7 +261,7 @@ function padBad(t) { const n = $("#num"); if (n) { n.textContent = t; n.classNam
    dite après une erreur ; speakReveal = dite même quand les commentaires sont coupés. */
 const GAMES = {
   word: { prompt: it => [it.mot], speakReveal: true,
-    reveal: (it, t, a) => ({ shown: Array.from(t).map((ch, i) => (norm(a)[i] === ch ? esc(ch) : `<span class="diff">${esc(ch)}</span>`)).join(""), spoken: ["Le mot est", t, { pause: 300 }, ...spellParts(t)] }) },
+    reveal: (it, t, a) => { const ex = explainWord(t, a); return { shown: Array.from(t).map((ch, i) => (norm(a)[i] === ch ? esc(ch) : `<span class="diff">${esc(ch)}</span>`)).join("") + (ex ? `<div class="explain">${ex.shown}</div>` : ""), spoken: ["Le mot est", t, { pause: 300 }, ...spellParts(t), ...(ex ? [{ pause: 400 }, ...ex.spoken] : [])] }; } },
   read: { prompt: () => [CONSIGNE.read], silent: true, speakReveal: true, praise: it => [it.mot], reveal: it => ({ shown: `${it.emoji} ${esc(it.mot)}`, spoken: [it.mot] }) },
   syllab: { prompt: it => [it.mot], speakReveal: true, praise: it => [it.mot], reveal: it => ({ shown: it.syl.join(" · "), spoken: [it.mot] }) },
   sound: { prompt: it => [it.sub === "rime" ? "Quel mot rime avec" : "Quel mot commence comme", it.target.mot, { pause: 400 }, it.choices[0].mot, it.choices[1].mot, "ou", it.choices[2].mot], speakReveal: true, praise: it => [it.target.mot, it.answer],
@@ -619,6 +647,7 @@ function mixItems(plan) {
 /* ---------- moteur de session ---------- */
 function startSession(kind) {
   stopAudio();
+  if (kind === "sonsref") { S.plays.sonsref = (S.plays.sonsref || 0) + 1; save(); return soundsScreen(); }
   let items;
   if (kind === "daily") items = mixItems(Object.entries(DAILY_MIX));
   else if (kind.startsWith("mix:")) items = mixItems([[kind.slice(4), 10]]);
@@ -1231,7 +1260,7 @@ function home() {
   stopAudio();
   const d = dailyState();
   const daily = `<button class="daily ${d.done ? "complete" : ""}" data-g="daily"><div class="dh"><b>${d.done ? "Défi du jour réussi! 🎉" : "⭐ Défi du jour"}</b></div>
-    <div class="ds">${d.done ? "Tu peux le rejouer pour le plaisir." : "10 questions : français, maths et musique"}</div>${weekHtml()}</button>`;
+    <div class="ds">${d.done ? "Tu peux le rejouer pour le plaisir." : "11 questions : français, maths, musique et plus"}</div>${weekHtml()}</button>`;
   const mixes = `<div class="mixes">${CATS.filter(c => c[0] !== "dec").map(([id, t, ic, c1, c2]) => `<button class="mix" data-g="mix:${id}" style="--c1:${c1};--c2:${c2}"><span>${ic}</span><b>${t}</b><small>Mélange</small></button>`).join("")}</div>`;
   const lists = CATS.map(([id, t, ic, , , games]) => `<h2 class="cathead"><span>${ic}</span>${t}</h2><div class="grid">${games.map(g => tileCard(ACTIVITIES.find(a => a[0] === g))).join("")}</div>`).join("");
   view(`${channelHeader()}
