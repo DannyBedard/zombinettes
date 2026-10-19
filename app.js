@@ -1594,6 +1594,9 @@ function parent() {
 /* ---------- démarrage ---------- */
 async function boot() {
   applyTheme();
+  const sky = document.createElement("div"); sky.className = "sky";
+  sky.innerHTML = Array.from({ length: 26 }, (_, k) => `<i class="${k % 5 === 0 ? "b" : k % 4 === 0 ? "c" : ""}" style="left:${rand(0, 100)}%;top:${rand(0, 100)}%;animation-delay:${(Math.random() * 3).toFixed(2)}s;animation-duration:${(2.5 + Math.random() * 3).toFixed(2)}s"></i>`).join("");
+  document.body.prepend(sky);
   view(`<div class="splash"><div class="splashzomb">${zombinette("happy")}</div><h1>Les Zombinettes</h1></div>`);
   const shown = Date.now();
   const res = await Promise.all([1, 2, 3].map(l => fetch(`data/mots-${l}.json`).then(r => r.json()).catch(() => [])));
