@@ -1,4 +1,4 @@
-const CACHE = "zombinettes-v28", MEDIA = "zombinettes-audio";
+const CACHE = "zombinettes-v29", MEDIA = "zombinettes-audio";
 const ASSETS = ["./", "index.html", "styles.css", "app.js", "manifest.webmanifest",
   "data/mots-1.json", "data/mots-2.json", "data/mots-3.json", "data/lecture.json", "data/sons.json", "data/syllabes.json", "data/phrases-desordre.json", "fonts/playwrite-ca.woff2",
   "icons/icon-180.png", "icons/icon-192.png", "icons/icon-512.png",

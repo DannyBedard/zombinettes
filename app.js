@@ -2,7 +2,7 @@
 (() => {
 const STORE_KEY = "zombinettes.v1";
 const DEFAULTS = {
-  palier: 5, palierAuto: true, mode: "tiles", decoys: 3, pin: "1234", weekly: [], theme: "violet", bg: "dark", avatar: null, custom: null, voice: "sylvie", pitch: 1,
+  palier: 5, palierAuto: true, mode: "tiles", decoys: 3, pin: "1234", weekly: [], theme: "violet", avatar: null, custom: null, voice: "sylvie", pitch: 1,
   mute: { quiz: false, word: false, read: false, sound: false, syllab: false, phrase: false, money: false, keys: false, figures: false, number: false, calc: false, compare: false, clock: false, trace: false, music: false },
   stars: 0, stickers: {}, sessions: 0, progress: {}, sessionLength: 8, newPerSession: 3,
   math: { numMax: 199, firstMax: 20, addMax: 10, sub: true, visual: true, length: 8 },
@@ -137,6 +137,7 @@ function load() {
   out.days = (s.days || []).slice();
   out.cabin = { items: [...(out.cabin.items || [])], visitors: [...(out.cabin.visitors || [])], pending: out.cabin.pending || 0 };
   if (!s.days && s.streak && s.streak.last) { const [y, m, d] = s.streak.last.split("-").map(Number); out.days = Array.from({ length: s.streak.n || 1 }, (_, k) => dayStr(new Date(y, m - 1, d - k))); }
+  delete out.bg;
   if (s.palier && !s.boost) { out.palier = Math.max(out.palier, 5);
     out.math = Object.assign(out.math, { firstMax: Math.max(out.math.firstMax, 20), addMax: Math.max(out.math.addMax, 10), sub: true });
     out.trace = Object.assign(out.trace, { upper: true, cursive: true, cwords: true });
@@ -318,7 +319,7 @@ function replay(it) {
 }
 function spellParts(w) { return Array.from(w.toLowerCase()).map(c => c === "'" || c === "’" ? "apostrophe" : c === "-" ? "trait d'union" : c); }
 function applyTheme() {
-  const h = document.documentElement; h.dataset.theme = S.theme || "violet"; h.dataset.bg = S.bg || "dark";
+  const h = document.documentElement; h.dataset.theme = S.theme || "violet"; h.dataset.bg = "color";
   if (S.custom) { h.style.setProperty("--accent", S.custom.c1); h.style.setProperty("--accent2", S.custom.c2); h.style.setProperty("--on-accent", S.custom.c1 === "#f1f1f1" || S.custom.c1 === "#fbbf24" ? "#111" : "#fff"); }
   else { h.style.removeProperty("--accent"); h.style.removeProperty("--accent2"); h.style.removeProperty("--on-accent"); }
 }
@@ -1375,8 +1376,8 @@ function styleScreen() {
       <label class="btn ghost small" for="photoCam" style="margin:0">🤳 Selfie</label><input type="file" id="photoCam" accept="image/*" capture="user" hidden>
       <label class="btn ghost small" for="photoFile" style="margin:0">🖼️ Photo</label><input type="file" id="photoFile" accept="image/*" hidden>
       ${S.avatar ? `<button class="btn ghost small" id="photoDel" style="margin:0">✖</button>` : ""}</div></div>
-    <div class="card"><div class="row" style="justify-content:center">${[["dark", "🌑 Sombre"], ["color", "🌈 Couleur"]].map(([id, lb]) => `<button class="pill ${(S.bg || "dark") === id ? "on" : ""}" data-bg="${id}">${lb}</button>`).join("")}</div>
-      ${S.bg === "color" ? `<div class="swatches duos"><button class="swatch duo ${!S.custom ? "on" : ""}" data-duo="theme" style="background:linear-gradient(135deg, var(--accent), var(--accent2))">🎨</button>${DUOS.map(([id, e, c1, c2]) => `<button class="swatch duo ${S.custom && S.custom.id === id ? "on" : ""}" data-duo="${id}" style="background:linear-gradient(135deg, ${c1}, ${c2})">${e}</button>`).join("")}</div>` : ""}</div>
+    <div class="card">
+      <div class="swatches duos"><button class="swatch duo ${!S.custom ? "on" : ""}" data-duo="theme" style="background:linear-gradient(135deg, var(--accent), var(--accent2))">🎨</button>${DUOS.map(([id, e, c1, c2]) => `<button class="swatch duo ${S.custom && S.custom.id === id ? "on" : ""}" data-duo="${id}" style="background:linear-gradient(135deg, ${c1}, ${c2})">${e}</button>`).join("")}</div></div>
     <div class="card"><div class="swatches">${THEMES.map(([t, e]) => `<button class="swatch ${S.theme === t ? "on" : ""}" data-t="${t}" data-theme="${t}">${e}</button>`).join("")}</div></div>
     <div class="card">
       <div class="voices">${edgeCards}${voices.length ? voices.map((v, i) => `<button class="voice ${S.voice === "system:" + v.voiceURI ? "on" : ""}" data-u="system:${esc(v.voiceURI)}"><span class="av">${AVATARS[i % AVATARS.length]}</span><span class="nm">${esc(v.name.replace(/\s*\(.*$/, "").trim())}${/enhanced|premium|amélior|neural|natural|google/i.test(v.name) ? " ✨" : ""}</span><span class="lg">${esc(v.lang.slice(-2).toUpperCase())}</span></button>`).join("") : ""}</div>
@@ -1385,7 +1386,6 @@ function styleScreen() {
   const onPhoto = async e => { const f = e.target.files[0]; if (f && await setAvatarFromFile(f)) { say(["Belle photo!"]); styleScreen(); } };
   $("#photoFile").onchange = onPhoto; $("#photoCam").onchange = onPhoto;
   if ($("#photoDel")) $("#photoDel").onclick = () => { S.avatar = null; save(); styleScreen(); };
-  app.querySelectorAll("[data-bg]").forEach(b => b.onclick = () => { S.bg = b.dataset.bg; if (S.bg === "dark") S.custom = null; save(); applyTheme(); say([S.bg === "dark" ? "Fond sombre" : "Fond coloré"]); styleScreen(); });
   app.querySelectorAll(".swatch[data-t]").forEach(b => b.onclick = () => { S.theme = b.dataset.t; S.custom = null; save(); applyTheme(); say([THEME_NAMES[S.theme]]); styleScreen(); });
   app.querySelectorAll("[data-duo]").forEach(b => b.onclick = () => {
     const d = DUOS.find(x => x[0] === b.dataset.duo);

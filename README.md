@@ -19,7 +19,7 @@ ouvrir l'URL dans Safari, Partager, « Sur l'écran d'accueil ». L'app fonction
 
 ## Interface
 
-Fond sombre, une couleur d'accent et une scène illustrée par thème (8 thèmes : violet, zombie, vampire, loup-garou, licorne, océan, chanteuse, sirène ; `img/*.svg`, dessinées à la main, pas d'assets externes) en bannière (ratio 3:1) et en fond de page assombri. En mode Couleur, six duos de couleurs prêts à l'emploi (plus le duo du thème). Deux fonds au choix dans Mon style : sombre, ou dégradé tiré des couleurs du thème avec surfaces translucides. La photo de profil peut être remplacée par une photo de l'appareil (recadrée en 256×256, stockée en base64 dans le localStorage). Accueil = page de chaîne (bannière, avatar, abonnés, niveau,
+Fond sombre, une couleur d'accent et une scène illustrée par thème (8 thèmes : violet, zombie, vampire, loup-garou, licorne, océan, chanteuse, sirène ; `img/*.svg`, dessinées à la main, pas d'assets externes) en bannière (ratio 3:1) et en fond de page assombri. En mode Couleur, six duos de couleurs prêts à l'emploi (plus le duo du thème). Fond en dégradé tiré des couleurs du thème (ou d'un des duos de Mon style), avec surfaces translucides et étoiles qui scintillent. La photo de profil peut être remplacée par une photo de l'appareil (recadrée en 256×256, stockée en base64 dans le localStorage). Accueil = page de chaîne (bannière, avatar, abonnés, niveau,
 succès) et grille de vignettes par activité avec badge de durée ; barre d'onglets en bas (Accueil, Succès, Style,
 Parent) ; progression segmentée dans les exercices ; fin de partie avec abonnés gagnés et nouveau collant, puis retour à l'accueil (bouton secondaire pour voir les collants).
 
