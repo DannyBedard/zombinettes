@@ -133,18 +133,18 @@ function frVoices() {
   const seen = new Set();
   return speechSynthesis.getVoices().filter(v => /^fr/i.test(v.lang) && SYSTEM_VOICE_OK.test(v.name)).filter(v => { const k = v.name + v.lang; if (seen.has(k)) return false; seen.add(k); return true; });
 }
-let actx = null; const BUFFERS = new Map();
+let actx = null; const BUFFERS = new Map(), AUDIO_KEEP = 60;
+function remember(map, key, val) { map.delete(key); map.set(key, val); while (map.size > AUDIO_KEEP) map.delete(map.keys().next().value); return val; }
 function unlockAudio() { try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); if (actx.state !== "running") actx.resume(); } catch {} }
 document.addEventListener("pointerdown", unlockAudio, { passive: true });
 async function getBuffer(url) {
-  if (BUFFERS.has(url)) return BUFFERS.get(url);
+  if (BUFFERS.has(url)) return remember(BUFFERS, url, BUFFERS.get(url));
   const buf = await actx.decodeAudioData(await fetch(url).then(r => r.arrayBuffer()));
-  BUFFERS.set(url, buf); return buf;
+  return remember(BUFFERS, url, buf);
 }
 const STRETCHED = new Map();
-function stretch(buf, f) {
-  const key = buf.length + ":" + f + ":" + buf.getChannelData(0)[Math.floor(buf.length / 3)];
-  if (STRETCHED.has(key)) return STRETCHED.get(key);
+function stretch(buf, f, key) {
+  if (STRETCHED.has(key)) return remember(STRETCHED, key, STRETCHED.get(key));
   const x = buf.getChannelData(0), sr = buf.sampleRate, N = 2 * Math.round(sr * 0.02), Hs = N / 2, Ha = Hs / f, tol = Math.round(sr * 0.008);
   const len = Math.ceil(x.length * f) + N, y = new Float32Array(len), wsum = new Float32Array(len), w = new Float32Array(N);
   for (let i = 0; i < N; i++) w[i] = 0.5 - 0.5 * Math.cos(2 * Math.PI * i / N);
@@ -165,13 +165,13 @@ function stretch(buf, f) {
   }
   for (let i = 0; i < len; i++) if (wsum[i] > 1e-3) y[i] /= wsum[i];
   const out = actx.createBuffer(1, len, sr); out.getChannelData(0).set(y);
-  STRETCHED.set(key, out); return out;
+  return remember(STRETCHED, key, out);
 }
 function playClip(url, rate, robot) { return new Promise(async res => {
   try {
     unlockAudio(); if (!actx) return playClipFallback(url, rate).then(res);
     let buf = await getBuffer(url);
-    if (rate !== 1) buf = stretch(buf, rate);
+    if (rate !== 1) buf = stretch(buf, rate, url + "@" + rate);
     const src = actx.createBufferSource(); src.buffer = buf; src.playbackRate.value = rate;
     let osc = null;
     if (robot) { const ring = actx.createGain(); ring.gain.value = 0; osc = actx.createOscillator(); osc.frequency.value = 45; osc.connect(ring.gain); src.connect(ring); ring.connect(actx.destination); osc.start(); }
@@ -272,8 +272,9 @@ function weeklyWords() { return S.weekly.map(m => ({ kind: "word", key: m, mot: 
 function prog(key) { return S.progress[key] || (S.progress[key] = { box: 0, last: -99, ok: 0, ko: 0 }); }
 function isDue(key, s) { const p = S.progress[key]; if (!p) return true; return s - p.last >= BOX_GAP[p.box]; }
 
-function buildWordSession() {
-  S.sessions += 1; const s = S.sessions;
+function buildWordSession(mix) {
+  if (!mix) S.sessions += 1;
+  const s = S.sessions;
   const n = S.sessionLength, chosen = [], seen = new Set();
   const add = w => { if (!seen.has(w.key) && chosen.length < n) { seen.add(w.key); chosen.push(w); } };
   weeklyWords().filter(w => isDue(w.key, s)).forEach(add);
@@ -285,7 +286,7 @@ function buildWordSession() {
   for (const w of fresh) { if (chosen.length >= n) break; add(w); }
   for (const w of known) { if (chosen.length >= n) break; add(w); }
   save();
-  return shuffle(chosen);
+  return mix ? chosen : shuffle(chosen);
 }
 
 /* ---------- maths ---------- */
@@ -546,7 +547,7 @@ function mixItems(plan) {
   const out = [];
   for (const [cat, n] of plan) {
     const share = allocate(cat, n);
-    for (const g in share) if (share[g]) out.push(...shuffle(gameItems(g)).slice(0, share[g]));
+    for (const g in share) if (share[g]) out.push(...(g === "word" ? buildWordSession(true) : shuffle(gameItems(g))).slice(0, share[g]));
   }
   let mixed = shuffle(out);
   for (let k = 1; k < mixed.length; k++) if (mixed[k].kind === mixed[k - 1].kind) { const j = mixed.findIndex((x, q) => q > k && x.kind !== mixed[k].kind); if (j > 0) [mixed[k], mixed[j]] = [mixed[j], mixed[k]]; }
@@ -703,7 +704,8 @@ function rhythmOnsets(pattern) { const on = []; let t = 0; for (const p of patte
 async function playMusic(it) {
   const me = session, idx = session.i, alive = () => session === me && session.i === idx && $("#speak");
   try {
-    unlockAudio(); if (!actx) return;
+    unlockAudio();
+    if (!actx) { if (it.sub === "rhythm" && alive()) { session.listening = false; session.taps = []; $("#drum").classList.add("ready"); } return; }
     if (it.sub === "pitch") {
       const btns = app.querySelectorAll(".note"), t0 = now();
       it.notes.forEach((n, k) => { tone(n, t0 + k * 0.9, 0.7); setTimeout(() => { if (alive()) btns[k].classList.add("lit"); setTimeout(() => btns[k] && btns[k].classList.remove("lit"), 650); }, (t0 - actx.currentTime + k * 0.9) * 1000); });
@@ -1011,7 +1013,7 @@ function check(it, answer) {
   }
 }
 function maybeLevelUp() {
-  if (session.kind !== "word" || !S.palierAuto || S.palier >= 10) return false;
+  if (!session.items.some(x => x.kind === "word") || !S.palierAuto || S.palier >= 10) return false;
   const un = unlockedWords(); if (!un.length) return false;
   const learned = un.filter(w => S.progress[w.key] && S.progress[w.key].box >= 1).length;
   if (learned / un.length >= 0.7) { S.palier += 1; return true; }
@@ -1325,7 +1327,7 @@ function parent() {
     const msg = $("#offMsg"); const m = MANIFEST[S.voice];
     if (!("caches" in window)) { msg.textContent = "Non disponible dans ce navigateur."; return; }
     if (!m) { msg.textContent = "La voix choisie n'a pas de clips à télécharger."; return; }
-    const urls = [...m].map(sl => `audio/${S.voice}/${sl}.mp3`); const cache = await caches.open("zombinettes-v10"); urls.push(...INSTRUMENTS.flatMap(x => [1, 2].map(k => `audio/instr/${x[0]}-${k}.m4a`))); let done = 0;
+    const urls = [...m].map(sl => `audio/${S.voice}/${sl}.mp3`); const cache = await caches.open("zombinettes-audio"); urls.push(...INSTRUMENTS.flatMap(x => [1, 2].map(k => `audio/instr/${x[0]}-${k}.m4a`))); let done = 0;
     for (let i = 0; i < urls.length; i += 25) {
       const batch = urls.slice(i, i + 25).filter(u => u);
       const existing = await Promise.all(batch.map(u => cache.match(u)));
@@ -1335,7 +1337,7 @@ function parent() {
     msg.textContent = `Prêt : ${urls.length} sons de ${S.voice === "sylvie" ? "Sylvie" : S.voice} disponibles hors ligne.`;
   };
   $("#pin").onclick = () => { const p = prompt("Nouveau NIP (4 chiffres)"); if (p && /^\d{4}$/.test(p)) { S.pin = p; save(); alert("NIP changé"); } };
-  $("#reset").onclick = () => { if (confirm("Effacer tous les progrès, abonnés et collants ?")) { S.progress = {}; S.stars = 0; S.stickers = {}; S.sessions = 0; S.palier = 1; S.mathStats = JSON.parse(JSON.stringify(DEFAULTS.mathStats)); save(); parent(); } };
+  $("#reset").onclick = () => { if (confirm("Effacer tous les progrès, abonnés et collants ?")) { S.progress = {}; S.stars = 0; S.stickers = {}; S.sessions = 0; S.palier = DEFAULTS.palier; S.daily = null; for (const k of ["mathStats", "plays", "streak", "mixCount"]) S[k] = JSON.parse(JSON.stringify(DEFAULTS[k])); save(); parent(); } };
 }
 
 /* ---------- démarrage ---------- */

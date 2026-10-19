@@ -114,8 +114,8 @@ le mot ou le nombre à écrire est toujours dit.
 
 ## Hors ligne
 
-Le service worker garde en cache l'app et les données ; les sons se mettent en cache au fur et à mesure qu'ils
-sont joués. Le bouton « Préparer le hors-ligne » de l'espace parent télécharge d'un coup tous les clips de la voix
+Le service worker garde en cache l'app et les données (réseau d'abord) ; les sons et extraits d'instruments vont dans
+un cache séparé, « zombinettes-audio », servi en priorité et jamais effacé par une mise à jour de l'app. Le bouton « Préparer le hors-ligne » de l'espace parent télécharge d'un coup tous les clips de la voix
 choisie (~12 Mo). La lecture passe par Web Audio, déverrouillé au premier toucher, pour contourner le blocage
 de lecture automatique de Safari iOS.
 
