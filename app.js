@@ -60,7 +60,22 @@ const FIGURES = [["ronde", "la ronde", "Touche la ronde."], ["blanche", "la blan
 const DECOY = { a: "oeà", à: "a", e: "éèa", é: "eèê", è: "éeê", ê: "èé", i: "ly", o: "au", u: "on", y: "i", s: "zc", c: "sk", k: "c", g: "jq", j: "g", m: "n", n: "mu", b: "dp", d: "bt", p: "qb", q: "pg", t: "df", f: "vt", v: "f", l: "i", r: "l", h: "n", z: "s", x: "s" };
 const THEME_AVATAR = { violet: "🧟‍♀️", zombie: "🧟‍♀️", vampire: "🧛‍♀️", loup: "🐺", licorne: "🦄", ocean: "🐬", chanteuse: "👩‍🎤", sirene: "🧜‍♀️" };
 const STICKERS = ["🧟‍♀️", "🧛‍♀️", "🐺", "👻", "🦇", "🕸️", "🎃", "📣", "🎤", "🎥", "📱", "🔔", "👍", "🎬", "🎮", "💜", "🧸", "🦄", "🌈", "⭐", "🍭", "🎀", "🎸", "🩰", "🎧", "🐱", "🌸", "🍦", "🦋", "🎉", "👑", "🐶", "🍩", "🛼", "🎈", "🌙", "🧟", "🧟‍♂️", "🧛", "🧛‍♂️", "🧙‍♀️", "🧚‍♀️", "🧜‍♀️", "👸", "🦸‍♀️", "🥷", "💀", "☠️", "🕷️", "🐈‍⬛", "🦉", "🐸", "🐼", "🐨", "🦊", "🐰", "🐹", "🐧", "🐙", "🦈", "🐬", "🦖", "🐉", "🐝", "🐞", "🌺", "🌻", "🍀", "🌵", "🍓", "🍒", "🍉", "🍕", "🧁", "🍪", "🍫", "🍿", "🧋", "🥤", "🎂", "🍰", "💍", "👠", "👗", "👛", "🕶️", "💄", "💅", "🪩", "🎹", "🎷", "🎺", "🥁", "🪇", "🎵", "🎶", "🎙️", "📸", "🎨", "🖍️", "🪄", "🔮", "🪅", "🎁", "🚀", "🛸", "❄️", "⚡", "🥇"];
-const PRAISE = ["Bravo!", "Wow!", "Super!", "Génial!", "Trop fort!", "Yé!", "Championne!", "Parfait!", "Incroyable!"];
+const PRAISE = ["Bravo!", "Wow!", "Super!", "Génial!", "Trop fort!", "Yé!", "Championne!", "Parfait!", "Incroyable!", "Excellent!", "Bien joué!", "Fantastique!", "Hourra!", "Tu es une vedette!", "Les abonnés adorent!"];
+const PRAISE_BY = {
+  word: ["Bien écrit!", "Toutes les lettres sont là!", "Quelle belle orthographe!"], read: ["Bien lu!", "Tu lis comme une grande!", "Super lecture!"],
+  sound: ["Tu as l'oreille fine!", "Bien entendu!"], syllab: ["Bien compté!", "Bon rythme!"], phrase: ["Belle phrase!", "Tout est dans le bon ordre!"],
+  trace: ["Beau tracé!", "Quelle belle écriture!"], number: ["Bon nombre!", "Bien écouté!"], calc: ["Bon calcul!", "Tu comptes vite!"],
+  compare: ["Le crocodile est content!", "Miam! Bon choix!"], money: ["Bien compté!", "Tu connais tes sous!"], clock: ["Tu sais lire l'heure!", "Bonne heure!"],
+  keys: ["Bonne note!", "Belle oreille de pianiste!"], figures: ["Tu connais tes notes!", "Bien trouvé!"], music: ["Belle oreille!", "Quelle musicienne!"], quiz: ["Bien trouvé!", "Tu as tout compris!"]
+};
+const PRAISE_RETRY = ["Tu as persévéré!", "Bien essayé, c'est ça!", "Tu ne lâches pas, bravo!"], PRAISE_ROW = { 3: "Trois de suite!", 5: "Cinq de suite! Wow!", 8: "Huit de suite! Incroyable!" };
+const recentPraise = [];
+function freshPick(list) { const pool = list.filter(x => !recentPraise.includes(x)), p = pick(pool.length ? pool : list); recentPraise.push(p); if (recentPraise.length > 6) recentPraise.shift(); return p; }
+function praiseFor(it) {
+  if (session.attempt > 0) return freshPick(PRAISE_RETRY);
+  if (PRAISE_ROW[session.row]) return PRAISE_ROW[session.row];
+  return freshPick(PRAISE_BY[it.kind] && Math.random() < 0.5 ? PRAISE_BY[it.kind] : PRAISE);
+}
 const BOX_GAP = [0, 2, 4, 8];
 const PALIERS = { 1: [1, 2, 3, 4], 2: [5, 6, 7], 3: [8, 9, 10] };
 const THEMES = [["violet", "💜"], ["zombie", "🧟‍♀️"], ["vampire", "🧛‍♀️"], ["loup", "🐺"], ["licorne", "🦄"], ["ocean", "🐬"], ["chanteuse", "👩‍🎤"], ["sirene", "🧜‍♀️"]];
@@ -777,9 +792,21 @@ function renderItem(it) {
 }
 function thinkFb(cls, text) { const fb = $("#fb"); fb.className = `feedback ${cls} think`; fb.innerHTML = `<span class="zthink">${zombinette("think")}</span><span>${text}</span>`; }
 function cmpSentence(it) { return [...numberParts(it.a), { gt: "est plus grand que", lt: "est plus petit que", eq: "est égal à" }[it.answer], ...numberParts(it.b)]; }
+/* Indice au 1er essai raté : on retire des mauvais choix pour qu'il en reste 2, et elle réessaie. */
+function giveHint(it) {
+  const all = [...app.querySelectorAll(".choices .choice")];
+  if (all.length < 3) return false;
+  const wrong = all.filter(b => b.dataset.v !== it.answer && !b.classList.contains("bad"));
+  shuffle(wrong).slice(0, Math.max(0, all.length - 2 - 1)).concat(all.filter(b => b.classList.contains("bad"))).forEach(b => { b.classList.remove("bad"); b.classList.add("gone"); });
+  if (it.kind === "compare") $("#cslot").textContent = "?";
+  session.attempt = 1; session.locked = false;
+  thinkFb("", "Presque! Essaie encore.");
+  chatter(it.kind, ["Presque! Essaie encore."]);
+  return true;
+}
 function setupChoices(it) {
   $(".choices").onclick = e => {
-    const b = e.target.closest(".choice"); if (!b || session.locked) return;
+    const b = e.target.closest(".choice"); if (!b || session.locked || b.classList.contains("gone")) return;
     if (it.kind === "compare") $("#cslot").innerHTML = crocSvg(b.dataset.v);
     b.classList.add(b.dataset.v === it.answer ? "ok" : "bad");
     if (it.kind === "music" && it.sub === "pitch") playNotes([it.notes[+b.dataset.v]]);
@@ -1063,10 +1090,11 @@ function check(it, answer) {
   const p = it.kind === "word" ? prog(it.key) : null;
   const sk = statKey(it), ms = it.kind === "word" ? null : (S.mathStats[sk] = S.mathStats[sk] || { ok: 0, ko: 0 });
   if (ok) {
+    session.row = session.attempt === 0 ? (session.row || 0) + 1 : 0;
     if (session.attempt === 0) { session.good++; S.stars += 1; if (p) { p.box = Math.min(3, p.box + 1); p.ok++; } else ms.ok++; }
     if (p) p.last = session.s;
     save();
-    fb.className = "feedback ok"; fb.textContent = pick(PRAISE);
+    fb.className = "feedback ok"; fb.textContent = praiseFor(it);
     $("#starsN").textContent = `👥 ${S.stars}`;
     confetti(); chatter(it.kind, [fb.textContent, ...(GAMES[it.kind].praise ? GAMES[it.kind].praise(it) : [])]);
     $("#slots") && $("#slots").querySelectorAll(".slot").forEach(s => s.classList.add("ok"));
@@ -1077,6 +1105,8 @@ function check(it, answer) {
     if (p) { p.box = 0; p.ko++; p.last = session.s; } else if (session.attempt === 0) ms.ko++;
     save();
     if (session.attempt === 0 && !it.requeued) session.retry.push(Object.assign({}, it, { requeued: true }));
+    session.row = 0;
+    if (session.attempt === 0 && giveHint(it)) return;
     session.attempt++;
     thinkFb("bad", "Oups!");
     $("#slots") && $("#slots").querySelectorAll(".slot").forEach(s => s.classList.add("bad"));

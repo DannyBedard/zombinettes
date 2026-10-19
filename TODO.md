@@ -4,8 +4,6 @@
 
 - **Revalider les mots de 1re année** avec la nouvelle Liste orthographique du MEQ (prescrite en 2027-2028, publiée sur Usito) : refaire `data/mots-*.json` et les clips.
 - **Dizaines et unités** : barres de 10 et petits cubes, écrire le nombre (34 = 3 barres + 4 cubes).
-- **Indice au 2e essai** : 2 choix au lieu de 3, ou faire clignoter la bonne zone.
-- **Bravos plus variés** et liés au jeu (« T'as trouvé la rime! »), pour que ça répète moins.
 
 ## Ensuite
 

@@ -329,3 +329,4 @@ button.daily { display: block; width: calc(100% - 32px); text-align: left; color
 .kwords { margin-top: 10px; }
 .zarm { stroke: #86d49a; stroke-width: 9; stroke-linecap: round; fill: none; }
 .zarm-o { stroke: #2b1d3d; stroke-width: 13; stroke-linecap: round; fill: none; }
+.choice.gone { opacity: .15; pointer-events: none; transform: scale(.9); transition: opacity .3s, transform .3s; }

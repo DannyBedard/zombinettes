@@ -56,6 +56,11 @@ formes (carré, rectangle, triangle, cercle, losange) et Les solides (cube, sph�
 dessinés en SVG. Progrès : à la fin d'une partie, « Tu connais maintenant N mots » (mots en boîte 2 ou plus) ou le total
 de bonnes réponses dans ces jeux ; page Mes progrès en haut de l'onglet Collants.
 
+Indice : dans les jeux à 3 ou 4 choix, une première erreur retire des mauvais choix pour qu'il en reste 2, avec
+« Presque! Essaie encore. » ; la réponse s'affiche seulement à la 2e erreur. Bravos : une cinquantaine de répliques
+tirées sans se répéter, dont des répliques propres à chaque jeu, des répliques d'effort après un 2e essai réussi et des
+séries (« Trois de suite! »).
+
 ## Comment ça apprend
 
 Chaque mot a une boîte (0 à 3). Un mot réussi monte d'une boîte, un mot raté retombe à 0.
