@@ -206,7 +206,6 @@ async function say(parts) {
     if (i < parts.length - 1) await new Promise(r => setTimeout(r, 120));
   }
 }
-function speak(text) { say([text]); }
 function chatter(kind, parts) { if (!S.mute[kind]) say(parts); }
 function numberParts(n) {
   n = +n; if (n <= 100) return [String(n)];
@@ -214,25 +213,40 @@ function numberParts(n) {
   return [THOUSANDS[t], HUNDREDS[h], r ? String(r) : ""].filter(Boolean);
 }
 function timeParts(h, m) { return ["Il est", HOURS[h], ...(m ? numberParts(m) : [])]; }
-function promptParts(it) {
-  switch (it.kind) {
-    case "word": return [it.mot];
-    case "trace": return it.fig ? [it.ch] : it.num ? numberParts(it.ch) : it.word ? [it.ch] : [it.ch.toLowerCase(), ...(it.ch !== it.ch.toLowerCase() ? ["majuscule"] : [])];
-    case "number": return numberParts(it.n);
-    case "calc": return [...numberParts(it.a), it.op === "+" ? "plus" : "moins", ...numberParts(it.b)];
-    case "read": return [CONSIGNE.read];
-    case "syllab": return [it.mot];
-    case "phrase": return ["Remets les mots dans l'ordre pour faire une phrase."];
-    case "keys": return [`Trouve le ${NOTES[it.note]} sur le clavier.`];
-    case "figures": return it.sub === "temps" ? [`Combien de temps vaut ${it.fig[1]}?`] : [FIGURES.find(x => x[0] === it.answer)[2]];
-    case "money": return it.sub === "find" ? ["Touche la pièce de", ...coinWords(it.value)] : it.sub === "count" ? ["Compte l'argent. Combien ça fait?"] : ["Compte l'argent et écris combien ça fait."];
-    case "sound": return [it.sub === "rime" ? "Quel mot rime avec" : "Quel mot commence comme", it.target.mot, { pause: 400 }, it.choices[0].mot, it.choices[1].mot, "ou", it.choices[2].mot];
-    case "compare": return ["Le crocodile mange toujours le plus grand nombre. Choisis la bonne bouche."];
-    case "clock": return ["Quelle heure est-il?"];
-    case "music": return it.sub === "pitch" ? [it.ask === "aigu" ? "Touche le son le plus aigu." : "Touche le son le plus grave."] : it.sub === "rhythm" ? ["Écoute le rythme, puis tape-le sur le tambour."] : ["Quel instrument joue?"];
-  }
-  return [];
-}
+const cap = t => t[0].toUpperCase() + t.slice(1);
+const figOf = id => FIGURES.find(x => x[0] === id), insOf = id => INSTRUMENTS.find(x => x[0] === id);
+const tempsLine = (fig, n) => `${cap(fig[1])} vaut ${TEMPS[n]}.`;
+function padBad(t) { const n = $("#num"); if (n) { n.textContent = t; n.className = "bad"; } }
+/* Une entrée par type de question : prompt = ce qui est dit pour poser la question ; once = dit seulement la première
+   fois dans une partie ; silent = jamais dit d'office (Lire) ; praise = ajouté au bravo ; reveal = réponse affichée et
+   dite après une erreur ; speakReveal = dite même quand les commentaires sont coupés. */
+const GAMES = {
+  word: { prompt: it => [it.mot], speakReveal: true,
+    reveal: (it, t, a) => ({ shown: Array.from(t).map((ch, i) => (norm(a)[i] === ch ? esc(ch) : `<span class="diff">${esc(ch)}</span>`)).join(""), spoken: ["Le mot est", t, { pause: 300 }, ...spellParts(t)] }) },
+  read: { prompt: () => [CONSIGNE.read], silent: true, speakReveal: true, praise: it => [it.mot], reveal: it => ({ shown: `${it.emoji} ${esc(it.mot)}`, spoken: [it.mot] }) },
+  syllab: { prompt: it => [it.mot], speakReveal: true, praise: it => [it.mot], reveal: it => ({ shown: it.syl.join(" · "), spoken: [it.mot] }) },
+  sound: { prompt: it => [it.sub === "rime" ? "Quel mot rime avec" : "Quel mot commence comme", it.target.mot, { pause: 400 }, it.choices[0].mot, it.choices[1].mot, "ou", it.choices[2].mot], speakReveal: true, praise: it => [it.target.mot, it.answer],
+    reveal: (it, t) => { const a = it.choices.find(c => c.mot === t); return { shown: `${it.target.emoji} ${esc(it.target.mot)} · ${a.emoji} ${esc(a.mot)}`, spoken: [it.target.mot, { pause: 250 }, a.mot] }; } },
+  phrase: { prompt: () => ["Remets les mots dans l'ordre pour faire une phrase."], once: true, speakReveal: true, praise: it => [it.phrase], reveal: it => ({ shown: esc(it.phrase), spoken: [it.phrase] }) },
+  trace: { prompt: it => it.fig || it.word ? [it.ch] : it.num ? numberParts(it.ch) : [it.ch.toLowerCase(), ...(it.ch !== it.ch.toLowerCase() ? ["majuscule"] : [])] },
+  number: { prompt: it => numberParts(it.n), reveal: (it, t) => (padBad(t), { shown: t, spoken: ["Le nombre est", ...numberParts(t)] }) },
+  calc: { prompt: it => [...numberParts(it.a), it.op === "+" ? "plus" : "moins", ...numberParts(it.b)],
+    reveal: (it, t) => (padBad(t), { shown: `${it.a} ${it.op} ${it.b} = ${t}`, spoken: [...GAMES.calc.prompt(it), "ça fait", ...numberParts(t)] }) },
+  compare: { prompt: () => ["Le crocodile mange toujours le plus grand nombre. Choisis la bonne bouche."], once: true, speakReveal: true, praise: it => cmpSentence(it),
+    reveal: (it, t) => { $("#cslot").innerHTML = crocSvg(t); return { shown: `${it.a} ${{ gt: "&gt;", lt: "&lt;", eq: "=" }[t]} ${it.b}`, spoken: cmpSentence(it) }; } },
+  money: { prompt: it => it.sub === "find" ? ["Touche la pièce de", ...coinWords(it.value)] : it.sub === "count" ? ["Compte l'argent. Combien ça fait?"] : ["Compte l'argent et écris combien ça fait."], once: it => it.sub !== "find",
+    reveal: (it, t) => it.sub === "find" ? { shown: `${coinSvg(+t)} ${coinLabel(+t)}`, spoken: coinWords(+t) } : (padBad(t), { shown: `${t} ${it.unit}`, spoken: ["ça fait", ...numberParts(t), it.unit === "¢" ? "sous" : +t > 1 ? "dollars" : "dollar"] }) },
+  clock: { prompt: () => ["Quelle heure est-il?"], once: true, praise: it => timeParts(it.h, it.m), reveal: (it, t) => ({ shown: t, spoken: timeParts(it.h, it.m) }) },
+  keys: { prompt: it => [`Trouve le ${NOTES[it.note]} sur le clavier.`],
+    reveal: it => { app.querySelectorAll(`.kbd .wk[data-n="${it.note}"]`).forEach(r => r.classList.add("ok")); return { shown: NOTES[it.note].toUpperCase(), spoken: [] }; } },
+  figures: { prompt: it => it.sub === "temps" ? [`Combien de temps vaut ${it.fig[1]}?`] : [figOf(it.answer)[2]], praise: it => [it.sub === "temps" ? tempsLine(it.fig, it.answer) : figOf(it.answer)[1]],
+    reveal: (it, t) => { if (it.sub === "temps") return { shown: `${it.fig[1]} = ${t} temps`, spoken: [tempsLine(it.fig, t)] }; const f = figOf(t); return { shown: `<img class="figans" src="img/music/${f[0]}.svg" alt=""> ${f[1]}`, spoken: ["C'est", f[1]] }; } },
+  music: { prompt: it => it.sub === "pitch" ? [it.ask === "aigu" ? "Touche le son le plus aigu." : "Touche le son le plus grave."] : it.sub === "rhythm" ? ["Écoute le rythme, puis tape-le sur le tambour."] : ["Quel instrument joue?"],
+    praise: it => it.sub === "instr" ? ["C'est", insOf(it.ins)[1]] : [],
+    reveal: (it, t) => it.sub === "pitch" ? { shown: `🔔 ${+t + 1}`, spoken: [it.ask === "aigu" ? "Le son le plus aigu, c'est le" : "Le son le plus grave, c'est le", +t ? "deuxième" : "premier"] }
+      : it.sub === "rhythm" ? { shown: it.pattern.join(" "), spoken: ["Écoute encore."] } : (ins => ({ shown: `${ins[2]} ${ins[1]}`, spoken: ["C'est", ins[1]] }))(insOf(it.ins)) }
+};
+function promptParts(it) { return GAMES[it.kind].prompt(it); }
 function replay(it) {
   const me = session, idx = session && session.i;
   return say(promptParts(it)).then(() => { if (it.kind === "music" && session === me && session.i === idx && !session.locked && $("#speak")) playMusic(it); });
@@ -266,7 +280,6 @@ function buildPool() {
     ws.forEach((w, i) => { w.palier = ps[Math.min(ps.length - 1, Math.floor(i * ps.length / n))]; POOL.push(w); });
   }
 }
-function poolWords() { return POOL; }
 function unlockedWords() { return POOL.filter(w => w.palier <= S.palier); }
 function weeklyWords() { return S.weekly.map(m => ({ kind: "word", key: m, mot: m, level: 0, source: "weekly" })); }
 function prog(key) { return S.progress[key] || (S.progress[key] = { box: 0, last: -99, ok: 0, ko: 0 }); }
@@ -372,8 +385,7 @@ function buildPhraseSession() {
   const ok = PHRASES.filter(p => p.replace(".", "").split(" ").length <= S.phrase.max);
   return shuffle(ok.length ? ok : PHRASES).slice(0, S.math.length).map(p => {
     const words = p.replace(/\.$/, " .").split(" ");
-    let tiles = shuffle(words.map((_, i) => i)); if (tiles.every((v, i) => v === i)) tiles = tiles.reverse();
-    return { kind: "phrase", phrase: p, words, tiles, answer: words.join(" ") };
+    return { kind: "phrase", phrase: p, words, answer: words.join(" ") };
   });
 }
 const COINS = { 5: ["5¢", 21.2], 10: ["10¢", 18], 25: ["25¢", 23.9], 100: ["1$", 26.5], 200: ["2$", 28] };
@@ -553,11 +565,6 @@ function mixItems(plan) {
   for (let k = 1; k < mixed.length; k++) if (mixed[k].kind === mixed[k - 1].kind) { const j = mixed.findIndex((x, q) => q > k && x.kind !== mixed[k].kind); if (j > 0) [mixed[k], mixed[j]] = [mixed[j], mixed[k]]; }
   return mixed;
 }
-function sessionTitle(kind) {
-  if (kind === "daily") return "🔥 Défi du jour";
-  if (kind.startsWith("mix:")) { const c = CATS.find(x => x[0] === kind.slice(4)); return `${c[2]} Mélange ${c[1]}`; }
-  const a = ACTIVITIES.find(x => x[0] === kind); return a ? `${a[2]} ${a[1]}` : "";
-}
 
 /* ---------- moteur de session ---------- */
 function startSession(kind) {
@@ -580,7 +587,8 @@ function nextItem() {
   session.attempt = 0;
   renderItem(it);
   const key = it.kind + (it.sub || ""), first = !session.seen.has(key);
-  const prompt = it.kind === "calc" && S.mute.calc ? [] : it.kind === "read" ? [] : ["phrase", "money", "clock", "compare"].includes(it.kind) && it.sub !== "find" && !first ? [] : promptParts(it);
+  const g = GAMES[it.kind], once = typeof g.once === "function" ? g.once(it) : g.once;
+  const prompt = (it.kind === "calc" && S.mute.calc) || g.silent || (once && !first) ? [] : g.prompt(it);
   const ann = it.kind === "trace" ? (it.fig ? "Voici la note :" : it.num ? "Voici le nombre :" : it.word ? "Voici le mot en lettres attachées :" : it.cursive ? "Voici la lettre attachée :" : it.isDigit ? "Voici le chiffre :" : "Voici la lettre :") : ANNONCE[it.kind];
   const consigne = it.kind === "trace" && it.fig ? "Trace la note avec ton doigt. Quand la tête est pleine, remplis-la." : it.kind === "trace" && it.cursive ? "Trace en lettres attachées avec ton doigt." : CONSIGNE[it.kind];
   const intro = first || (it.kind === "trace" && !it.fig && it.cursive !== session.lastCursive);
@@ -792,6 +800,26 @@ function dots(it) {
   if (it.op === "+") return `<div class="dots">${d(it.a, "a")}${d(it.b, "b")}</div>`;
   return `<div class="dots">${d(it.a - it.b, "a")}${d(it.b, "x")}</div>`;
 }
+function setupTileBoard(it, pieces, extra, joiner) {
+  const all = pieces.concat(extra);
+  let order = shuffle(all.map((_, i) => i));
+  if (pieces.length > 1 && order.every((v, i) => all[v] === all[i])) order = order.reverse();
+  const slots = $("#slots"), tiles = $("#tiles"), n = pieces.length;
+  slots.innerHTML = pieces.map((_, i) => `<div class="slot" data-i="${i}"></div>`).join("");
+  tiles.innerHTML = order.map(i => `<button class="tile" data-i="${i}">${esc(all[i])}</button>`).join("");
+  let filled = [];
+  const redraw = () => {
+    slots.querySelectorAll(".slot").forEach((sl, i) => { const f = filled[i]; sl.textContent = f ? f.text : ""; sl.className = "slot" + (f ? " filled" : ""); });
+    tiles.querySelectorAll(".tile").forEach(t => t.classList.toggle("used", filled.some(f => f.tile === t.dataset.i)));
+  };
+  tiles.onclick = e => {
+    const t = e.target.closest(".tile"); if (session.locked || !t || t.classList.contains("used") || filled.length >= n) return;
+    filled.push({ tile: t.dataset.i, text: t.textContent }); redraw();
+    if (filled.length === n) setTimeout(() => check(it, filled.map(f => f.text).join(joiner)), 250);
+  };
+  slots.onclick = e => { const sl = e.target.closest(".slot"); if (session.locked || !sl || !filled[sl.dataset.i]) return; filled.splice(sl.dataset.i, 1); redraw(); };
+  $("#erase").onclick = () => { if (!session.locked) { filled.pop(); redraw(); } };
+}
 function setupTiles(w) {
   const letters = Array.from(w.mot), decoys = [];
   const src = shuffle(letters.filter(c => /\p{L}/u.test(c)));
@@ -799,24 +827,7 @@ function setupTiles(w) {
     const c = src[k % src.length] || "e", opts = DECOY[c.toLowerCase()] || "aeiou";
     const d = pick(Array.from(opts)); if (!decoys.includes(d)) decoys.push(d);
   }
-  const all = letters.concat(decoys);
-  let order = shuffle(all.map((_, i) => i));
-  if (letters.length > 1 && order.every((v, i) => all[v] === all[i])) order = order.reverse();
-  const slots = $("#slots"), tiles = $("#tiles");
-  slots.innerHTML = letters.map((_, i) => `<div class="slot" data-i="${i}"></div>`).join("");
-  tiles.innerHTML = order.map(i => `<button class="tile" data-i="${i}">${esc(all[i])}</button>`).join("");
-  let filled = [];
-  const redraw = () => {
-    slots.querySelectorAll(".slot").forEach((sl, i) => { const f = filled[i]; sl.textContent = f ? f.letter : ""; sl.className = "slot" + (f ? " filled" : ""); });
-    tiles.querySelectorAll(".tile").forEach(t => t.classList.toggle("used", filled.some(f => f.tile === t.dataset.i)));
-  };
-  tiles.onclick = e => {
-    const t = e.target.closest(".tile"); if (session.locked || !t || t.classList.contains("used") || filled.length >= letters.length) return;
-    filled.push({ tile: t.dataset.i, letter: t.textContent }); redraw();
-    if (filled.length === letters.length) setTimeout(() => check(w, filled.map(f => f.letter).join("")), 250);
-  };
-  slots.onclick = e => { const sl = e.target.closest(".slot"); if (session.locked || !sl || !filled[sl.dataset.i]) return; filled.splice(sl.dataset.i, 1); redraw(); };
-  $("#erase").onclick = () => { if (!session.locked) { filled.pop(); redraw(); } };
+  setupTileBoard(w, letters, decoys, "");
 }
 function setupKeys(it) {
   const svg = $(".kbd");
@@ -834,23 +845,7 @@ function setupKeys(it) {
     if (!box.hidden) say(["Le do, c'est la touche blanche juste à gauche du groupe de deux touches noires.", ...(it.note ? ["Trouve d'abord le do. Ensuite, on monte vers la droite : do, ré, mi, fa, sol, la, si."] : [])]);
   };
 }
-function setupPhrase(it) {
-  const slots = $("#slots"), tiles = $("#tiles"), n = it.words.length;
-  slots.innerHTML = it.words.map((_, i) => `<div class="slot" data-i="${i}"></div>`).join("");
-  tiles.innerHTML = it.tiles.map(i => `<button class="tile" data-i="${i}">${esc(it.words[i])}</button>`).join("");
-  let filled = [];
-  const redraw = () => {
-    slots.querySelectorAll(".slot").forEach((sl, i) => { const f = filled[i]; sl.textContent = f ? f.w : ""; sl.className = "slot" + (f ? " filled" : ""); });
-    tiles.querySelectorAll(".tile").forEach(t => t.classList.toggle("used", filled.some(f => f.tile === t.dataset.i)));
-  };
-  tiles.onclick = e => {
-    const t = e.target.closest(".tile"); if (session.locked || !t || t.classList.contains("used") || filled.length >= n) return;
-    filled.push({ tile: t.dataset.i, w: t.textContent }); redraw();
-    if (filled.length === n) setTimeout(() => check(it, filled.map(f => f.w).join(" ")), 300);
-  };
-  slots.onclick = e => { const sl = e.target.closest(".slot"); if (session.locked || !sl || !filled[sl.dataset.i]) return; filled.splice(sl.dataset.i, 1); redraw(); };
-  $("#erase").onclick = () => { if (!session.locked) { filled.pop(); redraw(); } };
-}
+function setupPhrase(it) { setupTileBoard(it, it.words, [], " "); }
 function setupTyped(w) {
   const inp = $("#typed"); inp.focus();
   const go = () => { if (inp.value.trim()) check(w, inp.value); };
@@ -955,7 +950,7 @@ function check(it, answer) {
     save();
     fb.className = "feedback ok"; fb.textContent = pick(PRAISE);
     $("#starsN").textContent = `👥 ${S.stars}`;
-    confetti(); chatter(it.kind, [fb.textContent, ...(it.kind === "read" ? [it.mot] : it.kind === "sound" ? [it.target.mot, it.answer] : it.kind === "syllab" ? [it.mot] : it.kind === "phrase" ? [it.phrase] : it.kind === "compare" ? cmpSentence(it) : it.kind === "figures" ? (it.sub === "temps" ? [`${it.fig[1][0].toUpperCase()}${it.fig[1].slice(1)} vaut ${TEMPS[it.answer]}.`] : [FIGURES.find(x => x[0] === it.answer)[1]]) : it.kind === "clock" ? timeParts(it.h, it.m) : it.kind === "music" && it.sub === "instr" ? ["C'est", INSTRUMENTS.find(x => x[0] === it.ins)[1]] : [])]);
+    confetti(); chatter(it.kind, [fb.textContent, ...(GAMES[it.kind].praise ? GAMES[it.kind].praise(it) : [])]);
     $("#slots") && $("#slots").querySelectorAll(".slot").forEach(s => s.classList.add("ok"));
     $("#num") && ($("#num").className = "ok");
     $("#trace") && $("#trace").classList.add("ok");
@@ -967,46 +962,10 @@ function check(it, answer) {
     session.attempt++;
     fb.className = "feedback bad"; fb.textContent = "Oups!";
     $("#slots") && $("#slots").querySelectorAll(".slot").forEach(s => s.classList.add("bad"));
-    let shown, spoken;
-    if (it.kind === "word") {
-      shown = Array.from(target).map((ch, i) => (norm(answer)[i] === ch ? esc(ch) : `<span class="diff">${esc(ch)}</span>`)).join("");
-      spoken = ["Le mot est", target, { pause: 300 }, ...spellParts(target)];
-    } else if (it.kind === "read") {
-      shown = `${it.emoji} ${esc(it.mot)}`; spoken = [it.mot];
-    } else if (it.kind === "keys") {
-      shown = NOTES[it.note].toUpperCase(); spoken = [];
-      app.querySelectorAll(`.kbd .wk[data-n="${it.note}"]`).forEach(r => r.classList.add("ok"));
-    } else if (it.kind === "figures" && it.sub === "temps") {
-      shown = `${it.fig[1]} = ${target} temps`; spoken = [`${it.fig[1][0].toUpperCase()}${it.fig[1].slice(1)} vaut ${TEMPS[target]}.`];
-    } else if (it.kind === "figures") {
-      const f = FIGURES.find(x => x[0] === target); shown = `<img class="figans" src="img/music/${f[0]}.svg" alt=""> ${f[1]}`; spoken = ["C'est", f[1]];
-    } else if (it.kind === "phrase") {
-      shown = esc(it.phrase); spoken = [it.phrase];
-    } else if (it.kind === "money" && it.sub === "find") {
-      shown = `${coinSvg(+target)} ${coinLabel(+target)}`; spoken = coinWords(+target);
-    } else if (it.kind === "money") {
-      shown = `${target} ${it.unit}`; spoken = ["ça fait", ...numberParts(target), it.unit === "¢" ? "sous" : +target > 1 ? "dollars" : "dollar"];
-      if ($("#num")) { $("#num").textContent = target; $("#num").className = "bad"; }
-    } else if (it.kind === "syllab") {
-      shown = it.syl.join(" · "); spoken = [it.mot];
-    } else if (it.kind === "sound") {
-      const a = it.choices.find(c => c.mot === target); shown = `${it.target.emoji} ${esc(it.target.mot)} · ${a.emoji} ${esc(a.mot)}`; spoken = [it.target.mot, { pause: 250 }, a.mot];
-    } else if (it.kind === "compare") {
-      shown = `${it.a} ${{ gt: "&gt;", lt: "&lt;", eq: "=" }[target]} ${it.b}`; spoken = cmpSentence(it); $("#cslot").innerHTML = crocSvg(target);
-    } else if (it.kind === "clock") {
-      shown = target; spoken = timeParts(it.h, it.m);
-    } else if (it.kind === "music") {
-      if (it.sub === "pitch") { shown = `🔔 ${+target + 1}`; spoken = [it.ask === "aigu" ? "Le son le plus aigu, c'est le" : "Le son le plus grave, c'est le", +target ? "deuxième" : "premier"]; }
-      else if (it.sub === "rhythm") { shown = it.pattern.join(" "); spoken = ["Écoute encore."]; }
-      else { const ins = INSTRUMENTS.find(x => x[0] === it.ins); shown = `${ins[2]} ${ins[1]}`; spoken = ["C'est", ins[1]]; }
-    } else {
-      shown = it.kind === "calc" ? `${it.a} ${it.op} ${it.b} = ${target}` : target;
-      spoken = it.kind === "calc" ? [...promptParts(it), "ça fait", ...numberParts(target)] : ["Le nombre est", ...numberParts(target)];
-      $("#num").textContent = target; $("#num").className = "bad";
-    }
+    const { shown, spoken } = GAMES[it.kind].reveal ? GAMES[it.kind].reveal(it, target, answer) : { shown: "", spoken: [] };
     app.querySelectorAll(".choice").forEach(c => { if (c.dataset.v === target) c.classList.add("ok"); });
     fb.insertAdjacentHTML("afterend", `<div class="answer">${shown}</div><div class="actions"><button class="btn small" id="again">🔊 ↻</button><button class="btn ghost small" id="skip">→</button></div>`);
-    if (it.kind === "word" || it.kind === "read" || it.kind === "sound" || it.kind === "syllab" || it.kind === "phrase" || it.kind === "compare") say(spoken); else chatter(it.kind, spoken);
+    if (GAMES[it.kind].speakReveal) say(spoken); else chatter(it.kind, spoken);
     if (it.kind === "music" && it.sub === "rhythm") setTimeout(() => { if (session.items[session.i] === it && $("#again")) playMusic(it); }, S.mute.music ? 300 : 1300);
     $("#again").onclick = () => { renderItem(it); replay(it); };
     $("#skip").onclick = () => { session.i++; nextItem(); };
@@ -1306,7 +1265,7 @@ function parent() {
   };
   $("#export").onclick = async () => {
     const name = `zombinettes-${new Date().toISOString().slice(0, 10)}.json`;
-    const json = JSON.stringify(Object.assign({}, S, { pin: undefined, exportedAt: new Date().toISOString() }), null, 1);
+    const json = JSON.stringify(Object.assign({}, S, { pin: undefined, avatar: undefined, exportedAt: new Date().toISOString() }), null, 1);
     const file = new File([json], name, { type: "application/json" });
     try {
       if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: "Progrès Zombinettes" }); $("#ioMsg").textContent = "Fichier partagé."; return; }
@@ -1320,7 +1279,7 @@ function parent() {
       const data = JSON.parse(await f.text());
       if (!data.progress || !data.stickers) throw new Error("format");
       if (!confirm("Remplacer les progrès actuels par ceux du fichier ?")) return;
-      const pin = S.pin; localStorage.setItem(STORE_KEY, JSON.stringify(Object.assign(data, { pin }))); S = load(); applyTheme(); parent();
+      const pin = S.pin, avatar = data.avatar || S.avatar; localStorage.setItem(STORE_KEY, JSON.stringify(Object.assign(data, { pin, avatar }))); S = load(); applyTheme(); parent();
     } catch { $("#ioMsg").textContent = "Fichier invalide."; }
   };
   $("#offline").onclick = async () => {
