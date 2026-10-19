@@ -25,6 +25,8 @@ const ACTIVITIES = [
   ["compare", "Plus grand?", "🐊", "#16a34a", "#0ea5e9", "Le plus grand, le plus petit"],
   ["money", "Les sous", "🪙", "#ca8a04", "#64748b", "Compte l'argent"],
   ["clock", "L'heure", "🕒", "#6366f1", "#06b6d4", "Lis l'heure sur l'horloge"],
+  ["formes", "Les formes", "🔺", "#db2777", "#60a5fa", "Carré, triangle, cercle…"],
+  ["solides", "Les solides", "🧊", "#0891b2", "#a855f7", "Cube, sphère, cône…"],
   ["traceNum", "Tracer les chiffres", "✍️", "#0d9488", "#3b82f6", "Chiffres et nombres"],
   ["pitch", "Aigu ou grave", "🔔", "#a855f7", "#f43f5e", "Quel son est le plus aigu?"],
   ["rhythm", "Rythme", "🥁", "#f43f5e", "#f97316", "Ta, ti-ti, chut au tambour"],
@@ -42,7 +44,7 @@ const ACTIVITIES = [
 ];
 const CATS = [
   ["fr", "Français", "📚", "#7c3aed", "#ec4899", ["word", "read", "syllab", "sound", "phrase", "sonsref", "trace"]],
-  ["math", "Maths", "🧮", "#0ea5e9", "#22c55e", ["number", "calc", "compare", "money", "clock", "traceNum"]],
+  ["math", "Maths", "🧮", "#0ea5e9", "#22c55e", ["number", "calc", "compare", "money", "clock", "formes", "solides", "traceNum"]],
   ["mus", "Musique", "🎵", "#a855f7", "#f43f5e", ["pitch", "rhythm", "instr", "keys", "figures", "traceMus"]],
   ["dec", "Autre", "🌍", "#16a34a", "#f59e0b", ["vivant", "habitat", "meteo", "saisons", "avant", "couleurs", "emotions"]]
 ];
@@ -539,6 +541,34 @@ const QUIZ = {
   emotions: () => shuffle(SITUATIONS).map(([phrase, em]) => { const opts = shuffle([em, ...shuffle(Object.keys(EMOTIONS).filter(x => x !== em)).slice(0, 2)]);
     return quiz("emotions", { visual: "", text: phrase, prompt: [phrase, "Comment tu te sens?"], choices: opts.map(x => ({ v: x, html: `${EMOTIONS[x][0]}<small>${EMOTIONS[x][1]}</small>` })), answer: em, say: [EMOTIONS[em][2]], shown: `${EMOTIONS[em][0]} ${EMOTIONS[em][1]}` }); })
 };
+/* ---------- géométrie (figures planes et solides du 1er cycle) ---------- */
+const GEO_COLORS = ["#f472b6", "#60a5fa", "#4ade80", "#facc15", "#c084fc", "#fb923c"];
+const FORMES = [["carre", "le carré"], ["rectangle", "le rectangle"], ["triangle", "le triangle"], ["cercle", "le cercle"], ["losange", "le losange"]];
+const SOLIDES = [["cube", "le cube"], ["sphere", "la sphère"], ["cylindre", "le cylindre"], ["cone", "le cône"], ["pyramide", "la pyramide"], ["prisme", "le prisme"]];
+function shapeSvg(id, c) {
+  const st = `fill="${c}" stroke="#2b1d3d" stroke-width="3.5" stroke-linejoin="round"`, dk = `style="fill:color-mix(in srgb, ${c} 70%, #000)" stroke="#2b1d3d" stroke-width="3.5" stroke-linejoin="round"`, lt = `style="fill:color-mix(in srgb, ${c} 60%, #fff)" stroke="#2b1d3d" stroke-width="3.5" stroke-linejoin="round"`;
+  const tall = Math.random() < 0.5, flip = Math.random() < 0.5;
+  const d = {
+    carre: `<rect x="22" y="22" width="56" height="56" ${st}/>`,
+    rectangle: tall ? `<rect x="30" y="10" width="40" height="80" ${st}/>` : `<rect x="10" y="30" width="80" height="40" ${st}/>`,
+    triangle: flip ? `<polygon points="14,18 86,18 50,84" ${st}/>` : `<polygon points="50,14 88,84 12,84" ${st}/>`,
+    cercle: `<circle cx="50" cy="50" r="37" ${st}/>`,
+    losange: `<polygon points="50,8 82,50 50,92 18,50" ${st}/>`,
+    cube: `<polygon points="20,38 64,38 64,82 20,82" ${st}/><polygon points="20,38 36,22 80,22 64,38" ${lt}/><polygon points="64,38 80,22 80,66 64,82" ${dk}/>`,
+    prisme: `<polygon points="8,46 70,46 70,82 8,82" ${st}/><polygon points="8,46 26,30 88,30 70,46" ${lt}/><polygon points="70,46 88,30 88,66 70,82" ${dk}/>`,
+    sphere: `<circle cx="50" cy="50" r="38" ${st}/><ellipse cx="50" cy="52" rx="38" ry="10" fill="none" stroke="#2b1d3d" stroke-width="2" stroke-dasharray="5 4"/><ellipse cx="37" cy="34" rx="9" ry="6" fill="#fff" opacity=".6"/>`,
+    cylindre: `<path d="M22 24 v52 a28 10 0 0 0 56 0 v-52" ${st}/><ellipse cx="50" cy="24" rx="28" ry="10" ${lt}/>`,
+    cone: `<path d="M50 10 L80 76 a30 10 0 0 1 -60 0 Z" ${st}/><path d="M20 76 a30 10 0 0 0 60 0" fill="none" stroke="#2b1d3d" stroke-width="2" stroke-dasharray="5 4"/>`,
+    pyramide: `<polygon points="50,10 18,74 58,86" ${st}/><polygon points="50,10 58,86 86,66" ${dk}/>`
+  }[id];
+  return `<svg class="geo" viewBox="0 0 100 100">${d}</svg>`;
+}
+function geoQuiz(sub, list) {
+  return shuffle(list).map(([id, name]) => { const opts = shuffle([[id, name], ...shuffle(list.filter(x => x[0] !== id)).slice(0, 2)]), q = `Touche ${name}.`;
+    return quiz(sub, { visual: "", text: q, prompt: [q], choices: opts.map(([oid]) => ({ v: oid, html: shapeSvg(oid, pick(GEO_COLORS)) })), answer: id, say: [cap(name)], shown: `${shapeSvg(id, pick(GEO_COLORS))} ${name}` }); });
+}
+QUIZ.formes = () => geoQuiz("formes", FORMES);
+QUIZ.solides = () => geoQuiz("solides", SOLIDES);
 let SYL_WORDS = [];
 function buildSyllabSession() {
   const by = n => shuffle(SYL_WORDS.filter(w => w.syl.length === n)), pools = [by(1), by(2), by(3), by(4)], items = [];
