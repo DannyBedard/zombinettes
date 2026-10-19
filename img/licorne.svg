@@ -4,6 +4,5 @@
 <g fill="none" stroke-width="22" opacity=".85"><path d="M150 400 A450 450 0 0 1 1050 400" stroke="#f87171"/><path d="M172 400 A428 428 0 0 1 1028 400" stroke="#fbbf24"/><path d="M194 400 A406 406 0 0 1 1006 400" stroke="#4ade80"/><path d="M216 400 A384 384 0 0 1 984 400" stroke="#38bdf8"/><path d="M238 400 A362 362 0 0 1 962 400" stroke="#a78bfa"/></g>
 <g fill="#fff" opacity=".9"><circle cx="120" cy="70" r="3"/><circle cx="300" cy="40" r="2"/><circle cx="1060" cy="60" r="3"/><circle cx="900" cy="120" r="2"/><circle cx="60" cy="200" r="2"/><circle cx="1150" cy="220" r="2.5"/></g>
 <g fill="#fdf2f8" opacity=".95"><ellipse cx="200" cy="320" rx="120" ry="40"/><ellipse cx="260" cy="300" rx="80" ry="45"/><ellipse cx="1000" cy="330" rx="130" ry="40"/><ellipse cx="940" cy="305" rx="80" ry="45"/></g>
-<text x="600" y="350" font-size="130" text-anchor="middle">🦄</text>
 <text x="380" y="180" font-size="44" text-anchor="middle">✨</text><text x="820" y="200" font-size="44" text-anchor="middle">⭐</text>
 </svg>

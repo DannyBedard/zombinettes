@@ -352,3 +352,19 @@ button.daily { display: block; width: calc(100% - 32px); text-align: left; color
 #app.immersive .stage::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 38%; background: var(--scene) center bottom / cover no-repeat; opacity: .18; pointer-events: none; }
 #app.immersive .stage > * { position: relative; z-index: 1; }
 .target { font-size: clamp(4.6rem, 13vw, 7rem); }
+
+/* animations */
+@keyframes enterUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes jumpIn { 0% { transform: translateY(120%) scale(.6); } 60% { transform: translateY(-12%) scale(1.05); } 80% { transform: translateY(4%); } 100% { transform: none; } }
+@keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+@keyframes bubbleIn { from { opacity: 0; transform: scale(.6) translateY(10px); } to { opacity: 1; transform: none; } }
+#app.enter > *:not(.tabbar) { animation: enterUp .28s ease both; }
+#app.enter > *:nth-child(2) { animation-delay: .05s; } #app.enter > *:nth-child(3) { animation-delay: .1s; } #app.enter > *:nth-child(4) { animation-delay: .15s; }
+.splash { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; min-height: 80vh; }
+.splashzomb { width: 150px; height: 210px; animation: jumpIn .9s cubic-bezier(.3, 1.4, .5, 1) both; }
+.splash h1 { animation: enterUp .4s .5s ease both; }
+.hellozomb { animation: jumpIn .7s cubic-bezier(.3, 1.4, .5, 1) both, bob 3s 1s ease-in-out infinite; }
+.bubble { animation: bubbleIn .35s .5s ease both; }
+.door:nth-child(1) { animation: enterUp .3s .1s ease both; } .door:nth-child(2) { animation: enterUp .3s .16s ease both; }
+.door:nth-child(3) { animation: enterUp .3s .22s ease both; } .door:nth-child(4) { animation: enterUp .3s .28s ease both; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }

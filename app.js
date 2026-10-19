@@ -1308,6 +1308,7 @@ function offerCabin(box, silent) {
 function view(html, tab) {
   app.innerHTML = html + (tab ? tabbar(tab) : "");
   app.classList.toggle("immersive", !tab);
+  app.classList.remove("enter"); void app.offsetWidth; app.classList.add("enter");
   if (tab) app.querySelectorAll(".tabbar button").forEach(b => b.onclick = () => ({ home, album, cabin: cabinScreen, style: styleScreen, parent: pinScreen })[b.dataset.tab]());
 }
 function tabbar(active) {
@@ -1593,7 +1594,8 @@ function parent() {
 /* ---------- démarrage ---------- */
 async function boot() {
   applyTheme();
-  view(`<div class="hero">🧟‍♀️</div><p class="tagline">Chargement…</p>`);
+  view(`<div class="splash"><div class="splashzomb">${zombinette("happy")}</div><h1>Les Zombinettes</h1></div>`);
+  const shown = Date.now();
   const res = await Promise.all([1, 2, 3].map(l => fetch(`data/mots-${l}.json`).then(r => r.json()).catch(() => [])));
   PACKS = { 1: res[0], 2: res[1], 3: res[2] };
   READ_WORDS = await fetch("data/lecture.json").then(r => r.json()).catch(() => []);
@@ -1602,7 +1604,9 @@ async function boot() {
   SOUND_WORDS = await fetch("data/sons.json").then(r => r.json()).catch(() => []);
   try { const m = await fetch("audio/manifest.json").then(r => r.json()); for (const k in m) MANIFEST[k] = new Set(m[k]); } catch {}
   if (!S.voice.startsWith("system:") && !MANIFEST[S.voice]) { const first = Object.keys(MANIFEST)[0]; S.voice = first || "system:"; }
-  buildPool(); home();
+  buildPool();
+  await new Promise(r => setTimeout(r, Math.max(0, 1300 - (Date.now() - shown))));
+  home();
   if ("serviceWorker" in navigator && location.protocol !== "file:") navigator.serviceWorker.register("sw.js").catch(() => {});
 }
 boot();

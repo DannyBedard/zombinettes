@@ -5,6 +5,5 @@
 <g fill="none" stroke="#a5f3fc" stroke-width="3" opacity=".6"><circle cx="150" cy="120" r="10"/><circle cx="190" cy="70" r="6"/><circle cx="1020" cy="150" r="12"/><circle cx="1070" cy="90" r="7"/><circle cx="880" cy="60" r="5"/><circle cx="420" cy="90" r="8"/></g>
 <g fill="none" stroke="#059669" stroke-width="14" stroke-linecap="round"><path d="M120 400 q30 -60 0 -120 q-30 -60 10 -120"/><path d="M200 400 q-30 -50 0 -100 q30 -50 -5 -110"/><path d="M1050 400 q30 -60 0 -120 q-30 -60 10 -110"/><path d="M1130 400 q-30 -50 0 -100"/></g>
 <path d="M0 400 V350 Q300 320 600 360 T1200 340 V400z" fill="#d6c7a1"/>
-<text x="600" y="345" font-size="130" text-anchor="middle">🧜‍♀️</text>
 <text x="330" y="370" font-size="56" text-anchor="middle">🐚</text><text x="900" y="375" font-size="56" text-anchor="middle">💎</text><text x="760" y="210" font-size="44" text-anchor="middle">🐠</text><text x="450" y="180" font-size="40" text-anchor="middle">🫧</text>
 </svg>
