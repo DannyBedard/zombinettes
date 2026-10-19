@@ -38,6 +38,11 @@ les moins vus dans les mélanges passent en premier), puis tous les jeux sous de
 français, chiffres et nombres en maths) n'entre pas dans les mélanges. Dans une partie mélangée, chaque type de question
 dit sa consigne la première fois seulement.
 
+Découverte (sciences, univers social, arts, citoyenneté), très facile, une question à la fois avec choix d'images :
+vivant ou pas, où vit l'animal, quoi mettre selon la météo, les saisons, avant ou aujourd'hui, mélanger deux couleurs,
+les émotions. Banques de questions dans `app.js` (VIVANT, ANIMAUX, METEO, SCENES, AVANT, MELANGES, SITUATIONS) ; une
+question de Découverte s'ajoute au défi du jour (11 questions).
+
 ## Comment ça apprend
 
 Chaque mot a une boîte (0 à 3). Un mot réussi monte d'une boîte, un mot raté retombe à 0.

@@ -262,7 +262,8 @@ table.stats td { padding: 8px 4px; border-bottom: 1px solid var(--line); } table
 .figq img { width: 140px; height: 140px; background: #fff; border-radius: 14px; padding: 10px; object-fit: contain; }
 button.daily { display: block; width: calc(100% - 32px); text-align: left; color: var(--ink); }
 .daily .ds { color: var(--muted); font-size: .9rem; }
-.mixes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 0 16px 6px; }
+.mixes { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 0 16px 6px; }
+@media (min-width: 560px) { .mixes { grid-template-columns: repeat(4, 1fr); } }
 .mix { border-radius: 14px; padding: 14px 6px; background: linear-gradient(135deg, var(--c1), var(--c2)); color: #fff; display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .mix span { font-size: 2.2rem; } .mix b { font-size: 1rem; } .mix small { opacity: .85; font-size: .78rem; }
 .cathead { margin: 18px 16px 4px; font-size: 1.15rem; display: flex; align-items: center; gap: 8px; }
@@ -289,3 +290,11 @@ button.daily { display: block; width: calc(100% - 32px); text-align: left; color
 .week span.done i { border: 2px solid var(--warn); background: color-mix(in srgb, var(--warn) 22%, transparent); }
 .week span.today i { border-color: var(--accent); }
 .week small { font-size: .7rem; color: var(--muted); font-weight: 700; }
+.quizq { font-size: 1.35rem; color: var(--ink); font-weight: 700; padding: 0 12px; }
+.quizvis { display: flex; justify-content: center; margin: 0 0 14px; }
+.bigemo { font-size: 5rem; line-height: 1.1; letter-spacing: .1em; }
+.quizc .choice { font-size: 2.6rem; }
+.paint { display: inline-block; width: 44px; height: 44px; border-radius: 50% 46% 52% 44%; border: 3px solid rgba(255,255,255,.55); vertical-align: middle; }
+.mixpaint { display: flex; align-items: center; gap: 10px; font-size: 2rem; font-weight: 800; }
+.mixpaint .paint { width: 64px; height: 64px; }
+.answer .paint { width: 30px; height: 30px; }

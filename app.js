@@ -3,10 +3,10 @@
 const STORE_KEY = "zombinettes.v1";
 const DEFAULTS = {
   palier: 5, palierAuto: true, mode: "tiles", decoys: 3, pin: "1234", weekly: [], theme: "violet", bg: "dark", avatar: null, custom: null, voice: "sylvie", pitch: 1,
-  mute: { word: false, read: false, sound: false, syllab: false, phrase: false, money: false, keys: false, figures: false, number: false, calc: false, compare: false, clock: false, trace: false, music: false },
+  mute: { quiz: false, word: false, read: false, sound: false, syllab: false, phrase: false, money: false, keys: false, figures: false, number: false, calc: false, compare: false, clock: false, trace: false, music: false },
   stars: 0, stickers: {}, sessions: 0, progress: {}, sessionLength: 8, newPerSession: 3,
   math: { numMax: 199, firstMax: 20, addMax: 10, sub: true, visual: true, length: 8 },
-  mathStats: { number: { ok: 0, ko: 0 }, calc: { ok: 0, ko: 0 }, trace: { ok: 0, ko: 0 }, read: { ok: 0, ko: 0 }, sound: { ok: 0, ko: 0 }, syllab: { ok: 0, ko: 0 }, phrase: { ok: 0, ko: 0 }, money: { ok: 0, ko: 0 }, keys: { ok: 0, ko: 0 }, figures: { ok: 0, ko: 0 }, compare: { ok: 0, ko: 0 }, clock: { ok: 0, ko: 0 }, music: { ok: 0, ko: 0 } },
+  mathStats: { quiz: { ok: 0, ko: 0 }, number: { ok: 0, ko: 0 }, calc: { ok: 0, ko: 0 }, trace: { ok: 0, ko: 0 }, read: { ok: 0, ko: 0 }, sound: { ok: 0, ko: 0 }, syllab: { ok: 0, ko: 0 }, phrase: { ok: 0, ko: 0 }, money: { ok: 0, ko: 0 }, keys: { ok: 0, ko: 0 }, figures: { ok: 0, ko: 0 }, compare: { ok: 0, ko: 0 }, clock: { ok: 0, ko: 0 }, music: { ok: 0, ko: 0 } },
   trace: { lower: true, upper: true, digits: true, nums: true, cursive: true, cwords: true, length: 6 },
   read: { level: 2 }, sound: { rime: true, debut: true }, phrase: { max: 4 }, money: { level: 1 }, keys: { level: 3 }, daily: null, days: [], streak: { n: 0, last: "" }, mixCount: {}, cmp: { max: 1000 }, clock: { level: 1 }, music: { pitch: true, rhythm: true, instr: true, level: 2 },
   plays: { word: 0, read: 0, sound: 0, syllab: 0, phrase: 0, money: 0, keys: 0, figures: 0, number: 0, calc: 0, compare: 0, clock: 0, trace: 0, music: 0 },
@@ -30,14 +30,22 @@ const ACTIVITIES = [
   ["instr", "Instrument mystère", "🎻", "#9333ea", "#0ea5e9", "Quel instrument joue?"],
   ["traceMus", "Tracer les notes", "🖊️", "#db2777", "#7c3aed", "Ronde, blanche, noire, croche"],
   ["keys", "Piano", "🎹", "#0f172a", "#a855f7", "Trouve la note sur le clavier"],
-  ["figures", "Les notes", "🎼", "#be185d", "#6366f1", "Ronde, blanche, noire…"]
+  ["figures", "Les notes", "🎼", "#be185d", "#6366f1", "Ronde, blanche, noire…"],
+  ["vivant", "Vivant ou pas?", "🌱", "#16a34a", "#84cc16", "Est-ce que c'est vivant?"],
+  ["habitat", "Où vit l'animal?", "🦊", "#ea580c", "#0ea5e9", "Mer, forêt, ferme, banquise"],
+  ["meteo", "La météo", "🌦️", "#0284c7", "#facc15", "Qu'est-ce que tu mets?"],
+  ["saisons", "Les saisons", "🍂", "#d97706", "#22c55e", "Hiver, printemps, été, automne"],
+  ["avant", "Avant ou aujourd'hui", "☎️", "#78716c", "#a855f7", "Les objets d'autrefois"],
+  ["couleurs", "Les couleurs", "🎨", "#ef4444", "#3b82f6", "Mélange deux couleurs"],
+  ["emotions", "Les émotions", "😊", "#f472b6", "#f59e0b", "Comment tu te sens?"]
 ];
 const CATS = [
   ["fr", "Français", "📚", "#7c3aed", "#ec4899", ["word", "read", "syllab", "sound", "phrase", "trace"]],
   ["math", "Maths", "🧮", "#0ea5e9", "#22c55e", ["number", "calc", "compare", "money", "clock", "traceNum"]],
-  ["mus", "Musique", "🎵", "#a855f7", "#f43f5e", ["pitch", "rhythm", "instr", "keys", "figures", "traceMus"]]
+  ["mus", "Musique", "🎵", "#a855f7", "#f43f5e", ["pitch", "rhythm", "instr", "keys", "figures", "traceMus"]],
+  ["dec", "Découverte", "🌍", "#16a34a", "#f59e0b", ["vivant", "habitat", "meteo", "saisons", "avant", "couleurs", "emotions"]]
 ];
-const DAILY_MIX = { fr: 4, math: 4, mus: 2 }, NO_MIX = ["trace", "traceNum", "traceMus"], MIX_WEIGHT = { word: 3, read: 3 };
+const DAILY_MIX = { fr: 4, math: 4, mus: 2, dec: 1 }, NO_MIX = ["trace", "traceNum", "traceMus"], MIX_WEIGHT = { word: 3, read: 3 };
 const HUNDREDS = ["", "cent", "deux cents", "trois cents", "quatre cents", "cinq cents", "six cents", "sept cents", "huit cents", "neuf cents"];
 const THOUSANDS = ["", "mille", "deux mille", "trois mille", "quatre mille", "cinq mille", "six mille", "sept mille", "huit mille", "neuf mille"];
 const HOURS = ["midi", "une heure", "deux heures", "trois heures", "quatre heures", "cinq heures", "six heures", "sept heures", "huit heures", "neuf heures", "dix heures", "onze heures", "midi"];
@@ -243,6 +251,7 @@ const GAMES = {
     reveal: it => { app.querySelectorAll(`.kbd .wk[data-n="${it.note}"]`).forEach(r => r.classList.add("ok")); return { shown: NOTES[it.note].toUpperCase(), spoken: [] }; } },
   figures: { prompt: it => it.sub === "temps" ? [`Combien de temps vaut ${it.fig[1]}?`] : [figOf(it.answer)[2]], praise: it => [it.sub === "temps" ? tempsLine(it.fig, it.answer) : figOf(it.answer)[1]],
     reveal: (it, t) => { if (it.sub === "temps") return { shown: `${it.fig[1]} = ${t} temps`, spoken: [tempsLine(it.fig, t)] }; const f = figOf(t); return { shown: `<img class="figans" src="img/music/${f[0]}.svg" alt=""> ${f[1]}`, spoken: ["C'est", f[1]] }; } },
+  quiz: { prompt: it => it.prompt, speakReveal: true, praise: it => it.say, reveal: it => ({ shown: it.shown, spoken: it.say }) },
   music: { prompt: it => it.sub === "pitch" ? [it.ask === "aigu" ? "Touche le son le plus aigu." : "Touche le son le plus grave."] : it.sub === "rhythm" ? ["Écoute le rythme, puis tape-le sur le tambour."] : ["Quel instrument joue?"],
     praise: it => it.sub === "instr" ? ["C'est", insOf(it.ins)[1]] : [],
     reveal: (it, t) => it.sub === "pitch" ? { shown: `🔔 ${+t + 1}`, spoken: [it.ask === "aigu" ? "Le son le plus aigu, c'est le" : "Le son le plus grave, c'est le", +t ? "deuxième" : "premier"] }
@@ -455,6 +464,44 @@ function hintSvg() {
     <rect x="27" y="0" width="26" height="74" rx="3" class="bk g2"/><rect x="67" y="0" width="26" height="74" rx="3" class="bk g2"/>
     <text x="20" y="104" class="dot">DO</text><path d="M20 -28 L20 -6 M12 -14 L20 -4 L28 -14" class="arrow"/><text x="60" y="-14" class="lbl">2 noires</text></svg>`;
 }
+/* ---------- découverte (sciences, univers social, arts, citoyenneté) ---------- */
+const VIVANT = [["🐱", "le chat", 1], ["🌳", "l'arbre", 1], ["🌸", "la fleur", 1], ["🐟", "le poisson", 1], ["🍄", "le champignon", 1], ["👶", "le bébé", 1], ["🦋", "le papillon", 1], ["🐦", "l'oiseau", 1], ["🌵", "le cactus", 1], ["🐸", "la grenouille", 1],
+  ["🪨", "la roche", 0], ["🚗", "l'auto", 0], ["🎈", "le ballon", 0], ["🪑", "la chaise", 0], ["🤖", "le robot", 0], ["✏️", "le crayon", 0], ["☁️", "le nuage", 0], ["🏠", "la maison", 0], ["🧸", "le toutou", 0], ["⚽", "le ballon de soccer", 0]];
+const HABITATS = { mer: ["🌊", "dans la mer"], foret: ["🌲", "dans la forêt"], ferme: ["🚜", "à la ferme"], banquise: ["🧊", "sur la banquise"], maison: ["🏠", "dans la maison"] };
+const ANIMAUX = [["🐋", "la baleine", "mer"], ["🐬", "le dauphin", "mer"], ["🐙", "la pieuvre", "mer"], ["🦈", "le requin", "mer"], ["🐻", "l'ours", "foret"], ["🦊", "le renard", "foret"], ["🦉", "le hibou", "foret"], ["🦌", "le chevreuil", "foret"],
+  ["🐄", "la vache", "ferme"], ["🐷", "le cochon", "ferme"], ["🐔", "la poule", "ferme"], ["🐑", "le mouton", "ferme"], ["🐧", "le pingouin", "banquise"], ["🐻‍❄️", "l'ours polaire", "banquise"], ["🦭", "le phoque", "banquise"], ["🐶", "le chien", "maison"], ["🐹", "le hamster", "maison"]];
+const METEO = [["☀️", "Il fait chaud et il fait soleil.", [["🩳", "un short"], ["👒", "un chapeau de soleil"], ["🕶️", "des lunettes de soleil"]]],
+  ["❄️", "Il neige et il fait très froid.", [["🧤", "des mitaines"], ["🧣", "un foulard"], ["🥾", "des bottes d'hiver"]]],
+  ["🌧️", "Il pleut beaucoup.", [["☂️", "un parapluie"], ["👢", "des bottes de pluie"]]]];
+const SAISONS = { hiver: ["⛄", "l'hiver"], printemps: ["🌷", "le printemps"], ete: ["🏖️", "l'été"], automne: ["🍂", "l'automne"] };
+const SCENES = [["⛄🛷", "hiver"], ["❄️🧤", "hiver"], ["🌷🐣", "printemps"], ["🌱🌧️", "printemps"], ["🏖️🍦", "ete"], ["☀️🩳", "ete"], ["🍂🎃", "automne"], ["🍎🍁", "automne"]];
+const AVANT = [["☎️", "le vieux téléphone", "📱", "le cellulaire"], ["🕯️", "la chandelle", "💡", "l'ampoule"], ["🐴", "le cheval", "🚗", "l'auto"], ["✉️", "la lettre", "💬", "le texto"], ["📻", "la radio", "📺", "la télé"], ["🪶", "la plume", "🖊️", "le stylo"]];
+const COULEURS = { rouge: "#ef4444", jaune: "#facc15", bleu: "#3b82f6", orange: "#f97316", vert: "#22c55e", violet: "#8b5cf6", blanc: "#ffffff", rose: "#f9a8d4", noir: "#111111", gris: "#9ca3af" };
+const MELANGES = [["rouge", "jaune", "orange"], ["bleu", "jaune", "vert"], ["rouge", "bleu", "violet"], ["rouge", "blanc", "rose"], ["noir", "blanc", "gris"]];
+const EMOTIONS = { content: ["😄", "content"], triste: ["😢", "triste"], fache: ["😠", "fâché"], peur: ["😨", "peur"], surpris: ["😲", "surpris"] };
+const SITUATIONS = [["C'est ta fête et tu reçois un cadeau.", "content"], ["Tu as réussi ton beau dessin.", "content"], ["Ton ami ne veut plus jouer avec toi.", "triste"], ["Tu as perdu ton toutou.", "triste"],
+  ["Ton frère a brisé ton bricolage.", "fache"], ["Quelqu'un prend ta place sans demander.", "fache"], ["Il y a un gros orage pendant la nuit.", "peur"], ["Un gros chien aboie très fort.", "peur"], ["Un clown sort d'une boîte!", "surpris"]];
+const blob = c => `<span class="paint" style="background:${COULEURS[c]}"></span>`;
+const big = e => `<span class="bigemo">${e}</span>`;
+function quiz(sub, o) { return Object.assign({ kind: "quiz", sub }, o); }
+const QUIZ = {
+  vivant: () => shuffle(VIVANT).map(([e, n, v]) => quiz("vivant", { visual: big(e), text: "Est-ce que c'est vivant?", prompt: ["Est-ce que c'est vivant?"],
+    choices: [{ v: "1", html: "🌱<small>Vivant</small>" }, { v: "0", html: "🪨<small>Pas vivant</small>" }], answer: String(v), say: [cap(n), v ? "est vivant." : "n'est pas vivant."], shown: `${e} ${v ? "vivant" : "pas vivant"}` })),
+  habitat: () => shuffle(ANIMAUX).map(([e, n, h]) => { const opts = shuffle([h, ...shuffle(Object.keys(HABITATS).filter(x => x !== h)).slice(0, 2)]);
+    return quiz("habitat", { visual: big(e), text: "Où vit cet animal?", prompt: ["Où vit cet animal?"], choices: opts.map(x => ({ v: x, html: `${HABITATS[x][0]}<small>${HABITATS[x][1]}</small>` })), answer: h, say: [cap(n), "vit", HABITATS[h][1]], shown: `${e} ${HABITATS[h][0]}` }); }),
+  meteo: () => shuffle(METEO.flatMap(([w, phrase, wear]) => wear.map(([e, n]) => ({ w, phrase, e, n })))).map(({ w, phrase, e, n }) => {
+    const others = METEO.filter(m => m[0] !== w).map(m => pick(m[2]));
+    return quiz("meteo", { visual: big(w), text: phrase, prompt: [phrase, "Qu'est-ce que tu mets?"], choices: shuffle([[e, n], ...others]).map(([ce, cn]) => ({ v: cn, html: `${ce}<small>${cn}</small>` })), answer: n, say: ["Tu mets", n], shown: `${w} → ${e} ${n}` }); }),
+  saisons: () => shuffle(SCENES).map(([sc, s]) => quiz("saisons", { visual: big(sc), text: "Quelle saison est-ce?", prompt: ["Quelle saison est-ce?"],
+    choices: Object.keys(SAISONS).map(x => ({ v: x, html: `${SAISONS[x][0]}<small>${SAISONS[x][1]}</small>` })), answer: s, say: ["C'est", SAISONS[s][1]], shown: `${SAISONS[s][0]} ${SAISONS[s][1]}` })),
+  avant: () => shuffle(AVANT).map(([e1, n1, e2, n2]) => { const old = Math.random() < 0.5, q = old ? "Touche ce qu'on utilisait avant." : "Touche ce qu'on utilise aujourd'hui.";
+    return quiz("avant", { visual: "", text: q, prompt: [q], choices: shuffle([{ v: n1, html: `${e1}<small>${n1}</small>` }, { v: n2, html: `${e2}<small>${n2}</small>` }]), answer: old ? n1 : n2, say: [old ? "Avant, on avait" : "Aujourd'hui, on a", old ? n1 : n2], shown: `${old ? e1 : e2} ${old ? n1 : n2}` }); }),
+  couleurs: () => shuffle(MELANGES).map(([a, b, r]) => { const opts = shuffle([r, ...shuffle(MELANGES.map(m => m[2]).filter(x => x !== r)).slice(0, 2)]);
+    return quiz("couleurs", { visual: `<span class="mixpaint">${blob(a)} + ${blob(b)} = ?</span>`, text: `${cap(a)} et ${b}, ça donne quelle couleur?`, prompt: [`${cap(a)} et ${b}, ça donne quelle couleur?`],
+      choices: opts.map(x => ({ v: x, html: `${blob(x)}<small>${x}</small>` })), answer: r, say: [`${cap(a)} et ${b}, ça donne`, r], shown: `${blob(a)} + ${blob(b)} = ${blob(r)} ${r}` }); }),
+  emotions: () => shuffle(SITUATIONS).map(([phrase, em]) => { const opts = shuffle([em, ...shuffle(Object.keys(EMOTIONS).filter(x => x !== em)).slice(0, 2)]);
+    return quiz("emotions", { visual: "", text: phrase, prompt: [phrase, "Comment tu te sens?"], choices: opts.map(x => ({ v: x, html: `${EMOTIONS[x][0]}<small>${EMOTIONS[x][1]}</small>` })), answer: em, say: ["On se sent", EMOTIONS[em][1]], shown: `${EMOTIONS[em][0]} ${EMOTIONS[em][1]}` }); })
+};
 let SYL_WORDS = [];
 function buildSyllabSession() {
   const by = n => shuffle(SYL_WORDS.filter(w => w.syl.length === n)), pools = [by(1), by(2), by(3), by(4)], items = [];
@@ -542,7 +589,7 @@ function buildMusicSession(sub) {
   }
   return items;
 }
-const BUILDERS = { number: buildNumberSession, trace: buildTraceSession, traceNum: buildTraceNumSession, calc: buildCalcSession, read: buildReadSession, sound: buildSoundSession, syllab: buildSyllabSession, phrase: buildPhraseSession, money: buildMoneySession, keys: buildKeysSession, figures: buildFiguresSession, traceMus: buildTraceMusSession, compare: buildCompareSession, clock: buildClockSession, pitch: () => buildMusicSession("pitch"), rhythm: () => buildMusicSession("rhythm"), instr: () => buildMusicSession("instr") };
+const BUILDERS = { ...Object.fromEntries(Object.keys(QUIZ).map(k => [k, () => QUIZ[k]().slice(0, S.math.length)])), number: buildNumberSession, trace: buildTraceSession, traceNum: buildTraceNumSession, calc: buildCalcSession, read: buildReadSession, sound: buildSoundSession, syllab: buildSyllabSession, phrase: buildPhraseSession, money: buildMoneySession, keys: buildKeysSession, figures: buildFiguresSession, traceMus: buildTraceMusSession, compare: buildCompareSession, clock: buildClockSession, pitch: () => buildMusicSession("pitch"), rhythm: () => buildMusicSession("rhythm"), instr: () => buildMusicSession("instr") };
 function gameItems(id) {
   if (id === "word") return POOL.length || S.weekly.length ? buildWordSession() : [];
   return BUILDERS[id]();
@@ -611,6 +658,8 @@ function renderItem(it) {
     body = `<div class="tracewrap"><canvas id="trace"></canvas></div><div class="actions"><button class="btn ghost small" id="erase">⌫</button><button class="btn ghost small" id="skip">→</button></div>`;
   } else if (it.kind === "read") {
     body = `<div class="readword">${esc(it.mot)}</div><div class="choices">${it.choices.map(c => `<button class="choice emo" data-v="${esc(c.mot)}">${c.emoji}</button>`).join("")}</div>`;
+  } else if (it.kind === "quiz") {
+    body = `<div class="cmpq quizq">${esc(it.text)}</div>${it.visual ? `<div class="quizvis">${it.visual}</div>` : ""}<div class="choices ${it.choices.length === 2 ? "two" : it.choices.length === 4 ? "four" : ""} quizc">${it.choices.map(c => `<button class="choice" data-v="${esc(c.v)}">${c.html}</button>`).join("")}</div>`;
   } else if (it.kind === "keys") {
     body = `<div class="cmpq">Trouve le <b>${NOTES[it.note].toUpperCase()}</b></div><div class="kbdwrap">${keyboardSvg()}</div>
       <div class="hint" id="hint"><button class="btn ghost small" id="hintBtn">💡 Indice</button><div class="hintbox" id="hintBox" hidden>${hintSvg()}<p>Le <b>DO</b>, c'est la touche blanche juste à <b>gauche</b> du groupe de <b>2 touches noires</b>.</p>${it.note ? `<p>Ensuite, on monte vers la droite : do, ré, mi, fa, sol, la, si.</p>` : ""}</div></div>`;
@@ -1226,7 +1275,7 @@ function parent() {
         <tr><td>Nombres réussis / ratés</td><td>${S.mathStats.number.ok} / ${S.mathStats.number.ko}</td></tr>
         <tr><td>Calculs réussis / ratés</td><td>${S.mathStats.calc.ok} / ${S.mathStats.calc.ko}</td></tr>
         <tr><td>Tracés réussis</td><td>${S.mathStats.trace.ok}</td></tr>
-        ${[["read", "Lecture"], ["sound", "Rimes et sons"], ["syllab", "Syllabes"], ["phrase", "Phrases"], ["money", "Sous"], ["keys", "Piano"], ["figures", "Notes de musique"], ["compare", "Plus grand"], ["clock", "Heure"], ["music", "Aigu, rythme, instruments"]].map(([k, l]) => `<tr><td>${l} réussis / ratés</td><td>${S.mathStats[k].ok} / ${S.mathStats[k].ko}</td></tr>`).join("")}
+        ${[["read", "Lecture"], ["sound", "Rimes et sons"], ["syllab", "Syllabes"], ["phrase", "Phrases"], ["money", "Sous"], ["keys", "Piano"], ["figures", "Notes de musique"], ["compare", "Plus grand"], ["clock", "Heure"], ["music", "Aigu, rythme, instruments"], ["quiz", "Découverte"]].map(([k, l]) => `<tr><td>${l} réussis / ratés</td><td>${S.mathStats[k].ok} / ${S.mathStats[k].ko}</td></tr>`).join("")}
         <tr><td>Abonnés</td><td>${S.stars}</td></tr>
       </table>
       ${hard.length ? `<label>Mots difficiles</label><p>${hard.map(([k, p]) => `<span class="pill">${esc(k)} ×${p.ko}</span>`).join("")}</p>` : ""}
