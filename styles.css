@@ -327,3 +327,5 @@ button.daily { display: block; width: calc(100% - 32px); text-align: left; color
 .prog { background: var(--surface); border-radius: 14px; padding: 10px; display: flex; flex-direction: column; align-items: center; text-align: center; }
 .prog span { font-size: 1.8rem; } .prog b { font-size: 1.6rem; } .prog small { color: var(--muted); font-size: .75rem; }
 .kwords { margin-top: 10px; }
+.zarm { stroke: #86d49a; stroke-width: 9; stroke-linecap: round; fill: none; }
+.zarm-o { stroke: #2b1d3d; stroke-width: 13; stroke-linecap: round; fill: none; }

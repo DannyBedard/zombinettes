@@ -46,7 +46,7 @@ const CATS = [
   ["fr", "Français", "📚", "#7c3aed", "#ec4899", ["word", "read", "syllab", "sound", "phrase", "sonsref", "trace"]],
   ["math", "Maths", "🧮", "#0ea5e9", "#22c55e", ["number", "calc", "compare", "money", "clock", "formes", "solides", "traceNum"]],
   ["mus", "Musique", "🎵", "#a855f7", "#f43f5e", ["pitch", "rhythm", "instr", "keys", "figures", "traceMus"]],
-  ["dec", "Autre", "🌍", "#16a34a", "#f59e0b", ["vivant", "habitat", "meteo", "saisons", "avant", "couleurs", "emotions"]]
+  ["dec", "Autre", "🌍", "#16a34a", "#f59e0b", ["vivant", "habitat", "meteo", "saisons", "avant", "couleurs", "emotions"], { noMix: true }]
 ];
 const DAILY_MIX = { fr: 4, math: 4, mus: 2, dec: 1 }, NO_MIX = ["trace", "traceNum", "traceMus", "sonsref"], MIX_WEIGHT = { word: 3, read: 3 };
 const HUNDREDS = ["", "cent", "deux cents", "trois cents", "quatre cents", "cinq cents", "six cents", "sept cents", "huit cents", "neuf cents"];
@@ -245,13 +245,21 @@ function soundsScreen() {
   app.querySelectorAll(".sw").forEach(b => b.onclick = () => say([b.dataset.w, { pause: 300 }, ...spellParts(b.dataset.g)]));
   say(["Voici les lettres qui font un son ensemble. Touche un mot pour l'entendre."]);
 }
+const VOWELS = "aeiouyéèêëàâîïôûùœ", NASALS = ["an", "am", "en", "em", "in", "im", "on", "om", "un", "ain", "ein", "oin"];
+function graphHere(t, p, g) {
+  const nx = t[p + g.length] || "";
+  if (NASALS.includes(g)) return !nx || !(VOWELS.includes(nx) || nx === "n" || nx === "m");
+  if (g === "er" || g === "ez") return p + g.length === t.length && t.length > 3;
+  return true;
+}
 function explainWord(t, a) {
   t = norm(t); a = norm(a); let i = 0; while (i < t.length && t[i] === a[i]) i++;
   if (i >= t.length) return null;
+  if (a.length === t.length - 1 && t.slice(0, i) + t.slice(i + 1) === a && (t[i] === t[i - 1] || t[i] === t[i + 1])) return { shown: `Il y a deux <b>${t[i]}</b>.`, spoken: ["Il y a deux", t[i]] };
+  if (a.length === t.length + 1 && a.slice(0, i) + a.slice(i + 1) === t && (a[i] === a[i - 1] || a[i] === a[i + 1])) return { shown: `Il y a un seul <b>${a[i]}</b>.`, spoken: ["Il y a un seul", a[i]] };
   for (const [g, ex1, ex2] of GRAPHS) for (let p = t.indexOf(g); p >= 0; p = t.indexOf(g, p + 1))
-    if (p <= i && i < p + g.length) { const ex = ex1 !== t ? ex1 : ex2; return { shown: `Ici, c'est le son de <b>${esc(ex)}</b>, qui s'écrit <b>${esc(g)}</b>.`, spoken: ["Ici, c'est le son de", ex, "qui s'écrit", ...spellParts(g)] }; }
+    if (p <= i && i < p + g.length && graphHere(t, p, g)) { const ex = ex1 !== t ? ex1 : ex2; return { shown: `Ici, c'est le son de <b>${esc(ex)}</b>, qui s'écrit <b>${esc(g)}</b>.`, spoken: ["Ici, c'est le son de", ex, "qui s'écrit", ...spellParts(g)] }; }
   if (i === t.length - 1 && /[tdsxpzg]/.test(t[i]) && t.length > 2) return { shown: `La lettre <b>${t[i]}</b> à la fin ne s'entend pas.`, spoken: ["La dernière lettre", t[i], "ne s'entend pas."] };
-  if (t[i] === t[i + 1] || t[i] === t[i - 1]) return { shown: `Il y a deux <b>${t[i]}</b>.`, spoken: ["Il y a deux", t[i]] };
   if (/[éèêàâùûîôë]/.test(t[i])) return { shown: `Attention à l'accent : <b>${t[i]}</b>.`, spoken: ["Attention à l'accent!"] };
   return null;
 }
@@ -545,8 +553,9 @@ const QUIZ = {
 const GEO_COLORS = ["#f472b6", "#60a5fa", "#4ade80", "#facc15", "#c084fc", "#fb923c"];
 const FORMES = [["carre", "le carré"], ["rectangle", "le rectangle"], ["triangle", "le triangle"], ["cercle", "le cercle"], ["losange", "le losange"]];
 const SOLIDES = [["cube", "le cube"], ["sphere", "la sphère"], ["cylindre", "le cylindre"], ["cone", "le cône"], ["pyramide", "la pyramide"], ["prisme", "le prisme"]];
+function shade(hex, to, k) { const n = parseInt(hex.slice(1), 16), c = [n >> 16, (n >> 8) & 255, n & 255].map(v => Math.round(v + (to - v) * k)); return `rgb(${c.join(",")})`; }
 function shapeSvg(id, c) {
-  const st = `fill="${c}" stroke="#2b1d3d" stroke-width="3.5" stroke-linejoin="round"`, dk = `style="fill:color-mix(in srgb, ${c} 70%, #000)" stroke="#2b1d3d" stroke-width="3.5" stroke-linejoin="round"`, lt = `style="fill:color-mix(in srgb, ${c} 60%, #fff)" stroke="#2b1d3d" stroke-width="3.5" stroke-linejoin="round"`;
+  const face = col => `fill="${col}" stroke="#2b1d3d" stroke-width="3.5" stroke-linejoin="round"`, st = face(c), dk = face(shade(c, 0, 0.3)), lt = face(shade(c, 255, 0.4));
   const tall = Math.random() < 0.5, flip = Math.random() < 0.5;
   const d = {
     carre: `<rect x="22" y="22" width="56" height="56" ${st}/>`,
@@ -723,51 +732,38 @@ function nextItem() {
   const me = session, idx = session.i;
   setTimeout(() => { if (session === me && session.i === idx && $("#speak")) say(parts).then(() => { if (it.kind === "music" && session === me && session.i === idx && !session.locked && $("#speak")) playMusic(it); }); }, 300);
 }
+const PAD = `<div class="pad numpad">${[1, 2, 3, 4, 5, 6, 7, 8, 9, "⌫", 0, "✓"].map(k => `<button data-k="${k}">${k}</button>`).join("")}</div>`;
+const VIEWS = {
+  word: () => S.mode === "tiles"
+      ? `<div class="slots" id="slots"></div><div class="tiles" id="tiles"></div><div class="actions"><button class="btn ghost small" id="erase">⌫</button></div>`
+      : `<input class="typed" id="typed" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="text"><div class="actions"><button class="btn mint small" id="check">✓</button></div>`,
+  trace: () => `<div class="tracewrap"><canvas id="trace"></canvas></div><div class="actions"><button class="btn ghost small" id="erase">⌫</button><button class="btn ghost small" id="skip">→</button></div>`,
+  read: it => `<div class="readword ${it.sentence ? "sentence" : ""}">${esc(it.mot)}</div><div class="choices">${it.choices.map(c => `<button class="choice emo" data-v="${esc(c.mot)}">${c.emoji}</button>`).join("")}</div>`,
+  quiz: it => `<div class="cmpq quizq">${esc(it.text)}</div>${it.visual ? `<div class="quizvis">${it.visual}</div>` : ""}<div class="choices ${it.choices.length === 2 ? "two" : it.choices.length === 4 ? "four" : ""} quizc">${it.choices.map(c => `<button class="choice" data-v="${esc(c.v)}">${c.html}</button>`).join("")}</div>`,
+  keys: it => `<div class="cmpq">Trouve le <b>${NOTES[it.note].toUpperCase()}</b></div><div class="kbdwrap">${keyboardSvg()}</div>
+      <div class="hint" id="hint"><button class="btn ghost small" id="hintBtn">💡 Indice</button><div class="hintbox" id="hintBox" hidden>${hintSvg()}<p>Le <b>DO</b>, c'est la touche blanche juste à <b>gauche</b> du groupe de <b>2 touches noires</b>.</p>${it.note ? `<p>Ensuite, on monte vers la droite : do, ré, mi, fa, sol, la, si.</p>` : ""}</div></div>`,
+  figures: it => it.sub === "temps" ? `<div class="cmpq">Combien de temps vaut <b>${it.fig[1]}</b>?</div><div class="figq"><img src="img/music/${it.fig[0]}.svg" alt=""></div><div class="choices">${it.choices.map(n => `<button class="choice txt" data-v="${n}">${n} temps</button>`).join("")}</div>`
+    : `<div class="cmpq">Touche <b>${FIGURES.find(x => x[0] === it.answer)[1]}</b></div><div class="choices figs">${it.choices.map(c => `<button class="choice fig" data-v="${c[0]}"><img src="img/music/${c[0]}.svg" alt=""></button>`).join("")}</div>`,
+  phrase: () => `<div class="slots phr" id="slots"></div><div class="tiles phr" id="tiles"></div><div class="actions"><button class="btn ghost small" id="erase">⌫</button></div>`,
+  money: it => it.sub === "find" ? `<div class="cmpq">Touche la pièce de <b>${coinLabel(it.value)}</b></div><div class="choices coinpick">${it.choices.map(v => `<button class="choice" data-v="${v}">${coinSvg(v)}</button>`).join("")}</div>`
+    : it.sub === "count" ? `<div class="coins">${it.coins.map(coinSvg).join("")}</div><div class="cmpq">Combien ça fait?</div><div class="choices">${it.choices.map(v => `<button class="choice txt" data-v="${v}">${v} ${it.unit}</button>`).join("")}</div>`
+    : `<div class="coins">${it.coins.map(coinSvg).join("")}</div><div class="calc"><span id="num">?</span> ${it.unit}</div>${PAD}`,
+  syllab: it => `<div class="target">${it.emoji}<small>${esc(it.mot)}</small></div><div class="taps" id="taps"></div><button class="drum ready" id="drum">🥁</button>`,
+  sound: it => `<div class="cmpq">${it.sub === "rime" ? "Ça rime avec" : "Ça commence comme"}</div><div class="target">${it.target.emoji}<small>${esc(it.target.mot)}</small></div><div class="choices">${it.choices.map(c => `<button class="choice emo" data-v="${esc(c.mot)}">${c.emoji}</button>`).join("")}</div>`,
+  compare: it => `<div class="cmprow"><span class="cn">${it.a}</span><span class="cslot" id="cslot">?</span><span class="cn">${it.b}</span></div><div class="choices crocs">${["gt", "eq", "lt"].map(v => `<button class="choice" data-v="${v}">${crocSvg(v)}</button>`).join("")}</div>`,
+  clock: it => `<div class="clockwrap">${clockSvg(it.h, it.m, S.clock.level >= 3)}</div><div class="choices">${it.choices.map(c => `<button class="choice txt" data-v="${c}">${c}</button>`).join("")}</div>`,
+  music: it => it.sub === "pitch" ? `<div class="cmpq">Le son le plus <b>${it.ask}</b> ${it.ask === "aigu" ? "🐭" : "🐻"}</div><div class="choices two">${[0, 1].map(k => `<button class="choice num note" data-v="${k}">🔔<small>${k + 1}</small></button>`).join("")}</div>`
+    : it.sub === "rhythm" ? `<div class="rhythm" id="rhythm">${it.pattern.map((p, k) => `<span data-k="${k}">${p === "ta" ? "♩" : p === "titi" ? "♫" : "𝄽"}<small>${p}</small></span>`).join("")}</div><button class="drum" id="drum">🥁</button>`
+    : `<div class="cmpq">Quel instrument joue? 🎶</div><div class="choices ${it.choices.length > 3 ? "four" : ""}">${it.choices.map(([id, name, e]) => `<button class="choice emo" data-v="${id}">${e}<small>${name.replace(/^(le|la) /, "")}</small></button>`).join("")}</div>`,
+  calc: it => `<div class="calc"><span class="na">${it.a}</span> ${it.op} <span class="${it.op === "+" ? "nb" : "nx"}">${it.b}</span> = <span id="num">?</span></div><div id="dots">${dots(it)}</div>${PAD}`,
+  number: () => `<div class="calc"><span id="num">?</span></div>${PAD}`
+};
+const SETUPS = { word: it => S.mode === "tiles" ? setupTiles(it) : setupTyped(it), trace: it => setupTrace(it), syllab: it => setupSyllab(it), phrase: it => setupPhrase(it), keys: it => setupKeys(it),
+  music: it => it.sub === "rhythm" ? setupRhythm(it) : setupChoices(it), number: it => setupPad(it), calc: it => setupPad(it), money: it => it.sub === "pad" ? setupPad(it) : setupChoices(it) };
 function renderItem(it) {
   session.locked = false;
   const segs = session.items.map((_, k) => `<i class="${k < session.i ? "done" : k === session.i ? "cur" : ""}"></i>`).join("");
-  let body;
-  if (it.kind === "word") {
-    body = S.mode === "tiles"
-      ? `<div class="slots" id="slots"></div><div class="tiles" id="tiles"></div><div class="actions"><button class="btn ghost small" id="erase">⌫</button></div>`
-      : `<input class="typed" id="typed" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="text"><div class="actions"><button class="btn mint small" id="check">✓</button></div>`;
-  } else if (it.kind === "trace") {
-    body = `<div class="tracewrap"><canvas id="trace"></canvas></div><div class="actions"><button class="btn ghost small" id="erase">⌫</button><button class="btn ghost small" id="skip">→</button></div>`;
-  } else if (it.kind === "read") {
-    body = `<div class="readword ${it.sentence ? "sentence" : ""}">${esc(it.mot)}</div><div class="choices">${it.choices.map(c => `<button class="choice emo" data-v="${esc(c.mot)}">${c.emoji}</button>`).join("")}</div>`;
-  } else if (it.kind === "quiz") {
-    body = `<div class="cmpq quizq">${esc(it.text)}</div>${it.visual ? `<div class="quizvis">${it.visual}</div>` : ""}<div class="choices ${it.choices.length === 2 ? "two" : it.choices.length === 4 ? "four" : ""} quizc">${it.choices.map(c => `<button class="choice" data-v="${esc(c.v)}">${c.html}</button>`).join("")}</div>`;
-  } else if (it.kind === "keys") {
-    body = `<div class="cmpq">Trouve le <b>${NOTES[it.note].toUpperCase()}</b></div><div class="kbdwrap">${keyboardSvg()}</div>
-      <div class="hint" id="hint"><button class="btn ghost small" id="hintBtn">💡 Indice</button><div class="hintbox" id="hintBox" hidden>${hintSvg()}<p>Le <b>DO</b>, c'est la touche blanche juste à <b>gauche</b> du groupe de <b>2 touches noires</b>.</p>${it.note ? `<p>Ensuite, on monte vers la droite : do, ré, mi, fa, sol, la, si.</p>` : ""}</div></div>`;
-  } else if (it.kind === "figures" && it.sub === "temps") {
-    body = `<div class="cmpq">Combien de temps vaut <b>${it.fig[1]}</b>?</div><div class="figq"><img src="img/music/${it.fig[0]}.svg" alt=""></div><div class="choices">${it.choices.map(n => `<button class="choice txt" data-v="${n}">${n} temps</button>`).join("")}</div>`;
-  } else if (it.kind === "figures") {
-    body = `<div class="cmpq">Touche <b>${FIGURES.find(x => x[0] === it.answer)[1]}</b></div><div class="choices figs">${it.choices.map(c => `<button class="choice fig" data-v="${c[0]}"><img src="img/music/${c[0]}.svg" alt=""></button>`).join("")}</div>`;
-  } else if (it.kind === "phrase") {
-    body = `<div class="slots phr" id="slots"></div><div class="tiles phr" id="tiles"></div><div class="actions"><button class="btn ghost small" id="erase">⌫</button></div>`;
-  } else if (it.kind === "money" && it.sub === "find") {
-    body = `<div class="cmpq">Touche la pièce de <b>${coinLabel(it.value)}</b></div><div class="choices coinpick">${it.choices.map(v => `<button class="choice" data-v="${v}">${coinSvg(v)}</button>`).join("")}</div>`;
-  } else if (it.kind === "money" && it.sub === "count") {
-    body = `<div class="coins">${it.coins.map(coinSvg).join("")}</div><div class="cmpq">Combien ça fait?</div><div class="choices">${it.choices.map(v => `<button class="choice txt" data-v="${v}">${v} ${it.unit}</button>`).join("")}</div>`;
-  } else if (it.kind === "money") {
-    body = `<div class="coins">${it.coins.map(coinSvg).join("")}</div><div class="calc"><span id="num">?</span> ${it.unit}</div><div class="pad numpad">${[1, 2, 3, 4, 5, 6, 7, 8, 9, "⌫", 0, "✓"].map(k => `<button data-k="${k}">${k}</button>`).join("")}</div>`;
-  } else if (it.kind === "syllab") {
-    body = `<div class="target">${it.emoji}<small>${esc(it.mot)}</small></div><div class="taps" id="taps"></div><button class="drum ready" id="drum">🥁</button>`;
-  } else if (it.kind === "sound") {
-    body = `<div class="cmpq">${it.sub === "rime" ? "Ça rime avec" : "Ça commence comme"}</div><div class="target">${it.target.emoji}<small>${esc(it.target.mot)}</small></div><div class="choices">${it.choices.map(c => `<button class="choice emo" data-v="${esc(c.mot)}">${c.emoji}</button>`).join("")}</div>`;
-  } else if (it.kind === "compare") {
-    body = `<div class="cmprow"><span class="cn">${it.a}</span><span class="cslot" id="cslot">?</span><span class="cn">${it.b}</span></div><div class="choices crocs">${["gt", "eq", "lt"].map(v => `<button class="choice" data-v="${v}">${crocSvg(v)}</button>`).join("")}</div>`;
-  } else if (it.kind === "clock") {
-    body = `<div class="clockwrap">${clockSvg(it.h, it.m, S.clock.level >= 3)}</div><div class="choices">${it.choices.map(c => `<button class="choice txt" data-v="${c}">${c}</button>`).join("")}</div>`;
-  } else if (it.kind === "music") {
-    if (it.sub === "pitch") body = `<div class="cmpq">Le son le plus <b>${it.ask}</b> ${it.ask === "aigu" ? "🐭" : "🐻"}</div><div class="choices two">${[0, 1].map(k => `<button class="choice num note" data-v="${k}">🔔<small>${k + 1}</small></button>`).join("")}</div>`;
-    else if (it.sub === "rhythm") body = `<div class="rhythm" id="rhythm">${it.pattern.map((p, k) => `<span data-k="${k}">${p === "ta" ? "♩" : p === "titi" ? "♫" : "𝄽"}<small>${p}</small></span>`).join("")}</div><button class="drum" id="drum">🥁</button>`;
-    else body = `<div class="cmpq">Quel instrument joue? 🎶</div><div class="choices ${it.choices.length > 3 ? "four" : ""}">${it.choices.map(([id, name, e]) => `<button class="choice emo" data-v="${id}">${e}<small>${name.replace(/^(le|la) /, "")}</small></button>`).join("")}</div>`;
-  } else {
-    const shown = it.kind === "calc" ? `<div class="calc"><span class="na">${it.a}</span> ${it.op} <span class="${it.op === "+" ? "nb" : "nx"}">${it.b}</span> = <span id="num">?</span></div><div id="dots">${dots(it)}</div>` : `<div class="calc"><span id="num">?</span></div>`;
-    body = `${shown}<div class="pad numpad">${[1, 2, 3, 4, 5, 6, 7, 8, 9, "⌫", 0, "✓"].map(k => `<button data-k="${k}">${k}</button>`).join("")}</div>`;
-  }
+  const body = VIEWS[it.kind](it);
   view(`${topbar()}
     <div class="progress">${segs}</div>
     <div class="speakrow">${it.kind === "calc" ? `<button class="mute eye ${S.math.visual ? "" : "on"}" id="eye">${S.math.visual ? "👀" : "🙈"}</button>` : ""}<button class="speak" id="speak">🔊</button><button class="mute ${S.mute[it.kind] ? "on" : ""}" id="mute">${S.mute[it.kind] ? "🔇" : "🗣️"}</button></div>
@@ -777,14 +773,7 @@ function renderItem(it) {
   $("#speak").onclick = () => replay(it);
   if ($("#eye")) $("#eye").onclick = () => { S.math.visual = !S.math.visual; save(); $("#eye").textContent = S.math.visual ? "👀" : "🙈"; $("#eye").classList.toggle("on", !S.math.visual); $("#dots").innerHTML = dots(it); };
   $("#mute").onclick = () => { S.mute[it.kind] = !S.mute[it.kind]; save(); const on = S.mute[it.kind]; $("#mute").textContent = on ? "🔇" : "🗣️"; $("#mute").classList.toggle("on", on); if (on) stopAudio(); };
-  if (it.kind === "word") { if (S.mode === "tiles") setupTiles(it); else setupTyped(it); }
-  else if (it.kind === "trace") setupTrace(it);
-  else if (it.kind === "music" && it.sub === "rhythm") setupRhythm(it);
-  else if (it.kind === "syllab") setupSyllab(it);
-  else if (it.kind === "phrase") setupPhrase(it);
-  else if (it.kind === "keys") setupKeys(it);
-  else if ($(".choices")) setupChoices(it);
-  else setupPad(it);
+  (SETUPS[it.kind] || setupChoices)(it);
 }
 function thinkFb(cls, text) { const fb = $("#fb"); fb.className = `feedback ${cls} think`; fb.innerHTML = `<span class="zthink">${zombinette("think")}</span><span>${text}</span>`; }
 function cmpSentence(it) { return [...numberParts(it.a), { gt: "est plus grand que", lt: "est plus petit que", eq: "est égal à" }[it.answer], ...numberParts(it.b)]; }
@@ -1072,7 +1061,7 @@ function check(it, answer) {
   const ok = it.kind === "word" ? norm(answer) === norm(target) : it.kind === "number" || it.kind === "calc" || it.kind === "money" ? String(parseInt(answer, 10)) === target : String(answer) === target;
   const fb = $("#fb");
   const p = it.kind === "word" ? prog(it.key) : null;
-  const ms = it.kind === "word" ? null : S.mathStats[it.kind];
+  const sk = statKey(it), ms = it.kind === "word" ? null : (S.mathStats[sk] = S.mathStats[sk] || { ok: 0, ko: 0 });
   if (ok) {
     if (session.attempt === 0) { session.good++; S.stars += 1; if (p) { p.box = Math.min(3, p.box + 1); p.ok++; } else ms.ok++; }
     if (p) p.last = session.s;
@@ -1126,11 +1115,12 @@ function weekHtml() {
   return `<div class="week">${["L", "M", "M", "J", "V", "S", "D"].map((l, k) => { const day = new Date(monday.getFullYear(), monday.getMonth(), monday.getDate() + k), ds = dayStr(day), done = S.days.includes(ds);
     return `<span class="${done ? "done" : ""} ${ds === dayStr(now) ? "today" : ""}"><i>${done ? "⭐" : ""}</i><small>${l}</small></span>`; }).join("")}</div>`;
 }
-function knownWords() { return POOL.concat(weeklyWords()).filter(w => S.progress[w.key] && S.progress[w.key].box >= 2); }
+function statKey(it) { return it.kind === "quiz" ? it.sub : it.kind; }
+function knownWords() { const seen = new Set(); return POOL.concat(weeklyWords()).filter(w => !seen.has(w.key) && seen.add(w.key) && S.progress[w.key] && S.progress[w.key].box >= 2); }
 function okTotal(kinds) { return kinds.reduce((t, k) => t + (S.mathStats[k] ? S.mathStats[k].ok : 0), 0); }
 function progressNote() {
   if (session.items.some(x => x.kind === "word")) { const n = knownWords().length; if (n) return { html: `📚 Tu connais maintenant <b>${n}</b> mot${n > 1 ? "s" : ""}!`, say: ["Tu connais maintenant", ...numberParts(n), "mots!"] }; }
-  const kinds = [...new Set(session.items.map(x => x.kind))].filter(k => k !== "word"), n = okTotal(kinds);
+  const kinds = [...new Set(session.items.filter(x => x.kind !== "word").map(statKey))], n = okTotal(kinds);
   return n ? { html: `⭐ <b>${n}</b> bonne${n > 1 ? "s" : ""} réponse${n > 1 ? "s" : ""} dans ces jeux depuis le début!`, say: ["Tu as maintenant", ...numberParts(n), "bonnes réponses!"] } : null;
 }
 function endSession() {
@@ -1160,19 +1150,17 @@ function endSession() {
 /* ---------- Zombinette et sa cabane (dessins SVG maison) ---------- */
 const OUT = "#2b1d3d";
 function zombinette(pose = "idle") {
-  const arms = pose === "happy"
-    ? `<path d="M28 76 L12 50" class="zl"/><path d="M72 76 L88 50" class="zl"/><circle cx="11" cy="46" r="9" fill="#f472b6" stroke="${OUT}" stroke-width="3"/><circle cx="89" cy="46" r="9" fill="#f472b6" stroke="${OUT}" stroke-width="3"/>`
-    : pose === "think"
-      ? `<path d="M28 78 L20 100" class="zl"/><path d="M72 78 L62 62 L56 58" class="zl"/>`
-      : `<path d="M28 78 L20 100" class="zl"/><path d="M72 76 L86 56" class="zl"/><path d="M86 56 l-4 -9 M86 56 l3 -9 M86 56 l8 -5" stroke="${OUT}" stroke-width="3" stroke-linecap="round"/>`;
+  const arm = d => `<path d="${d}" class="zarm-o"/><path d="${d}" class="zarm"/>`, pom = (x, y) => `<circle cx="${x}" cy="${y}" r="9" fill="#f472b6" stroke="${OUT}" stroke-width="3"/>`;
+  const arms = pose === "happy" ? arm("M28 76 L12 50") + arm("M72 76 L88 50") + pom(11, 46) + pom(89, 46)
+    : pose === "think" ? arm("M28 78 L20 100") + arm("M72 78 L62 62 L56 58")
+    : arm("M28 78 L20 100") + arm("M72 76 L86 56") + `<path d="M86 56 l-4 -9 M86 56 l3 -9 M86 56 l8 -5" stroke="${OUT}" stroke-width="3" stroke-linecap="round"/>`;
   const mouth = pose === "happy" ? `<path d="M41 50 Q50 61 59 50 Z" fill="#7f1d1d" stroke="${OUT}" stroke-width="2.5"/>`
     : pose === "think" ? `<path d="M44 53 Q50 50 57 54" fill="none" stroke="${OUT}" stroke-width="3" stroke-linecap="round"/>`
     : `<path d="M42 51 Q50 58 58 51" fill="none" stroke="${OUT}" stroke-width="3" stroke-linecap="round"/>`;
   return `<svg class="zomb" viewBox="0 0 100 140">
-    <style>.zl{stroke:#86d49a;stroke-width:9;stroke-linecap:round;fill:none}</style>
     <rect x="37" y="104" width="9" height="24" rx="4" fill="#86d49a" stroke="${OUT}" stroke-width="3"/><rect x="54" y="104" width="9" height="24" rx="4" fill="#86d49a" stroke="${OUT}" stroke-width="3"/>
     <path d="M33 130 h15 v-6 h-12 z M52 130 h15 l-3 -6 h-12 z" fill="#7c3aed" stroke="${OUT}" stroke-width="3" stroke-linejoin="round"/>
-    ${arms.replace(/class="zl"/g, `class="zl" style="stroke:${OUT};stroke-width:13"`)}${arms}
+    ${arms}
     <path d="M34 66 L66 66 L76 108 L24 108 Z" fill="#ec4899" stroke="${OUT}" stroke-width="3" stroke-linejoin="round"/>
     <path d="M24 108 L76 108 L72 100 L28 100 Z" fill="#f9a8d4"/><path d="M50 74 l3 6 7 1 -5 5 1 7 -6 -3 -6 3 1 -7 -5 -5 7 -1 z" fill="#fde047" stroke="${OUT}" stroke-width="1.5"/>
     <circle cx="22" cy="28" r="11" fill="#7c3aed" stroke="${OUT}" stroke-width="3"/><circle cx="78" cy="28" r="11" fill="#7c3aed" stroke="${OUT}" stroke-width="3"/>
@@ -1229,8 +1217,8 @@ const STUDIO_ITEMS = [
   ["aquarium", "l'aquarium", `<g transform="translate(-74 0)"><rect x="150" y="248" width="52" height="38" rx="4" fill="#bae6fd" stroke="${OUT}" stroke-width="3" opacity=".95"/><path d="M168 266 q8 -8 16 0 q-8 8 -16 0z M184 266 l6 -5 v10z" fill="#f97316" stroke="${OUT}" stroke-width="1.2"/><path d="M158 286 q4 -14 0 -22 M194 286 q-4 -12 2 -20" stroke="#16a34a" stroke-width="3" fill="none"/></g>`],
   ["ballons", "les ballons", [["#f472b6", 368, 70], ["#a855f7", 384, 92], ["#facc15", 360, 100]].map(([c, x, y]) => `<path d="M${x} ${y + 16} q4 40 -6 80" stroke="${OUT}" stroke-width="1.2" fill="none"/><ellipse cx="${x}" cy="${y}" rx="13" ry="16" fill="${c}" stroke="${OUT}" stroke-width="2"/>`).join("")]
 ];
-const ALL_ITEMS = () => CABIN_ITEMS.concat(STUDIO_ITEMS);
-const roomOf = id => STUDIO_ITEMS.some(x => x[0] === id) ? "studio" : "chambre";
+const ITEMS = CABIN_ITEMS.map(x => [...x, "chambre"]).concat(STUDIO_ITEMS.map(x => [...x, "studio"]));
+const ALL_ITEMS = () => ITEMS, roomOf = id => ITEMS.find(x => x[0] === id)[3];
 function studioSvg() {
   const own = S.cabin.items;
   return `<svg class="cabin" viewBox="0 0 400 300">
@@ -1315,8 +1303,8 @@ function home() {
   stopAudio();
   const d = dailyState();
   const daily = `<button class="daily ${d.done ? "complete" : ""}" data-g="daily"><div class="dh"><b>${d.done ? "Défi du jour réussi! 🎉" : "⭐ Défi du jour"}</b></div>
-    <div class="ds">${d.done ? "Tu peux le rejouer pour le plaisir." : "11 questions : français, maths, musique et plus"}</div>${weekHtml()}</button>`;
-  const mixes = `<div class="mixes">${CATS.filter(c => c[0] !== "dec").map(([id, t, ic, c1, c2]) => `<button class="mix" data-g="mix:${id}" style="--c1:${c1};--c2:${c2}"><span>${ic}</span><b>${t}</b><small>Mélange</small></button>`).join("")}</div>`;
+    <div class="ds">${d.done ? "Tu peux le rejouer pour le plaisir." : `${Object.values(DAILY_MIX).reduce((a, b) => a + b, 0)} questions : français, maths, musique et plus`}</div>${weekHtml()}</button>`;
+  const mixes = `<div class="mixes">${CATS.filter(c => !(c[6] && c[6].noMix)).map(([id, t, ic, c1, c2]) => `<button class="mix" data-g="mix:${id}" style="--c1:${c1};--c2:${c2}"><span>${ic}</span><b>${t}</b><small>Mélange</small></button>`).join("")}</div>`;
   const lists = CATS.map(([id, t, ic, , , games]) => `<h2 class="cathead"><span>${ic}</span>${t}</h2><div class="grid">${games.map(g => tileCard(ACTIVITIES.find(a => a[0] === g))).join("")}</div>`).join("");
   view(`${channelHeader()}
     ${daily}
@@ -1327,8 +1315,8 @@ function home() {
 }
 function album() {
   const unlocked = Object.keys(S.stickers).length;
-  const kw = knownWords(), prog = [["📚", "mots que tu connais", kw.length], ["🔢", "bonnes réponses en maths", okTotal(["number", "calc", "compare", "money", "clock"])], ["🎵", "bonnes réponses en musique", okTotal(["music", "keys", "figures"])],
-    ["✏️", "tracés réussis", okTotal(["trace"])], ["🌍", "bonnes réponses en découverte et géométrie", okTotal(["quiz"])], ["⭐", "défis du jour", S.days.length]];
+  const kw = knownWords(), prog = [["📚", "mots que tu connais", kw.length], ["🔢", "bonnes réponses en maths", okTotal(["number", "calc", "compare", "money", "clock", "formes", "solides"])], ["🎵", "bonnes réponses en musique", okTotal(["music", "keys", "figures"])],
+    ["✏️", "tracés réussis", okTotal(["trace"])], ["🌍", "bonnes réponses en découverte", okTotal(["quiz", "vivant", "habitat", "meteo", "saisons", "avant", "couleurs", "emotions"])], ["⭐", "défis du jour", S.days.length]];
   view(`<div class="section"><h1>Mes progrès</h1>
     <div class="progs">${prog.map(([ic, lb, n]) => `<div class="prog"><span>${ic}</span><b>${n}</b><small>${lb}</small></div>`).join("")}</div>
     ${kw.length ? `<div class="kwords">${kw.slice(-24).map(w => `<span class="pill">${esc(w.mot)}</span>`).join("")}</div>` : ""}
