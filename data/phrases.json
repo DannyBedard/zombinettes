@@ -367,7 +367,7 @@
     "l'affiche de zombie",
     "l'aquarium",
     "l'étagère de livres",
-    "la bannière Zombinette",
+    "la bannière Zombidette",
     "la boule disco",
     "la caméra",
     "la chaise de gamer",
@@ -413,7 +413,12 @@
     "les étoiles au mur",
     "un chat noir",
     "un hibou",
-    "un petit fantôme"
+    "un petit fantôme",
+    "Choisis ta décoration!",
+    "Félicitations!",
+    "Tu as gagné",
+    "et un nouveau collant!",
+    "Tu as gagné un nouveau collant!"
   ],
   "graphs": [
     "abeille",

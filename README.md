@@ -1,4 +1,4 @@
-# Zombinette
+# Zombidette
 
 Jeu éducatif pour le 1er cycle du primaire (PWA, iPad et iPhone) : dictée de mots basée sur la Liste
 orthographique officielle du ministère de l'Éducation du Québec (1re, 2e et 3e année), lecture (mot → image),
@@ -31,7 +31,7 @@ Parent) ; progression segmentée dans les exercices ; fin de partie avec abonné
 
 ## Organisation
 
-Accueil (tient sur un écran) : la Zombinette qui salue dans la bannière, le défi du jour (11 questions : 4 de
+Accueil (tient sur un écran) : la Zombidette qui salue dans la bannière, le défi du jour (11 questions : 4 de
 français, 4 de maths, 2 de musique, 1 autre, piochées dans des jeux différents ; le réussir une fois par jour met une
 étoile au calendrier), puis 4 portes (Français, Maths, Musique, Autre). Chaque porte ouvre la page de la matière : un
 bouton Mélange (10 questions ; en français, les mots et Lire pèsent 3 fois plus ; les jeux les moins vus passent en
@@ -43,7 +43,7 @@ vivant ou pas, où vit l'animal, quoi mettre selon la météo, les saisons, avan
 les émotions. Banques de questions dans `app.js` (VIVANT, ANIMAUX, METEO, SCENES, AVANT, MELANGES, SITUATIONS) ; une
 question de Découverte s'ajoute au défi du jour (11 questions). À l'accueil, ces jeux sont sous « Autre », sans bouton Mélange.
 
-Onglet 🧟‍♀️ Zombinette : personnaliser la Zombinette (coiffure et couleur des cheveux ; robe, pantalon ou short, couleur et
+Onglet 🧟‍♀️ Zombidette : personnaliser la Zombidette (coiffure et couleur des cheveux ; robe, pantalon ou short, couleur et
 dessin ; souliers ; mains, S.zomb), puis sa chambre. Récompense de fin de partie : choisir 1 parmi 3 entre un objet (27, dans
 ITEMS) et un décor (16 : murs, planchers, fenêtres, dans DECOR). Les objets se déplacent au doigt (S.cabin.pos) ; les décors
 gagnés se choisissent sous la chambre. Une fois sur 6, une visite surprise (chat noir, fantôme, hibou).

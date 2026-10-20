@@ -1,4 +1,4 @@
-/* Zombinette — français et maths pour le 1er cycle du primaire */
+/* Zombidette — français et maths pour le 1er cycle du primaire */
 (() => {
 const STORE_KEY = "zombinettes.v1";
 const DEFAULTS = {
@@ -1163,24 +1163,30 @@ function endSession() {
   if (rewardPool().length) S.cabin.pending = Math.min(3, (S.cabin.pending || 0) + 1);
   const up = maybeLevelUp(); save();
   const gained = session.good, note = progressNote();
+  const reward = rewardPool().length && S.cabin.pending;
   view(`${topbar()}
-    <div class="result"><div class="zombres">${zombinette("happy")}</div><h1>Bravo!</h1>
-      <div class="score">+${gained} <small>abonné${gained > 1 ? "s" : ""}</small></div>
-      ${note ? `<p class="prognote">${note.html}</p>` : ""}
-      <p class="tagline">${gained >= session.total / 2 ? `${gained} sur ${session.total}` : "Tu as travaillé fort!"}</p>
-      ${up ? `<div class="levelup">📚 Nouveaux mots débloqués!</div>` : ""}
+    <div class="result"><div class="zombres">${zombinette("happy")}</div><h1>Félicitations!</h1>
+      ${gained ? `<div class="score">+${gained} <small>abonné${gained > 1 ? "s" : ""}</small></div>` : `<p class="tagline">Tu as travaillé fort!</p>`}
       <div class="toast"><span class="ic">${sticker}</span><div><div class="tt">Nouveau collant</div><div class="tn">${S.stickers[sticker] > 1 ? `Tu l'as ${S.stickers[sticker]} fois!` : "Il est dans ton album!"}</div></div></div>
+      ${note ? `<p class="prognote">${note.html}</p>` : ""}
+      ${up ? `<div class="levelup">📚 Nouveaux mots débloqués!</div>` : ""}
       ${daily && daily.complete ? `<div class="toast streak"><span class="ic">${daily.sticker || "⭐"}</span><div><div class="tt">Défi du jour réussi!</div><div class="tn">${daily.n} défi${daily.n > 1 ? "s" : ""} en tout${daily.sticker ? " · collant spécial!" : ""}</div></div></div>${weekHtml()}` : ""}
     </div>
-    <div class="cabinpick" id="cabinPick"></div>
-    <button class="btn pink" id="home">🏠 Accueil</button>
+    <button class="btn pink" id="next">${reward ? "Suivant ▶" : "🏠 Accueil"}</button>
     <button class="btn ghost small" id="album">Voir mes collants</button>`);
   confetti(60);
-  chatter(session.kind, ["Bravo! Tu as gagné un nouveau collant!", ...(gained ? [String(gained), gained > 1 ? "nouveaux abonnés" : "nouvel abonné"] : ["Tu as travaillé fort!"]), ...(note ? note.say : []), ...(daily && daily.complete ? ["Défi du jour réussi!"] : []), ...(offerCabin($("#cabinPick"), true) ? [{ pause: 300 }, "Choisis un objet pour la cabane!"] : [])]);
-  $("#back").onclick = home; $("#home").onclick = home; $("#album").onclick = album;
+  chatter(session.kind, ["Félicitations!", ...(gained ? ["Tu as gagné", ...numberParts(gained), gained > 1 ? "nouveaux abonnés" : "nouvel abonné", "et un nouveau collant!"] : ["Tu as travaillé fort!", "Tu as gagné un nouveau collant!"]), ...(note ? note.say : []), ...(daily && daily.complete ? ["Défi du jour réussi!"] : [])]);
+  $("#back").onclick = home; $("#album").onclick = album;
+  $("#next").onclick = () => reward ? decoStep() : home();
+}
+function decoStep() {
+  view(`${topbar()}<div class="result"><div class="cabinpick" id="cabinPick"></div></div>
+    <button class="btn pink" id="home">🏠 Accueil</button>`);
+  $("#back").onclick = home; $("#home").onclick = home;
+  if (!offerCabin($("#cabinPick"))) home();
 }
 
-/* ---------- Zombinette et sa cabane (dessins SVG maison) ---------- */
+/* ---------- Zombidette et sa cabane (dessins SVG maison) ---------- */
 const OUT = "#2b1d3d";
 const ZOPT = {
   hair: [["#7c3aed", "violet"], ["#f472b6", "rose"], ["#3b82f6", "bleu"], ["#22c55e", "vert"], ["#ea580c", "roux"], ["#facc15", "blond"], ["#1f2937", "noir"]],
@@ -1265,7 +1271,7 @@ const CABIN_VISITORS = [
 ];
 const EXTRA_ITEMS = [
   ["etoilesmur", "les étoiles au mur", [[40, 30], [120, 24], [300, 36], [350, 70], [70, 96], [250, 22]].map(([x, y]) => `<path d="M${x} ${y - 7} l2 5 6 1 -4 4 1 6 -5 -3 -5 3 1 -6 -4 -4 6 -1z" fill="#fef08a" opacity=".9"/>`).join("")],
-  ["banniere", "la bannière Zombinette", `<path d="M90 44 q110 22 220 0 v26 q-110 22 -220 0z" fill="#ec4899" stroke="${OUT}" stroke-width="2.5"/><text x="200" y="66" text-anchor="middle" font-family="system-ui" font-weight="900" font-size="17" fill="#fff" stroke="${OUT}" stroke-width=".8">ZOMBINETTE</text>`],
+  ["banniere", "la bannière Zombidette", `<path d="M90 44 q110 22 220 0 v26 q-110 22 -220 0z" fill="#ec4899" stroke="${OUT}" stroke-width="2.5"/><text x="200" y="66" text-anchor="middle" font-family="system-ui" font-weight="900" font-size="17" fill="#fff" stroke="${OUT}" stroke-width=".8">ZOMBIDETTE</text>`],
   ["neon", "le néon étoile", `<path d="M200 86 l9 18 20 3 -15 14 4 20 -18 -10 -18 10 4 -20 -15 -14 20 -3z" fill="none" stroke="#f0abfc" stroke-width="7" opacity=".5"/><path d="M200 86 l9 18 20 3 -15 14 4 20 -18 -10 -18 10 4 -20 -15 -14 20 -3z" fill="none" stroke="#fff" stroke-width="2.5"/>`],
   ["affichezombie", "l'affiche de zombie", `<rect x="326" y="96" width="54" height="66" rx="3" fill="#14532d" stroke="${OUT}" stroke-width="2.5"/><circle cx="353" cy="122" r="13" fill="#86d49a" stroke="${OUT}" stroke-width="2"/><circle cx="348" cy="120" r="2.5" fill="${OUT}"/><circle cx="358" cy="120" r="2.5" fill="${OUT}"/><path d="M346 128 h14" stroke="${OUT}" stroke-width="2"/><path d="M334 152 h38" stroke="#a3e635" stroke-width="5" stroke-linecap="round"/>`],
   ["coussin", "le coussin cœur", `<path transform="translate(262 0)" d="M112 290 q-26 -14 -22 -30 q4 -12 22 -2 q18 -10 22 2 q4 16 -22 30z" fill="#f43f5e" stroke="${OUT}" stroke-width="2.5"/>`],
@@ -1329,12 +1335,12 @@ function rewardsLeft() { return rewardPool().length; }
 function cabinScreen(chosen) {
   const left = rewardsLeft();
   if (!chosen && S.cabin.pending && left) cabinRoom = "chambre";
-  const tabs = `<div class="row" style="justify-content:center">${[["zomb", "👗 Zombinette"], ["chambre", "🛏️ La chambre"]].map(([id, lb]) => `<button class="pill ${cabinRoom === id ? "on" : ""}" data-room="${id}">${lb}</button>`).join("")}</div>`;
+  const tabs = `<div class="row" style="justify-content:center">${[["zomb", "👗 Zombidette"], ["chambre", "🛏️ La chambre"]].map(([id, lb]) => `<button class="pill ${cabinRoom === id ? "on" : ""}" data-room="${id}">${lb}</button>`).join("")}</div>`;
   if (cabinRoom === "zomb") return zombEditor(tabs);
   const d = Object.assign({}, DECOR_DEF, S.cabin.decor || {});
   const decoRow = part => { const opts = DECOR[part].filter(([did]) => decorOwned(part, did)); return opts.length > 1 ? `<div class="zopts">${opts.map(([did]) => `<button class="zopt deco ${d[part] === did ? "on" : ""}" data-part="${part}" data-d="${did}">${itemThumb(`${part}:${did}`)}</button>`).join("")}</div>` : ""; };
   const decos = ["mur", "sol", "fenetre"].map(decoRow).filter(Boolean).join("");
-  view(`<div class="section"><h1>Zombinette</h1>${tabs}
+  view(`<div class="section"><h1>Zombidette</h1>${tabs}
     ${S.cabin.pending && left ? `<div class="cabinpick" id="cabinPickTab"></div>` : ""}
     <div class="cabinwrap" id="room">${cabinSvg(true)}</div>
     <p class="tagline">${S.cabin.items.length ? "✋ Glisse un objet avec ton doigt pour le déplacer." : "La chambre est vide… Finis une partie pour choisir un objet!"}</p>
@@ -1370,7 +1376,7 @@ function zombEditor(tabs) {
     ? `<button class="zopt txt ${z[key] === v ? "on" : ""}" data-k="${key}" data-v="${v}">${a}</button>`
     : `<button class="zopt ${z[key] === v ? "on" : ""}" data-k="${key}" data-v="${v}" style="background:${v}" aria-label="${a}"></button>`).join("")}</div></div>`;
   const rows = [["💇‍♀️", "Cheveux", sw("style", ZOPT.style) + sw("hair", ZOPT.hair)], ["👗", "Vêtements", sw("outfit", ZOPT.outfit) + sw("dress", ZOPT.dress) + sw("motif", ZOPT.motif)], ["👟", "Souliers", sw("shoes", ZOPT.shoes)], ["🧤", "Mains", sw("hands", ZOPT.hands)]];
-  view(`<div class="section"><h1>Zombinette</h1>${tabs}
+  view(`<div class="section"><h1>Zombidette</h1>${tabs}
     <div class="zedit"><div class="zprev" id="zprev">${zombinette("idle")}</div>
       <div class="zparts">${rows.map(([ic, lb, html]) => `<div class="zpart"><div class="zlab">${ic} ${lb}</div>${html}</div>`).join("")}</div></div></div>`, "cabin");
   app.querySelectorAll("[data-room]").forEach(b => b.onclick = () => { cabinRoom = b.dataset.room; cabinScreen(true); });
@@ -1384,7 +1390,7 @@ function offerCabin(box, silent) {
   const left = rewardPool();
   if (!left.length || !S.cabin.pending || !box) return false;
   const opts = shuffle(left).slice(0, 3);
-  box.innerHTML = `<h2>Choisis un objet pour la cabane!</h2><div class="choices cabinopts">${opts.map(([id, name]) => `<button class="choice" data-c="${id}">${itemThumb(id)}<small>${name}</small></button>`).join("")}</div>`;
+  box.innerHTML = `<h2>Choisis ta décoration!</h2><div class="choices cabinopts">${opts.map(([id, name]) => `<button class="choice" data-c="${id}">${itemThumb(id)}<small>${name}</small></button>`).join("")}</div>`;
   fitThumbs();
   box.querySelectorAll("[data-c]").forEach(b => b.onclick = () => {
     if (!S.cabin.pending) return;
@@ -1398,7 +1404,7 @@ function offerCabin(box, silent) {
     say([it[1], ...(visit ? [{ pause: 400 }, "Surprise! Quelqu'un vient visiter la cabane!"] : [])]);
     if (box.id === "cabinPickTab") setTimeout(() => { if ($("#cabinPickTab")) cabinScreen(); }, 2500);
   });
-  if (!silent) say(["Choisis un objet pour la cabane!"]);
+  if (!silent) say(["Choisis ta décoration!"]);
   return true;
 }
 /* ---------- écrans ---------- */
@@ -1409,7 +1415,7 @@ function view(html, tab) {
   if (tab) app.querySelectorAll(".tabbar button").forEach(b => b.onclick = () => ({ home, album, cabin: cabinScreen, style: styleScreen, parent: pinScreen })[b.dataset.tab]());
 }
 function tabbar(active) {
-  const tabs = [["home", "🏠", "Accueil"], ["cabin", "🧟‍♀️", "Zombinette"], ["album", "🌟", "Collants"], ["style", "🎨", "Style"], ["parent", "👤", "Parent"]];
+  const tabs = [["home", "🏠", "Accueil"], ["cabin", "🧟‍♀️", "Zombidette"], ["album", "🌟", "Collants"], ["style", "🎨", "Style"], ["parent", "👤", "Parent"]];
   return `<nav class="tabbar">${tabs.map(([id, ic, lb]) => `<button data-tab="${id}" class="${active === id ? "on" : ""}">${ic}${id === "cabin" && S.cabin.pending && rewardPool().length ? `<span class="badge">${S.cabin.pending}</span>` : ""}<small>${lb}</small></button>`).join("")}</nav>`;
 }
 function topbar(back = true) {
@@ -1427,7 +1433,7 @@ function home() {
   stopAudio();
   const d = dailyState(), hello = pick(HELLOS), unlocked = Object.keys(S.stickers).length;
   view(`<div class="hello"><div class="hellozomb">${zombinette("idle")}</div><div class="bubble">${hello}</div>
-      <div class="who"><div class="avatar">${avatarHtml()}</div><div><b>Zombinette</b><small>👥 ${S.stars} abonnés · 🌟 ${unlocked} collants</small></div></div></div>
+      <div class="who"><div class="avatar">${avatarHtml()}</div><div><b>Zombidette</b><small>👥 ${S.stars} abonnés · 🌟 ${unlocked} collants</small></div></div></div>
     <button class="daily ${d.done ? "complete" : ""}" data-g="daily"><div class="dh"><b>${d.done ? "Défi du jour réussi! 🎉" : "⭐ Défi du jour"}</b><span class="go">${d.done ? "🔁" : "▶"}</span></div>${weekHtml()}</button>
     <div class="doors">${CATS.map(([id, t, ic, c1, c2]) => `<button class="door" data-cat="${id}" style="--c1:${c1};--c2:${c2}"><span>${ic}</span><b>${t}</b></button>`).join("")}</div>`, "home");
   app.querySelectorAll("[data-g]").forEach(b => b.onclick = () => startSession(b.dataset.g));
@@ -1652,11 +1658,11 @@ function parent() {
     save(); home();
   };
   $("#export").onclick = async () => {
-    const name = `zombinette-${new Date().toISOString().slice(0, 10)}.json`;
+    const name = `zombidette-${new Date().toISOString().slice(0, 10)}.json`;
     const json = JSON.stringify(Object.assign({}, S, { pin: undefined, avatar: undefined, exportedAt: new Date().toISOString() }), null, 1);
     const file = new File([json], name, { type: "application/json" });
     try {
-      if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: "Progrès Zombinette" }); $("#ioMsg").textContent = "Fichier partagé."; return; }
+      if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: "Progrès Zombidette" }); $("#ioMsg").textContent = "Fichier partagé."; return; }
     } catch (e) { if (e.name === "AbortError") return; }
     const a = document.createElement("a"); a.href = URL.createObjectURL(file); a.download = name; document.body.appendChild(a); a.click(); a.remove();
     $("#ioMsg").textContent = `Fichier ${name} téléchargé.`;
@@ -1693,7 +1699,7 @@ async function boot() {
   const sky = document.createElement("div"); sky.className = "sky";
   sky.innerHTML = Array.from({ length: 26 }, (_, k) => `<i class="${k % 5 === 0 ? "b" : k % 4 === 0 ? "c" : ""}" style="left:${rand(0, 100)}%;top:${rand(0, 100)}%;animation-delay:${(Math.random() * 3).toFixed(2)}s;animation-duration:${(2.5 + Math.random() * 3).toFixed(2)}s"></i>`).join("");
   document.body.prepend(sky);
-  view(`<div class="splash"><div class="splashzomb">${zombinette("happy")}</div><h1>Zombinette</h1></div>`);
+  view(`<div class="splash"><div class="splashzomb">${zombinette("happy")}</div><h1>Zombidette</h1></div>`);
   const shown = Date.now();
   const res = await Promise.all([1, 2, 3].map(l => fetch(`data/mots-${l}.json`).then(r => r.json()).catch(() => [])));
   PACKS = { 1: res[0], 2: res[1], 3: res[2] };
