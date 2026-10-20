@@ -399,3 +399,13 @@ button.daily { display: block; width: calc(100% - 32px); text-align: left; color
 .zopt.stored { width: 64px; height: 56px; border-radius: 12px; background: #3b2a5c; padding: 4px; }
 .zopt.stored .thumbobj { width: 100%; height: 100%; }
 .zlab small { font-weight: 500; color: var(--muted); }
+
+/* poses animées */
+.zomb.dance { animation: wiggle .45s ease-in-out infinite alternate; transform-origin: 50% 92%; }
+@keyframes wiggle { from { transform: rotate(-7deg); } to { transform: rotate(7deg) translateY(-3px); } }
+.zomb.surprise { animation: hop .4s ease; }
+@keyframes hop { 40% { transform: translateY(-10px) scale(1.05); } }
+.hellozomb.asleep { animation: none; }
+.zomb.sleep .zzz { animation: float 2.4s ease-in-out infinite; }
+@keyframes float { 50% { transform: translateY(-4px); opacity: .6; } }
+.toast .ic.zsurp { width: 40px; height: 56px; display: inline-block; }

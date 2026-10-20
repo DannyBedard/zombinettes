@@ -794,7 +794,7 @@ function renderItem(it) {
   $("#mute").onclick = () => { S.mute[it.kind] = !S.mute[it.kind]; save(); const on = S.mute[it.kind]; $("#mute").textContent = on ? "🔇" : "🗣️"; $("#mute").classList.toggle("on", on); if (on) stopAudio(); };
   (SETUPS[it.kind] || setupChoices)(it);
 }
-function thinkFb(cls, text) { const fb = $("#fb"); fb.className = `feedback ${cls} think`; fb.innerHTML = `<span class="zthink">${zombinette("think")}</span><span>${text}</span>`; }
+function thinkFb(cls, text) { sfx("oops"); const fb = $("#fb"); fb.className = `feedback ${cls} think`; fb.innerHTML = `<span class="zthink">${zombinette("think")}</span><span>${text}</span>`; }
 function cmpSentence(it) { return [...numberParts(it.a), { gt: "est plus grand que", lt: "est plus petit que", eq: "est égal à" }[it.answer], ...numberParts(it.b)]; }
 /* Indice au 1er essai raté : on retire des mauvais choix pour qu'il en reste 2, et elle réessaie. */
 function giveHint(it) {
@@ -855,6 +855,22 @@ async function playRecording(id, file) {
   src.onended = () => clearInterval(stopper);
   return t + buf.duration;
 }
+/* Effets sonores synthétisés (aucun fichier), coupables dans Mon style */
+function sfx(kind) {
+  if (S.sfx === false) return; unlockAudio(); if (!actx) return;
+  const t = actx.currentTime + 0.01, out = actx.createGain(); out.gain.value = 0.18; out.connect(actx.destination);
+  const note = (f, at, dur, type = "sine", vol = 1) => { const o = actx.createOscillator(), g = actx.createGain(); o.type = type; o.frequency.setValueAtTime(f, at);
+    g.gain.setValueAtTime(0.0001, at); g.gain.exponentialRampToValueAtTime(vol, at + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, at + dur); o.connect(g); g.connect(out); o.start(at); o.stop(at + dur + 0.05); return o; };
+  if (kind === "tap") { const o = note(520, t, 0.07, "sine", 0.6); o.frequency.exponentialRampToValueAtTime(820, t + 0.06); }
+  else if (kind === "ok") { note(1046, t, 0.18, "triangle"); note(1318, t + 0.09, 0.3, "triangle"); }
+  else if (kind === "oops") { const o = note(330, t, 0.22, "triangle", 0.7); o.frequency.exponentialRampToValueAtTime(220, t + 0.2); }
+  else if (kind === "fanfare") [523, 659, 784, 1046].forEach((f, k) => note(f, t + k * 0.1, k === 3 ? 0.45 : 0.16, "triangle"));
+  else if (kind === "sparkle") [1568, 2093, 1760, 2349, 2637].forEach((f, k) => note(f, t + k * 0.06, 0.14, "sine", 0.5));
+  else if (kind === "whoosh") { const n = actx.createBufferSource(), b = actx.createBuffer(1, actx.sampleRate * 0.3, actx.sampleRate), d = b.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.sin(Math.PI * i / d.length);
+    const fl = actx.createBiquadFilter(); fl.type = "bandpass"; fl.frequency.setValueAtTime(400, t); fl.frequency.exponentialRampToValueAtTime(2400, t + 0.3); n.buffer = b; n.connect(fl); fl.connect(out); n.start(t); }
+}
+document.addEventListener("pointerdown", e => { const b = e.target.closest("button"); if (b && !b.closest(".drum, .kbd, .choices, .numpad, #tiles")) sfx("tap"); }, { passive: true });
 function wait(t) { return new Promise(r => setTimeout(r, Math.max(0, (t - actx.currentTime) * 1000))); }
 async function playNotes(notes) { const t0 = now(); if (!actx) return; notes.forEach((n, k) => tone(n, t0 + k * 0.8, 0.65)); return wait(t0 + notes.length * 0.8); }
 function rhythmOnsets(pattern) { const on = []; let t = 0; for (const p of pattern) { if (p === "ta") on.push([t, p]); if (p === "titi") on.push([t, p], [t + 0.5, p]); t += 1; } return on; }
@@ -1098,9 +1114,11 @@ function check(it, answer) {
     if (session.attempt === 0) { session.good++; S.stars += 1; if (p) { p.box = Math.min(3, p.box + 1); p.ok++; } else ms.ok++; }
     if (p) p.last = session.s;
     save();
-    fb.className = "feedback ok"; fb.textContent = praiseFor(it);
+    const ptxt = praiseFor(it);
+    if (PRAISE_ROW[session.row] && session.attempt === 0) { fb.className = "feedback ok think"; fb.innerHTML = `<span class="zthink">${zombinette("dance")}</span><span>${ptxt}</span>`; sfx("fanfare"); }
+    else { fb.className = "feedback ok"; fb.textContent = ptxt; sfx("ok"); }
     $("#starsN").textContent = `👥 ${S.stars}`;
-    confetti(); chatter(it.kind, [fb.textContent, ...(GAMES[it.kind].praise ? GAMES[it.kind].praise(it) : [])]);
+    confetti(); chatter(it.kind, [ptxt, ...(GAMES[it.kind].praise ? GAMES[it.kind].praise(it) : [])]);
     $("#slots") && $("#slots").querySelectorAll(".slot").forEach(s => s.classList.add("ok"));
     $("#num") && ($("#num").className = "ok");
     $("#trace") && $("#trace").classList.add("ok");
@@ -1166,7 +1184,7 @@ function endSession() {
   const gained = session.good, note = progressNote();
   const reward = hasReward();
   view(`${topbar()}
-    <div class="result"><div class="zombres">${zombinette("happy")}</div><h1>Félicitations!</h1>
+    <div class="result"><div class="zombres">${zombinette(daily && daily.complete ? "dance" : "happy")}</div><h1>Félicitations!</h1>
       ${gained ? `<div class="score">+${gained} <small>abonné${gained > 1 ? "s" : ""}</small></div>` : `<p class="tagline">Tu as travaillé fort!</p>`}
       <div class="toast"><span class="ic">${sticker}</span><div><div class="tt">Nouveau collant</div><div class="tn">${S.stickers[sticker] > 1 ? `Tu l'as ${S.stickers[sticker]} fois!` : "Il est dans ton album!"}</div></div></div>
       ${note ? `<p class="prognote">${note.html}</p>` : ""}
@@ -1175,7 +1193,7 @@ function endSession() {
     </div>
     <button class="btn pink" id="next">${reward ? "Suivant ▶" : "🏠 Accueil"}</button>
     <button class="btn ghost small" id="album">Voir mes collants</button>`);
-  confetti(60);
+  confetti(60); sfx("fanfare");
   chatter(session.kind, ["Félicitations!", ...(gained ? ["Tu as gagné", ...numberParts(gained), gained > 1 ? "nouveaux abonnés" : "nouvel abonné", "et un nouveau collant!"] : ["Tu as travaillé fort!", "Tu as gagné un nouveau collant!"]), ...(note ? note.say : []), ...(daily && daily.complete ? ["Défi du jour réussi!"] : [])]);
   $("#back").onclick = home; $("#album").onclick = album;
   $("#next").onclick = () => reward ? decoStep() : home();
@@ -1219,15 +1237,20 @@ function zombinette(pose = "idle") {
   const pom = (x, y) => `<circle cx="${x}" cy="${y}" r="9" fill="${z.hands === ZDEF.hands ? "#f472b6" : z.hands}" stroke="${OUT}" stroke-width="3"/>`;
   const arms = pose === "happy" ? arm("M28 76 L12 50") + arm("M72 76 L88 50") + pom(11, 46) + pom(89, 46)
     : pose === "think" ? arm("M28 78 L20 100") + arm("M72 78 L62 62 L56 58") + hand(20, 100) + hand(56, 58)
+    : pose === "dance" ? arm("M28 76 L12 58") + arm("M72 78 L88 94") + hand(12, 58) + hand(88, 94)
+    : pose === "surprise" ? arm("M28 76 L8 62") + arm("M72 76 L92 62") + hand(8, 62) + hand(92, 62)
+    : pose === "sleep" ? arm("M28 78 L24 100") + arm("M72 78 L76 100") + hand(24, 100) + hand(76, 100)
     : arm("M28 78 L20 100") + arm("M72 76 L86 56") + hand(20, 100) + hand(86, 56);
-  const mouth = pose === "happy" ? `<path d="M41 50 Q50 61 59 50 Z" fill="#7f1d1d" stroke="${OUT}" stroke-width="2.5"/>`
+  const mouth = pose === "happy" || pose === "dance" ? `<path d="M41 50 Q50 61 59 50 Z" fill="#7f1d1d" stroke="${OUT}" stroke-width="2.5"/>`
+    : pose === "surprise" ? `<ellipse cx="50" cy="54" rx="4.5" ry="6" fill="#7f1d1d" stroke="${OUT}" stroke-width="2.5"/>`
+    : pose === "sleep" ? `<path d="M46 53 Q50 55 54 53" fill="none" stroke="${OUT}" stroke-width="2.5" stroke-linecap="round"/>`
     : pose === "think" ? `<path d="M44 53 Q50 50 57 54" fill="none" stroke="${OUT}" stroke-width="3" stroke-linecap="round"/>`
     : `<path d="M42 51 Q50 58 58 51" fill="none" stroke="${OUT}" stroke-width="3" stroke-linecap="round"/>`;
   const hairBack = z.style === "long" ? `<path d="M24 40 Q22 12 50 12 Q78 12 76 40 L80 76 Q68 82 62 68 L38 68 Q32 82 20 76 Z" fill="${z.hair}" stroke="${OUT}" stroke-width="3" stroke-linejoin="round"/>`
     : z.style === "court" ? `<path d="M23 52 Q16 14 50 12 Q84 14 77 52 Q71 58 66 52 L66 40 L34 40 L34 52 Q29 58 23 52 Z" fill="${z.hair}" stroke="${OUT}" stroke-width="3" stroke-linejoin="round"/>` : "";
   const tails = z.style === "couettes" ? `<circle cx="22" cy="28" r="11" fill="${z.hair}" stroke="${OUT}" stroke-width="3"/><circle cx="78" cy="28" r="11" fill="${z.hair}" stroke="${OUT}" stroke-width="3"/>
     <path d="M14 19 l8 5 -8 5 z M30 19 l-8 5 8 5 z" fill="#f472b6" stroke="${OUT}" stroke-width="1.5"/>` : "";
-  return `<svg class="zomb" viewBox="0 0 100 140">
+  return `<svg class="zomb ${pose}" viewBox="0 0 100 140">
     <rect x="37" y="104" width="9" height="24" rx="4" fill="#86d49a" stroke="${OUT}" stroke-width="3"/><rect x="54" y="104" width="9" height="24" rx="4" fill="#86d49a" stroke="${OUT}" stroke-width="3"/>
     <path d="M33 130 h15 v-6 h-12 z M52 130 h15 l-3 -6 h-12 z" fill="${z.shoes}" stroke="${OUT}" stroke-width="3" stroke-linejoin="round"/>
     ${hairBack}${arms}
@@ -1236,10 +1259,14 @@ function zombinette(pose = "idle") {
     <circle cx="50" cy="40" r="25" fill="#9ae6a6" stroke="${OUT}" stroke-width="3"/>
     <path d="M25 38 Q27 14 50 14 Q73 14 75 38 Q66 26 52 28 Q44 22 34 30 Q30 33 25 38 Z" fill="${z.hair}" stroke="${OUT}" stroke-width="3" stroke-linejoin="round"/>
     <path d="M60 30 l8 4 M62 28 l-2 6 M66 30 l-2 6" stroke="${OUT}" stroke-width="1.6"/>
-    <circle cx="41" cy="42" r="6" fill="#fff" stroke="${OUT}" stroke-width="2"/><circle cx="42" cy="43" r="3" fill="${OUT}"/>
-    <circle cx="59" cy="42" r="6" fill="#fff" stroke="${OUT}" stroke-width="2"/><circle cx="58" cy="43" r="3" fill="${OUT}"/>
+    ${pose === "sleep" ? `<path d="M36 43 Q41 47 46 43 M54 43 Q59 47 64 43" fill="none" stroke="${OUT}" stroke-width="2.5" stroke-linecap="round"/>`
+      : `<circle cx="41" cy="42" r="${pose === "surprise" ? 7.5 : 6}" fill="#fff" stroke="${OUT}" stroke-width="2"/><circle cx="42" cy="43" r="3" fill="${OUT}"/>
+    <circle cx="59" cy="42" r="${pose === "surprise" ? 7.5 : 6}" fill="#fff" stroke="${OUT}" stroke-width="2"/><circle cx="58" cy="43" r="3" fill="${OUT}"/>`}
     <circle cx="35" cy="50" r="3.5" fill="#f9a8d4" opacity=".8"/><circle cx="65" cy="50" r="3.5" fill="#f9a8d4" opacity=".8"/>
     ${mouth}${pose === "think" ? `<text x="78" y="20" font-size="18" font-weight="800" fill="#fde047" stroke="${OUT}" stroke-width="1">?</text>` : ""}
+    ${pose === "surprise" ? `<text x="80" y="22" font-size="20" font-weight="900" fill="#fde047" stroke="${OUT}" stroke-width="1">!</text>` : ""}
+    ${pose === "dance" ? `<text x="2" y="30" font-size="16" fill="#fde047" stroke="${OUT}" stroke-width=".8">♪</text><text x="84" y="24" font-size="14" fill="#f9a8d4" stroke="${OUT}" stroke-width=".8">♫</text>` : ""}
+    ${pose === "sleep" ? `<text x="72" y="22" font-size="13" font-weight="900" fill="#e0e7ff" stroke="${OUT}" stroke-width=".8" class="zzz">Z<tspan dx="2" dy="-7" font-size="10">z</tspan></text>` : ""}
   </svg>`;
 }
 const S_ = (d, f, extra = "") => `<path d="${d}" fill="${f}" stroke="${OUT}" stroke-width="2.5" stroke-linejoin="round" ${extra}/>`;
@@ -1378,7 +1405,7 @@ function enableDrag(svg) {
   };
   svg.onpointerup = svg.onpointercancel = () => {
     if (!cur) return; cur.g.classList.remove("drag");
-    if (cur.overBin) { S.cabin.hidden = [...new Set((S.cabin.hidden || []).concat(cur.id))]; save(); cur = null; say(["Rangé!"]); return cabinScreen(true); }
+    if (cur.overBin) { sfx("whoosh"); S.cabin.hidden = [...new Set((S.cabin.hidden || []).concat(cur.id))]; save(); cur = null; say(["Rangé!"]); return cabinScreen(true); }
     if (cur.now) { S.cabin.pos = Object.assign({}, S.cabin.pos || {}, { [cur.id]: cur.now }); save(); }
     cur = null;
   };
@@ -1412,8 +1439,8 @@ function offerCabin(box, silent) {
     else S.cabin.items.push(it[0]);
     const vleft = CABIN_VISITORS.filter(([id]) => !S.cabin.visitors.includes(id)), visit = vleft.length && Math.random() < 0.17 ? pick(vleft) : null;
     if (visit) S.cabin.visitors.push(visit[0]);
-    save();
-    box.innerHTML = `<div class="cabinwrap small">${cabinSvg(true)}</div>${visit ? `<div class="toast streak"><span class="ic">✨</span><div><div class="tt">Surprise!</div><div class="tn">${cap(visit[1])} vient visiter la cabane!</div></div></div>` : ""}`;
+    save(); sfx("sparkle");
+    box.innerHTML = `<div class="cabinwrap small">${cabinSvg(true)}</div>${visit ? `<div class="toast streak"><span class="ic zsurp">${zombinette("surprise")}</span><div><div class="tt">Surprise!</div><div class="tn">${cap(visit[1])} vient visiter la cabane!</div></div></div>` : ""}`;
     say([it[1], ...(visit ? [{ pause: 400 }, "Surprise! Quelqu'un vient visiter la cabane!"] : [])]);
     if (box.id === "cabinPickTab") setTimeout(() => { if ($("#cabinPickTab")) cabinScreen(); }, 2500);
   });
@@ -1452,6 +1479,10 @@ function home() {
   app.querySelectorAll("[data-g]").forEach(b => b.onclick = () => startSession(b.dataset.g));
   app.querySelectorAll("[data-cat]").forEach(b => b.onclick = () => catScreen(b.dataset.cat));
   if (!greeted) { greeted = true; setTimeout(() => { if ($(".hello")) say([hello]); }, 400); }
+  clearTimeout(home.nap);
+  const nap = () => { home.nap = setTimeout(() => { const z = $(".hellozomb"), bub = $(".bubble"); if (!z) return; z.innerHTML = zombinette("sleep"); z.classList.add("asleep"); bub.textContent = "Zzz…"; }, 40000); };
+  nap();
+  $(".hello").onclick = () => { const z = $(".hellozomb"); if (!z.classList.contains("asleep")) return; z.classList.remove("asleep"); z.innerHTML = zombinette("surprise"); $(".bubble").textContent = "Oh! Allô!"; sfx("sparkle"); setTimeout(() => { if ($(".hellozomb")) $(".hellozomb").innerHTML = zombinette("idle"); }, 1200); nap(); };
 }
 function catScreen(id) {
   stopAudio();
@@ -1497,6 +1528,7 @@ function styleScreen() {
     <div class="card">
       <div class="voices">${edgeCards}${voices.length ? voices.map((v, i) => `<button class="voice ${S.voice === "system:" + v.voiceURI ? "on" : ""}" data-u="system:${esc(v.voiceURI)}"><span class="av">${AVATARS[i % AVATARS.length]}</span><span class="nm">${esc(v.name.replace(/\s*\(.*$/, "").trim())}${/enhanced|premium|amélior|neural|natural|google/i.test(v.name) ? " ✨" : ""}</span><span class="lg">${esc(v.lang.slice(-2).toUpperCase())}</span></button>`).join("") : ""}</div>
       <div class="row" style="justify-content:center">${VOICE_STYLES.map((v, i) => `<button class="pill big ${i === styleIdx ? "on" : ""}" data-p="${v[2]}">${v[1]}</button>`).join("")}</div>
+      <div class="row" style="justify-content:center"><button class="pill big ${S.sfx === false ? "" : "on"}" id="sfxOn">🔔 Sons</button><button class="pill big ${S.sfx === false ? "on" : ""}" id="sfxOff">🔕</button></div>
     </div></div>`, "style");
   const onPhoto = async e => { const f = e.target.files[0]; if (f && await setAvatarFromFile(f)) { say(["Belle photo!"]); styleScreen(); } };
   $("#photoFile").onchange = onPhoto; $("#photoCam").onchange = onPhoto;
@@ -1513,6 +1545,8 @@ function styleScreen() {
     if (edge) say([`Salut! Moi c'est ${edge[1]}. On joue ensemble?`]);
     else { const v = voices.find(x => "system:" + x.voiceURI === S.voice); say([`Salut! Moi c'est ${v ? v.name.replace(/\s*\(.*$/, "") : "ta voix"}.`, "On joue ensemble?"]); }
   });
+  $("#sfxOn").onclick = () => { S.sfx = true; save(); styleScreen(); sfx("ok"); };
+  $("#sfxOff").onclick = () => { S.sfx = false; save(); styleScreen(); };
   app.querySelectorAll("[data-p]").forEach(b => b.onclick = () => { const v = b.dataset.p; S.pitch = isNaN(v) ? v : +v; save(); app.querySelectorAll("[data-p]").forEach(x => x.classList.toggle("on", x === b)); say([STYLE_NAMES[S.pitch]]); });
 }
 if ("speechSynthesis" in window) speechSynthesis.addEventListener("voiceschanged", () => { if ($("h1") && $("h1").textContent === "Mon style") styleScreen(); });

@@ -18,8 +18,6 @@
 - **Zombidette dessinée par elle** (photo du dessin à convertir en SVG), pour remplacer la mienne.
 - **Touche familiale** : son prénom, son chat, quelques répliques enregistrées par un parent.
 - **Chambre** : d'autres objets et décors quand les 43 sont gagnés.
-- **Plus de poses de Zombidette** (danse, surprise, dodo) pour réagir pendant les jeux.
-- **Petits effets sonores** (pop au toucher, ding sur une bonne réponse, tambour au collant), en Web Audio, coupables dans Mon style.
 
 ## Technique
 

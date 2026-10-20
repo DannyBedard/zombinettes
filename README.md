@@ -31,7 +31,7 @@ Parent) ; progression segmentée dans les exercices ; fin de partie avec abonné
 
 ## Organisation
 
-Accueil (tient sur un écran) : la Zombidette qui salue dans la bannière, le défi du jour (11 questions : 4 de
+Accueil (tient sur un écran) : la Zombidette qui salue dans la bannière (elle s'endort après 40 s sans toucher, un toucher la réveille), le défi du jour (11 questions : 4 de
 français, 4 de maths, 2 de musique, 1 autre, piochées dans des jeux différents ; le réussir une fois par jour met une
 étoile au calendrier), puis 4 portes (Français, Maths, Musique, Autre). Chaque porte ouvre la page de la matière : un
 bouton Mélange (10 questions ; en français, les mots et Lire pèsent 3 fois plus ; les jeux les moins vus passent en
@@ -132,7 +132,7 @@ morceau de phrase joue son clip s'il existe, sinon la voix système prend le rel
 (installation : `brew install pipx && pipx install edge-tts`). Les clips existants ne sont pas refaits ; un clip refusé par le serveur n'est jamais gardé vide (le jeu passe alors à la voix de l'appareil).
 
 L'écran « Mon style » (pour l'enfant) permet de choisir la voix (Sylvie et Jean livrées avec l'app, plus Amélie et Daniel si l'appareil
-les a), un style de voix (normale, petite, grosse, robot ; petite et grosse changent la hauteur sans changer la vitesse, par étirement WSOLA) et un thème de couleurs. Dans chaque
+les a), un style de voix (normale, petite, grosse, robot ; petite et grosse changent la hauteur sans changer la vitesse, par étirement WSOLA) et un thème de couleurs, et d'activer ou couper les petits effets sonores (synthétisés en Web Audio : toucher, bonne réponse, erreur, fanfare, étincelles, panier). Zombidette danse sur 3, 5 et 8 bonnes réponses de suite et en fin de défi du jour, et fait la surprise quand un visiteur arrive. Dans chaque
 exercice, le bouton 🗣️/🔇 coupe les commentaires (consigne, bravos, explications) pour cet exercice seulement ;
 le mot ou le nombre à écrire est toujours dit.
 
