@@ -1615,6 +1615,32 @@ function pinScreen() {
     if (entered.length === 4) { if (entered === S.pin) parent(); else { entered = ""; $(".hint").textContent = "Mauvais NIP, réessaie"; app.querySelectorAll(".pin span").forEach(d => d.classList.remove("on")); } }
   };
 }
+const GH_REPO = "DannyBedard/zombinettes", GH_TOKEN_KEY = "zombinettes.gh", CODE_RE = /^[a-z]+-\d{4}$/;
+const CODE_WORDS = ["lune", "etoile", "chat", "zombie", "licorne", "pizza", "fusee", "dragon", "nuage", "sirene", "panda", "robot"];
+function ghToken() { try { return localStorage.getItem(GH_TOKEN_KEY) || ""; } catch { return ""; } }
+function saveCode() { if (!S.saveCode) { S.saveCode = `${pick(CODE_WORDS)}-${rand(1000, 9999)}`; save(); } return S.saveCode; }
+function progressJson() { return JSON.stringify(Object.assign({}, S, { pin: undefined, avatar: undefined, exportedAt: new Date().toISOString() }), null, 1); }
+function b64(text) { const b = new TextEncoder().encode(text); let s = ""; for (let i = 0; i < b.length; i += 8192) s += String.fromCharCode(...b.subarray(i, i + 8192)); return btoa(s); }
+function ghUrl(code) { return `https://api.github.com/repos/${GH_REPO}/contents/progres/${code}.json`; }
+async function ghSave() {
+  const code = saveCode(), tok = ghToken(), h = { Authorization: `Bearer ${tok}`, Accept: "application/vnd.github+json" };
+  const cur = await fetch(ghUrl(code), { headers: h, cache: "no-store" });
+  if (cur.status === 401) throw new Error("Jeton refusé (expiré ou mauvais droits).");
+  const sha = cur.ok ? (await cur.json()).sha : undefined;
+  const r = await fetch(ghUrl(code), { method: "PUT", headers: h, body: JSON.stringify({ message: `Progrès ${code}`, content: b64(progressJson()), sha }) });
+  if (!r.ok) throw new Error(r.status === 401 || r.status === 403 || r.status === 404 ? "Jeton refusé (expiré ou mauvais droits)." : `Erreur GitHub ${r.status}.`);
+  S.savedAt = new Date().toISOString(); save();
+}
+async function ghLoad(code) {
+  const tok = ghToken(), r = await fetch(ghUrl(code), { headers: Object.assign({ Accept: "application/vnd.github.raw+json" }, tok ? { Authorization: `Bearer ${tok}` } : {}), cache: "no-store" });
+  if (r.status === 404) throw new Error("Aucune sauvegarde avec ce code.");
+  if (!r.ok) throw new Error(`Erreur GitHub ${r.status}.`);
+  return r.json();
+}
+function applyImport(data) {
+  if (!data.progress || !data.stickers) throw new Error("format");
+  const pin = S.pin, avatar = data.avatar || S.avatar; localStorage.setItem(STORE_KEY, JSON.stringify(Object.assign(data, { pin, avatar }))); S = load(); applyTheme();
+}
 function parent() {
   const m = S.math, un = unlockedWords();
   const boxes = [0, 0, 0, 0]; let seen = 0;
@@ -1729,6 +1755,17 @@ function parent() {
       <p class="muted" id="ioMsg"></p>
     </div>
     <div class="card">
+      <h2>☁️ Sauvegarde en ligne</h2>
+      <p class="muted">Code de cette partie : <b>${esc(saveCode())}</b>${S.savedAt ? ` · dernière sauvegarde ${new Date(S.savedAt).toLocaleString("fr-CA", { dateStyle: "long", timeStyle: "short" })}` : ""}. Sur un autre appareil, entre ce code pour reprendre la même progression.</p>
+      <div class="row"><button class="btn small" id="ghSave" ${ghToken() ? "" : "disabled"}>Sauvegarder sur GitHub</button></div>
+      <div class="row"><input id="ghCode" placeholder="lune-4821" autocomplete="off" autocapitalize="off" spellcheck="false" style="max-width:160px"><button class="btn ghost small" id="ghLoad">Charger ce code</button></div>
+      <details><summary class="muted">Jeton GitHub ${ghToken() ? "✓ enregistré" : "(requis pour sauvegarder)"}</summary>
+        <p class="muted">Jeton « fine-grained » limité au dépôt zombinettes, permission Contents en lecture et écriture. Il reste dans cet appareil et n'est jamais exporté.</p>
+        <div class="row"><input id="ghTok" type="password" autocomplete="off" placeholder="github_pat_…" style="max-width:220px"><button class="btn ghost small" id="ghTokSave">Enregistrer</button>${ghToken() ? `<button class="btn ghost small" id="ghTokDel">Oublier</button>` : ""}</div>
+      </details>
+      <p class="muted" id="ghMsg"></p>
+    </div>
+    <div class="card">
       <h2>📴 Hors ligne</h2>
       <p class="muted">Télécharge la voix choisie dans l'appareil pour que tout fonctionne sans Wi-Fi (auto, avion, chalet).</p>
       <button class="btn small" id="offline">Préparer le hors-ligne</button>
@@ -1770,9 +1807,26 @@ function parent() {
       const data = JSON.parse(await f.text());
       if (!data.progress || !data.stickers) throw new Error("format");
       if (!confirm("Remplacer les progrès actuels par ceux du fichier ?")) return;
-      const pin = S.pin, avatar = data.avatar || S.avatar; localStorage.setItem(STORE_KEY, JSON.stringify(Object.assign(data, { pin, avatar }))); S = load(); applyTheme(); parent();
+      applyImport(data); parent();
     } catch { $("#ioMsg").textContent = "Fichier invalide."; }
   };
+  const ghMsg = t => { $("#ghMsg").textContent = t; };
+  $("#ghSave").onclick = async () => {
+    const b = $("#ghSave"); b.disabled = true; ghMsg("Sauvegarde…");
+    try { await ghSave(); parent(); $("#ghMsg").textContent = `Sauvegardé sous ${S.saveCode}.`; } catch (e) { ghMsg(e.message || "Erreur réseau."); b.disabled = false; }
+  };
+  $("#ghLoad").onclick = async () => {
+    const code = $("#ghCode").value.trim().toLowerCase();
+    if (!CODE_RE.test(code)) return ghMsg("Le code ressemble à lune-4821.");
+    ghMsg("Chargement…");
+    try {
+      const data = await ghLoad(code);
+      if (!confirm(`Remplacer les progrès de cet appareil par ceux du code ${code} ?`)) return ghMsg("");
+      applyImport(Object.assign(data, { saveCode: code })); parent(); $("#ghMsg").textContent = `Progrès du code ${code} chargés.`;
+    } catch (e) { ghMsg(e.message === "format" ? "Sauvegarde invalide." : e.message || "Erreur réseau."); }
+  };
+  $("#ghTokSave").onclick = () => { const t = $("#ghTok").value.trim(); if (!t) return; try { localStorage.setItem(GH_TOKEN_KEY, t); } catch {} parent(); };
+  if ($("#ghTokDel")) $("#ghTokDel").onclick = () => { try { localStorage.removeItem(GH_TOKEN_KEY); } catch {} parent(); };
   $("#offline").onclick = async () => {
     const msg = $("#offMsg"); const m = MANIFEST[S.voice];
     if (!("caches" in window)) { msg.textContent = "Non disponible dans ce navigateur."; return; }

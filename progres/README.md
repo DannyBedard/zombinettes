@@ -1,1 +1,1 @@
-Sauvegardes exportées depuis l'espace parent (Exporter les progrès). Déposer ici le fichier zombinettes-AAAA-MM-JJ.json.
+Sauvegardes des progrès. Les fichiers `<code>.json` (ex. `lune-4821.json`) sont écrits par le bouton « Sauvegarder sur GitHub » de l'espace parent ; les anciens exports manuels zombidette-AAAA-MM-JJ.json peuvent aussi être déposés ici.
