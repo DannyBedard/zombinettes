@@ -350,7 +350,7 @@ button.daily { display: block; width: calc(100% - 32px); text-align: left; color
 /* écran de jeu qui remplit l'iPad */
 #app.immersive .stage { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 6px; border-radius: 22px; margin: 8px 0 0; padding: 18px 12px 22px; position: relative; overflow: hidden;
   background: radial-gradient(120% 70% at 50% 0%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 70%), var(--surface); }
-#app.immersive .stage::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 38%; background: var(--scene) center bottom / cover no-repeat; opacity: .18; pointer-events: none; }
+#app.immersive .stage::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 38%; background: var(--scene) center bottom / contain no-repeat; opacity: .18; pointer-events: none; }
 #app.immersive .stage > * { position: relative; z-index: 1; }
 .target { font-size: clamp(4.6rem, 13vw, 7rem); }
 
