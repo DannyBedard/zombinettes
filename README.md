@@ -43,10 +43,10 @@ vivant ou pas, où vit l'animal, quoi mettre selon la météo, les saisons, avan
 les émotions. Banques de questions dans `app.js` (VIVANT, ANIMAUX, METEO, SCENES, AVANT, MELANGES, SITUATIONS) ; une
 question de Découverte s'ajoute au défi du jour (11 questions). À l'accueil, ces jeux sont sous « Autre », sans bouton Mélange.
 
-Onglet 🧟‍♀️ Zombinette : personnaliser la Zombinette (coiffure couettes, court ou long et couleur des cheveux ; couleur
-et dessin de la robe ; couleur des souliers et des mains, S.zomb), puis la chambre et le studio de sa cabane. Zombinette et sa cabane : personnage et cabane dessinés en SVG dans `app.js` (zombinette(pose), CABIN_ITEMS,
-CABIN_VISITORS), sans image externe. À la fin de chaque partie, l'enfant choisit 1 objet sur 3 pour la cabane (33
-objets : 20 pour la chambre, 13 pour le studio de YouTubeuse, STUDIO_ITEMS) ; une fois sur 6, une visite surprise non annoncée s'ajoute (chat noir, fantôme, hibou). Onglet 🛖 Cabane.
+Onglet 🧟‍♀️ Zombinette : personnaliser la Zombinette (coiffure et couleur des cheveux ; robe, pantalon ou short, couleur et
+dessin ; souliers ; mains, S.zomb), puis sa chambre. Récompense de fin de partie : choisir 1 parmi 3 entre un objet (27, dans
+ITEMS) et un décor (16 : murs, planchers, fenêtres, dans DECOR). Les objets se déplacent au doigt (S.cabin.pos) ; les décors
+gagnés se choisissent sous la chambre. Une fois sur 6, une visite surprise (chat noir, fantôme, hibou).
 
 Rétroaction : en dictée, après une erreur, le jeu explique la cause quand il la reconnaît (« Ici, c'est le son de gâteau,
 qui s'écrit e-a-u », lettre muette à la fin, lettre double, accent ; table GRAPHS). Page 🔤 Les sons : les lettres qui
