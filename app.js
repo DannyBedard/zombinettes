@@ -1326,6 +1326,7 @@ const CABIN_VISITORS = [
   ["fantome", "un petit fantôme", `<path d="M84 150 q0 -28 22 -28 q22 0 22 28 v22 l-6 -6 -5 6 -6 -6 -5 6 -6 -6 -5 6 -5 -6 -6 6z" fill="#f8fafc" stroke="${OUT}" stroke-width="2.5" opacity=".9"/><circle cx="99" cy="146" r="3" fill="${OUT}"/><circle cx="113" cy="146" r="3" fill="${OUT}"/>`],
   ["hibou", "un hibou", `<ellipse cx="280" cy="92" rx="14" ry="17" fill="#a16207" stroke="${OUT}" stroke-width="2.5"/><circle cx="274" cy="88" r="5" fill="#fff" stroke="${OUT}" stroke-width="1.5"/><circle cx="286" cy="88" r="5" fill="#fff" stroke="${OUT}" stroke-width="1.5"/><circle cx="274" cy="88" r="2" fill="${OUT}"/><circle cx="286" cy="88" r="2" fill="${OUT}"/><path d="M278 95 l2 4 2 -4z" fill="#f59e0b"/>`]
 ];
+const VISITOR_LINES = { chat: "Miaou! Je suis un chat noir. Je viens te visiter!", fantome: "Bouh! Je suis un petit fantôme. Je viens te visiter!", hibou: "Hou hou! Je suis un hibou. Je viens te visiter!" };
 const EXTRA_ITEMS = [
   ["etoilesmur", "les étoiles au mur", [[40, 30], [120, 24], [300, 36], [350, 70], [70, 96], [250, 22]].map(([x, y]) => `<path d="M${x} ${y - 7} l2 5 6 1 -4 4 1 6 -5 -3 -5 3 1 -6 -4 -4 6 -1z" fill="#fef08a" opacity=".9"/>`).join("")],
   ["banniere", "la bannière Zombidette", `<path d="M90 44 q110 22 220 0 v26 q-110 22 -220 0z" fill="#ec4899" stroke="${OUT}" stroke-width="2.5"/><text x="200" y="66" text-anchor="middle" font-family="system-ui" font-weight="900" font-size="17" fill="#fff" stroke="${OUT}" stroke-width=".8">ZOMBIDETTE</text>`],
@@ -1370,14 +1371,14 @@ function cabinSvg(withZomb = true) {
   return `<svg class="cabin" viewBox="0 0 400 300">${roomBack(d)}
     ${ITEMS.filter(([id]) => own.includes(id) && !(S.cabin.hidden || []).includes(id)).map(([id, , svg]) => itemG(id, svg)).join("")}
     ${withZomb ? `<g class="noptr" transform="translate(176 150) scale(.95)">${zombinette("idle").replace(/^<svg[^>]*>|<\/svg>$/g, "")}</g>` : ""}
-    ${CABIN_VISITORS.filter(([id]) => vis.includes(id) && !(S.cabin.hidden || []).includes(id)).map(([id, , svg]) => itemG(id, svg)).join("")}
+    ${CABIN_VISITORS.filter(([id]) => vis.includes(id)).map(([id, , svg]) => `<g class="visitor v-${id}" data-vis="${id}"><g>${svg}</g></g>`).join("")}
   </svg>`;
 }
 function itemThumb(id) {
   if (id.includes(":")) { const [part, did] = id.split(":"), d = Object.assign({}, DECOR_DEF, { [part]: did });
     const vb = part === "fenetre" ? "150 44 102 82" : part === "sol" ? "0 205 200 95" : "0 0 160 120";
     return `<svg class="thumbobj deco" viewBox="${vb}">${roomBack(d)}</svg>`; }
-  return `<svg class="thumbobj" viewBox="0 0 400 300"><g>${(ITEMS.find(x => x[0] === id) || CABIN_VISITORS.find(x => x[0] === id))[2]}</g></svg>`;
+  return `<svg class="thumbobj" viewBox="0 0 400 300"><g>${ITEMS.find(x => x[0] === id)[2]}</g></svg>`;
 }
 function rewardPool() {
   const items = ITEMS.filter(([id]) => !S.cabin.items.includes(id)).map(([id, name]) => [id, name]);
@@ -1395,11 +1396,11 @@ function cabinScreen(chosen) {
   const d = Object.assign({}, DECOR_DEF, S.cabin.decor || {});
   const decoRow = part => { const opts = DECOR[part].filter(([did]) => decorOwned(part, did)); return opts.length > 1 ? `<div class="zopts">${opts.map(([did]) => `<button class="zopt deco ${d[part] === did ? "on" : ""}" data-part="${part}" data-d="${did}">${itemThumb(`${part}:${did}`)}</button>`).join("")}</div>` : ""; };
   const decos = ["mur", "sol", "fenetre"].map(decoRow).filter(Boolean).join("");
-  const stored = (S.cabin.hidden || []).filter(id => S.cabin.items.includes(id) || S.cabin.visitors.includes(id));
+  const stored = (S.cabin.hidden || []).filter(id => S.cabin.items.includes(id));
   view(`<div class="section"><h1>Zombidette</h1>${tabs}
     ${hasReward() ? `<div class="cabinpick" id="cabinPickTab"></div>` : ""}
     <div class="cabinwrap roomwrap" id="room">${cabinSvg(true)}<div class="bin" id="bin">🧺</div></div>
-    <p class="tagline">${S.cabin.items.length || S.cabin.visitors.length ? "✋ Glisse un objet pour le déplacer, ou dans le panier 🧺 pour le ranger." : "La chambre est vide… Finis une partie pour choisir un objet!"}</p>
+    <p class="tagline">${S.cabin.items.length ? "✋ Glisse un objet pour le déplacer, ou dans le panier 🧺 pour le ranger." : "La chambre est vide… Finis une partie pour choisir un objet!"}</p>
     ${stored.length ? `<div class="zpart"><div class="zlab">🧺 Objets rangés <small>(touche pour le remettre)</small></div><div class="zopts">${stored.map(id => `<button class="zopt stored" data-back="${id}">${itemThumb(id)}</button>`).join("")}</div></div>` : ""}
     ${decos ? `<div class="zpart"><div class="zlab">🎨 Décor</div>${decos}</div>` : ""}</div>`, "cabin");
   app.querySelectorAll("[data-room]").forEach(b => b.onclick = () => { cabinRoom = b.dataset.room; cabinScreen(true); });
@@ -1407,6 +1408,7 @@ function cabinScreen(chosen) {
   enableDrag($("#room svg"));
   fitThumbs();
   app.querySelectorAll("[data-back]").forEach(b => b.onclick = () => { S.cabin.hidden = (S.cabin.hidden || []).filter(x => x !== b.dataset.back); save(); cabinScreen(true); });
+  app.querySelectorAll("[data-vis]").forEach(g => g.onclick = () => { g.classList.remove("hi"); void g.getBBox(); g.classList.add("hi"); sfx("sparkle"); say([VISITOR_LINES[g.dataset.vis]]); });
   offerCabin($("#cabinPickTab"));
 }
 function enableDrag(svg) {
