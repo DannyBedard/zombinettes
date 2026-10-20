@@ -1240,10 +1240,10 @@ const ZOPT = {
   hair: [["#7c3aed", "violet"], ["#f472b6", "rose"], ["#3b82f6", "bleu"], ["#22c55e", "vert"], ["#ea580c", "roux"], ["#facc15", "blond"], ["#1f2937", "noir"]],
   style: [["couettes", "🎀", "Couettes"], ["court", "💇‍♀️", "Court"], ["long", "👱‍♀️", "Long"]],
   outfit: [["robe", "👗"], ["pantalon", "👖"], ["short", "🩳"]],
-  dress: [["#ec4899", "rose"], ["#8b5cf6", "violet"], ["#3b82f6", "bleu"], ["#22c55e", "vert"], ["#facc15", "jaune"], ["#ef4444", "rouge"], ["#1f2937", "noir"]],
+  dress: [["#ec4899", "rose"], ["#8b5cf6", "violet"], ["#3b82f6", "bleu"], ["#22c55e", "vert"], ["#facc15", "jaune"], ["#ef4444", "rouge"], ["#1f2937", "noir"], ["#f8fafc", "blanc"]],
   motif: [["etoile", "⭐"], ["coeur", "❤️"], ["eclair", "⚡"], ["note", "🎵"], ["crane", "💀"], ["aucun", "⬜"]],
-  shoes: [["#7c3aed", "violet"], ["#f472b6", "rose"], ["#ef4444", "rouge"], ["#3b82f6", "bleu"], ["#1f2937", "noir"], ["#f8fafc", "blanc"]],
-  hands: [["#86d49a", "peau"], ["#f472b6", "rose"], ["#8b5cf6", "violet"], ["#facc15", "jaune"], ["#f8fafc", "blanc"], ["#1f2937", "noir"]]
+  shoes: [["#7c3aed", "violet"], ["#f472b6", "rose"], ["#ef4444", "rouge"], ["#3b82f6", "bleu"], ["#22c55e", "vert"], ["#facc15", "jaune"], ["#1f2937", "noir"], ["#f8fafc", "blanc"]],
+  hands: [["#86d49a", "peau"], ["#f472b6", "rose"], ["#8b5cf6", "violet"], ["#3b82f6", "bleu"], ["#22c55e", "vert"], ["#facc15", "jaune"], ["#ef4444", "rouge"], ["#f8fafc", "blanc"], ["#1f2937", "noir"]]
 };
 const ZDEF = { hair: "#7c3aed", style: "couettes", outfit: "robe", dress: "#ec4899", motif: "etoile", shoes: "#7c3aed", hands: "#86d49a" };
 const MOTIFS = {
