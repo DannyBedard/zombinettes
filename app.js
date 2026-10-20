@@ -1,6 +1,7 @@
 /* Zombidette — français et maths pour le 1er cycle du primaire */
 (() => {
 const STORE_KEY = "zombinettes.v1";
+const REMOVED_ITEMS = ["panneau", "bureau", "clavier", "casque", "lavelampe", "chaise"];
 const DEFAULTS = {
   palier: 5, palierAuto: true, mode: "tiles", decoys: 3, pin: "1234", weekly: [], theme: "violet", avatar: null, custom: null, voice: "sylvie", pitch: 1,
   mute: { quiz: false, word: false, read: false, sound: false, syllab: false, phrase: false, money: false, keys: false, figures: false, number: false, calc: false, compare: false, clock: false, trace: false, music: false },
@@ -136,7 +137,7 @@ function load() {
   if (s.palier && (s.boost || 0) < 5) { out.boost = 5; out.money = { level: 1 }; }
   out.days = (s.days || []).slice();
   out.cabin = { items: [...(out.cabin.items || [])], visitors: [...(out.cabin.visitors || [])], pending: out.cabin.pending || 0, pos: Object.assign({}, out.cabin.pos), decor: out.cabin.decor, unlocked: [...(out.cabin.unlocked || [])] };
-  const gone = out.cabin.items.filter(id => ["panneau", "bureau", "clavier", "casque", "lavelampe", "chaise"].includes(id));
+  const gone = out.cabin.items.filter(id => REMOVED_ITEMS.includes(id));
   if (gone.length) { out.cabin.items = out.cabin.items.filter(id => !gone.includes(id)); out.cabin.pending = Math.min(3, out.cabin.pending + gone.length); }
   if (!s.days && s.streak && s.streak.last) { const [y, m, d] = s.streak.last.split("-").map(Number); out.days = Array.from({ length: s.streak.n || 1 }, (_, k) => dayStr(new Date(y, m - 1, d - k))); }
   delete out.bg;
@@ -1163,7 +1164,7 @@ function endSession() {
   if (rewardPool().length) S.cabin.pending = Math.min(3, (S.cabin.pending || 0) + 1);
   const up = maybeLevelUp(); save();
   const gained = session.good, note = progressNote();
-  const reward = rewardPool().length && S.cabin.pending;
+  const reward = hasReward();
   view(`${topbar()}
     <div class="result"><div class="zombres">${zombinette("happy")}</div><h1>Félicitations!</h1>
       ${gained ? `<div class="score">+${gained} <small>abonné${gained > 1 ? "s" : ""}</small></div>` : `<p class="tagline">Tu as travaillé fort!</p>`}
@@ -1278,8 +1279,7 @@ const EXTRA_ITEMS = [
   ["aquarium", "l'aquarium", `<g transform="translate(-74 0)"><rect x="150" y="248" width="52" height="38" rx="4" fill="#bae6fd" stroke="${OUT}" stroke-width="3" opacity=".95"/><path d="M168 266 q8 -8 16 0 q-8 8 -16 0z M184 266 l6 -5 v10z" fill="#f97316" stroke="${OUT}" stroke-width="1.2"/><path d="M158 286 q4 -14 0 -22 M194 286 q-4 -12 2 -20" stroke="#16a34a" stroke-width="3" fill="none"/></g>`],
   ["ballons", "les ballons", [["#f472b6", 368, 70], ["#a855f7", 384, 92], ["#facc15", 360, 100]].map(([c, x, y]) => `<path d="M${x} ${y + 16} q4 40 -6 80" stroke="${OUT}" stroke-width="1.2" fill="none"/><ellipse cx="${x}" cy="${y}" rx="13" ry="16" fill="${c}" stroke="${OUT}" stroke-width="2"/>`).join("")]
 ];
-const ITEMS = CABIN_ITEMS.concat(EXTRA_ITEMS), REMOVED_ITEMS = ["panneau", "bureau", "clavier", "casque", "lavelampe", "chaise"];
-const ALL_ITEMS = () => ITEMS;
+const ITEMS = CABIN_ITEMS.concat(EXTRA_ITEMS);
 /* Position de départ des objets venus de l'ancien studio (déplaçables ensuite) */
 const ITEM_START = { neon: { x: -100, y: 40 }, affichezombie: { x: -96, y: 30 }, coussin: { x: -170, y: 0 }, aquarium: { x: 60, y: 0 } };
 const DECOR = {
@@ -1313,15 +1313,15 @@ function cabinSvg(withZomb = true) {
   const own = S.cabin.items, vis = S.cabin.visitors, d = Object.assign({}, DECOR_DEF, S.cabin.decor || {});
   return `<svg class="cabin" viewBox="0 0 400 300">${roomBack(d)}
     ${ITEMS.filter(([id]) => own.includes(id)).map(([id, , svg]) => itemG(id, svg)).join("")}
-    ${withZomb ? `<g transform="translate(176 150) scale(.95)">${zombinette("idle").replace(/^<svg[^>]*>|<\/svg>$/g, "")}</g>` : ""}
-    ${CABIN_VISITORS.filter(([id]) => vis.includes(id)).map(x => x[2]).join("")}
+    ${withZomb ? `<g class="noptr" transform="translate(176 150) scale(.95)">${zombinette("idle").replace(/^<svg[^>]*>|<\/svg>$/g, "")}</g>` : ""}
+    <g class="noptr">${CABIN_VISITORS.filter(([id]) => vis.includes(id)).map(x => x[2]).join("")}</g>
   </svg>`;
 }
 function itemThumb(id) {
   if (id.includes(":")) { const [part, did] = id.split(":"), d = Object.assign({}, DECOR_DEF, { [part]: did });
     const vb = part === "fenetre" ? "150 44 102 82" : part === "sol" ? "0 205 200 95" : "0 0 160 120";
     return `<svg class="thumbobj deco" viewBox="${vb}">${roomBack(d)}</svg>`; }
-  return `<svg class="thumbobj" viewBox="0 0 400 300"><g>${ALL_ITEMS().find(x => x[0] === id)[2]}</g></svg>`;
+  return `<svg class="thumbobj" viewBox="0 0 400 300"><g>${ITEMS.find(x => x[0] === id)[2]}</g></svg>`;
 }
 function rewardPool() {
   const items = ITEMS.filter(([id]) => !S.cabin.items.includes(id)).map(([id, name]) => [id, name]);
@@ -1331,17 +1331,16 @@ function rewardPool() {
 function fitThumbs() { app.querySelectorAll(".thumbobj:not(.deco)").forEach(sv => { const b = sv.querySelector("g").getBBox(), p = 8; sv.setAttribute("viewBox", `${b.x - p} ${b.y - p} ${b.width + 2 * p} ${b.height + 2 * p}`); }); }
 
 let cabinRoom = "zomb";
-function rewardsLeft() { return rewardPool().length; }
+function hasReward() { return !!(S.cabin.pending && rewardPool().length); }
 function cabinScreen(chosen) {
-  const left = rewardsLeft();
-  if (!chosen && S.cabin.pending && left) cabinRoom = "chambre";
+  if (!chosen && hasReward()) cabinRoom = "chambre";
   const tabs = `<div class="row" style="justify-content:center">${[["zomb", "👗 Zombidette"], ["chambre", "🛏️ La chambre"]].map(([id, lb]) => `<button class="pill ${cabinRoom === id ? "on" : ""}" data-room="${id}">${lb}</button>`).join("")}</div>`;
   if (cabinRoom === "zomb") return zombEditor(tabs);
   const d = Object.assign({}, DECOR_DEF, S.cabin.decor || {});
   const decoRow = part => { const opts = DECOR[part].filter(([did]) => decorOwned(part, did)); return opts.length > 1 ? `<div class="zopts">${opts.map(([did]) => `<button class="zopt deco ${d[part] === did ? "on" : ""}" data-part="${part}" data-d="${did}">${itemThumb(`${part}:${did}`)}</button>`).join("")}</div>` : ""; };
   const decos = ["mur", "sol", "fenetre"].map(decoRow).filter(Boolean).join("");
   view(`<div class="section"><h1>Zombidette</h1>${tabs}
-    ${S.cabin.pending && left ? `<div class="cabinpick" id="cabinPickTab"></div>` : ""}
+    ${hasReward() ? `<div class="cabinpick" id="cabinPickTab"></div>` : ""}
     <div class="cabinwrap" id="room">${cabinSvg(true)}</div>
     <p class="tagline">${S.cabin.items.length ? "✋ Glisse un objet avec ton doigt pour le déplacer." : "La chambre est vide… Finis une partie pour choisir un objet!"}</p>
     ${decos ? `<div class="zpart"><div class="zlab">🎨 Décor</div>${decos}</div>` : ""}</div>`, "cabin");
@@ -1354,15 +1353,23 @@ function enableDrag(svg) {
   if (!svg) return;
   let cur = null;
   const pt = e => { const p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY; return p.matrixTransform(svg.getScreenCTM().inverse()); };
-  svg.style.touchAction = "none";
+  const clamp = (b, x, y) => ({ x: Math.round(Math.max(-b.x, Math.min(400 - b.x - b.width, x))), y: Math.round(Math.max(-b.y, Math.min(300 - b.y - b.height, y))) });
+  const posOf = id => (S.cabin.pos || {})[id] || ITEM_START[id] || { x: 0, y: 0 };
+  let fixed = false;
+  svg.querySelectorAll(".cit").forEach(g => {
+    const id = g.dataset.id, p = posOf(id), c = clamp(g.getBBox(), p.x, p.y);
+    if (c.x !== p.x || c.y !== p.y) { g.setAttribute("transform", `translate(${c.x} ${c.y})`); S.cabin.pos = Object.assign({}, S.cabin.pos || {}, { [id]: c }); fixed = true; }
+  });
+  if (fixed) save();
   svg.onpointerdown = e => {
     const g = e.target.closest(".cit"); if (!g) return;
-    const id = g.dataset.id, p0 = (S.cabin.pos || {})[id] || ITEM_START[id] || { x: 0, y: 0 }, s0 = pt(e);
-    cur = { g, id, p0, s0 }; g.classList.add("drag"); svg.setPointerCapture(e.pointerId);
+    e.preventDefault();
+    cur = { g, id: g.dataset.id, p0: posOf(g.dataset.id), s0: pt(e), box: g.getBBox() }; g.classList.add("drag"); svg.setPointerCapture(e.pointerId);
   };
   svg.onpointermove = e => {
-    if (!cur) return; const s1 = pt(e), x = Math.max(-380, Math.min(380, cur.p0.x + s1.x - cur.s0.x)), y = Math.max(-280, Math.min(280, cur.p0.y + s1.y - cur.s0.y));
-    cur.g.setAttribute("transform", `translate(${x} ${y})`); cur.now = { x: Math.round(x), y: Math.round(y) };
+    if (!cur) return; const s1 = pt(e);
+    cur.now = clamp(cur.box, cur.p0.x + s1.x - cur.s0.x, cur.p0.y + s1.y - cur.s0.y);
+    cur.g.setAttribute("transform", `translate(${cur.now.x} ${cur.now.y})`);
   };
   svg.onpointerup = svg.onpointercancel = () => {
     if (!cur) return; cur.g.classList.remove("drag");
@@ -1416,7 +1423,7 @@ function view(html, tab) {
 }
 function tabbar(active) {
   const tabs = [["home", "🏠", "Accueil"], ["cabin", "🧟‍♀️", "Zombidette"], ["album", "🌟", "Collants"], ["style", "🎨", "Style"], ["parent", "👤", "Parent"]];
-  return `<nav class="tabbar">${tabs.map(([id, ic, lb]) => `<button data-tab="${id}" class="${active === id ? "on" : ""}">${ic}${id === "cabin" && S.cabin.pending && rewardPool().length ? `<span class="badge">${S.cabin.pending}</span>` : ""}<small>${lb}</small></button>`).join("")}</nav>`;
+  return `<nav class="tabbar">${tabs.map(([id, ic, lb]) => `<button data-tab="${id}" class="${active === id ? "on" : ""}">${ic}${id === "cabin" && hasReward() ? `<span class="badge">${S.cabin.pending}</span>` : ""}<small>${lb}</small></button>`).join("")}</nav>`;
 }
 function topbar(back = true) {
   return `<div class="topbar">${back ? `<button class="back" id="back">←</button>` : "<span></span>"}<span class="stars" id="starsN" title="abonnés">👥 ${S.stars}</span></div>`;

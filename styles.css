@@ -391,3 +391,5 @@ button.daily { display: block; width: calc(100% - 32px); text-align: left; color
 .zopt.deco { width: 64px; height: 48px; border-radius: 10px; padding: 0; overflow: hidden; background: #000; }
 .zopt.deco .thumbobj { width: 100%; height: 100%; }
 .cabinopts .thumbobj.deco { width: 90%; height: 70%; border-radius: 10px; }
+.noptr { pointer-events: none; }
+#room svg { touch-action: pan-y; } .cit { touch-action: none; }
