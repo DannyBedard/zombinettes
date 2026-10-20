@@ -464,6 +464,8 @@ const READ_SENTENCES = [["Le chat dort.", "🐱💤"], ["Le chat boit du lait.",
   ["Le soleil est jaune.", "☀️"], ["La lune brille la nuit.", "🌙"], ["Le lapin mange une carotte.", "🐰🥕"], ["Il pleut beaucoup.", "🌧️"], ["Le bébé dort.", "👶💤"], ["Le poisson nage dans l'eau.", "🐟💧"],
   ["La fille porte une robe rouge.", "👧👗"], ["J'aime le chocolat.", "🍫"], ["Le train roule vite.", "🚂"], ["Il fait froid en hiver.", "❄️🧣"], ["Le zombie danse à l'école.", "🧟🕺"], ["La sirène nage dans la mer.", "🧜‍♀️🌊"],
   ["L'oiseau chante dans l'arbre.", "🐦🌳"], ["Je mange du pain.", "🍞"], ["La neige est blanche.", "⛄"]];
+const LOOKALIKE = [["bébé", "fille", "garçon", "homme", "femme", "reine"], ["porc", "cochon"], ["poule", "coq"], ["rose", "fleur"], ["sapin", "arbre"], ["pluie", "nuage"]];
+const lookalike = (a, b) => LOOKALIKE.some(g => g.includes(a) && g.includes(b));
 function buildReadSession(mode) {
   const lvl = S.read.level, n = S.sessionLength;
   if (mode === "phrases") return shuffle(READ_SENTENCES).slice(0, n).map(([p, e]) => {
@@ -472,7 +474,7 @@ function buildReadSession(mode) {
   });
   const pool = lvl === 1 ? READ_WORDS.filter(w => difficulty(w.mot) < 4.5) : READ_WORDS;
   return shuffle(pool).slice(0, n).map(w => {
-    const others = READ_WORDS.filter(o => o !== w);
+    const others = READ_WORDS.filter(o => o !== w && !lookalike(o.mot, w.mot));
     const near = lvl === 1 ? shuffle(others) : shuffle(others).sort((x, y) => similarity(w.mot, y.mot) - similarity(w.mot, x.mot)).slice(0, 6);
     const choices = shuffle([w, ...shuffle(near).slice(0, lvl >= 3 ? 3 : 2)]);
     return { kind: "read", mot: w.mot, emoji: w.emoji, choices, answer: w.mot };
