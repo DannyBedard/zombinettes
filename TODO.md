@@ -15,12 +15,15 @@
 
 ## Univers et récompenses
 
-- **Zombinette dessinée par elle** (photo du dessin à convertir en SVG), pour remplacer la mienne.
+- **Zombidette dessinée par elle** (photo du dessin à convertir en SVG), pour remplacer la mienne.
 - **Touche familiale** : son prénom, son chat, quelques répliques enregistrées par un parent.
-- **Cabane** : déplacer les objets ; d'autres objets ou une 3e pièce quand les 33 sont gagnés.
-- **Plus de poses de la Zombinette** (danse, surprise, dodo) pour réagir pendant les jeux.
+- **Chambre** : d'autres objets et décors quand les 43 sont gagnés.
+- **Plus de poses de Zombidette** (danse, surprise, dodo) pour réagir pendant les jeux.
+- **Petits effets sonores** (pop au toucher, ding sur une bonne réponse, tambour au collant), en Web Audio, coupables dans Mon style.
 
 ## Technique
+
+- **NIP oublié** : moyen de le réinitialiser (ex. question parent) ; aujourd'hui il faut effacer les données du site.
 
 - **Voix des mots de la semaine** : aujourd'hui, c'est la voix de l'iPad qui les dit (pas de clip pré-généré).
 - **Tests automatisés** de base (un passage dans chaque jeu), au lieu de les rejouer à la main.
@@ -28,10 +31,10 @@
 
 ## Plus tard
 
-- **Petits problèmes** (« Zombinette a 3 collants… ») : quand elle lira plus facilement.
+- **Petits problèmes** (« Zombidette a 3 collants… ») : quand elle lira plus facilement.
 
 ## Écarté
 
 - Jeu de décodage (trop proche de Lire).
 - Flèches de tracé (l'ordre des traits varie selon l'école, et c'est impossible avec la police actuelle).
-- Fond clair et abandon des abonnés : elle aime le thème sombre YouTubeuse.
+- Abandon des abonnés (elle les aime). Le fond sombre a été retiré à la place : fond coloré seulement.
