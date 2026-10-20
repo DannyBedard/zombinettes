@@ -1370,14 +1370,14 @@ function cabinSvg(withZomb = true) {
   return `<svg class="cabin" viewBox="0 0 400 300">${roomBack(d)}
     ${ITEMS.filter(([id]) => own.includes(id) && !(S.cabin.hidden || []).includes(id)).map(([id, , svg]) => itemG(id, svg)).join("")}
     ${withZomb ? `<g class="noptr" transform="translate(176 150) scale(.95)">${zombinette("idle").replace(/^<svg[^>]*>|<\/svg>$/g, "")}</g>` : ""}
-    <g class="noptr">${CABIN_VISITORS.filter(([id]) => vis.includes(id)).map(x => x[2]).join("")}</g>
+    ${CABIN_VISITORS.filter(([id]) => vis.includes(id) && !(S.cabin.hidden || []).includes(id)).map(([id, , svg]) => itemG(id, svg)).join("")}
   </svg>`;
 }
 function itemThumb(id) {
   if (id.includes(":")) { const [part, did] = id.split(":"), d = Object.assign({}, DECOR_DEF, { [part]: did });
     const vb = part === "fenetre" ? "150 44 102 82" : part === "sol" ? "0 205 200 95" : "0 0 160 120";
     return `<svg class="thumbobj deco" viewBox="${vb}">${roomBack(d)}</svg>`; }
-  return `<svg class="thumbobj" viewBox="0 0 400 300"><g>${ITEMS.find(x => x[0] === id)[2]}</g></svg>`;
+  return `<svg class="thumbobj" viewBox="0 0 400 300"><g>${(ITEMS.find(x => x[0] === id) || CABIN_VISITORS.find(x => x[0] === id))[2]}</g></svg>`;
 }
 function rewardPool() {
   const items = ITEMS.filter(([id]) => !S.cabin.items.includes(id)).map(([id, name]) => [id, name]);
@@ -1395,11 +1395,11 @@ function cabinScreen(chosen) {
   const d = Object.assign({}, DECOR_DEF, S.cabin.decor || {});
   const decoRow = part => { const opts = DECOR[part].filter(([did]) => decorOwned(part, did)); return opts.length > 1 ? `<div class="zopts">${opts.map(([did]) => `<button class="zopt deco ${d[part] === did ? "on" : ""}" data-part="${part}" data-d="${did}">${itemThumb(`${part}:${did}`)}</button>`).join("")}</div>` : ""; };
   const decos = ["mur", "sol", "fenetre"].map(decoRow).filter(Boolean).join("");
-  const stored = (S.cabin.hidden || []).filter(id => S.cabin.items.includes(id));
+  const stored = (S.cabin.hidden || []).filter(id => S.cabin.items.includes(id) || S.cabin.visitors.includes(id));
   view(`<div class="section"><h1>Zombidette</h1>${tabs}
     ${hasReward() ? `<div class="cabinpick" id="cabinPickTab"></div>` : ""}
     <div class="cabinwrap roomwrap" id="room">${cabinSvg(true)}<div class="bin" id="bin">🧺</div></div>
-    <p class="tagline">${S.cabin.items.length ? "✋ Glisse un objet pour le déplacer, ou dans le panier 🧺 pour le ranger." : "La chambre est vide… Finis une partie pour choisir un objet!"}</p>
+    <p class="tagline">${S.cabin.items.length || S.cabin.visitors.length ? "✋ Glisse un objet pour le déplacer, ou dans le panier 🧺 pour le ranger." : "La chambre est vide… Finis une partie pour choisir un objet!"}</p>
     ${stored.length ? `<div class="zpart"><div class="zlab">🧺 Objets rangés <small>(touche pour le remettre)</small></div><div class="zopts">${stored.map(id => `<button class="zopt stored" data-back="${id}">${itemThumb(id)}</button>`).join("")}</div></div>` : ""}
     ${decos ? `<div class="zpart"><div class="zlab">🎨 Décor</div>${decos}</div>` : ""}</div>`, "cabin");
   app.querySelectorAll("[data-room]").forEach(b => b.onclick = () => { cabinRoom = b.dataset.room; cabinScreen(true); });
