@@ -598,8 +598,8 @@ function shapeSvg(id, c) {
   const face = col => `fill="${col}" stroke="#2b1d3d" stroke-width="3.5" stroke-linejoin="round"`, st = face(c), dk = face(shade(c, 0, 0.3)), lt = face(shade(c, 255, 0.4));
   const tall = Math.random() < 0.5, flip = Math.random() < 0.5;
   const d = {
-    carre: `<rect x="22" y="22" width="56" height="56" ${st}/>`,
-    rectangle: tall ? `<rect x="30" y="10" width="40" height="80" ${st}/>` : `<rect x="10" y="30" width="80" height="40" ${st}/>`,
+    carre: `<rect x="14" y="14" width="72" height="72" ${st}/>`,
+    rectangle: tall ? `<rect x="24" y="6" width="52" height="88" ${st}/>` : `<rect x="6" y="24" width="88" height="52" ${st}/>`,
     triangle: flip ? `<polygon points="14,18 86,18 50,84" ${st}/>` : `<polygon points="50,14 88,84 12,84" ${st}/>`,
     cercle: `<circle cx="50" cy="50" r="37" ${st}/>`,
     losange: `<polygon points="50,8 82,50 50,92 18,50" ${st}/>`,
