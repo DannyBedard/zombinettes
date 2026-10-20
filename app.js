@@ -1787,7 +1787,11 @@ async function boot() {
   try { const m = await fetch("audio/manifest.json").then(r => r.json()); for (const k in m) MANIFEST[k] = new Set(m[k]); } catch {}
   if (!S.voice.startsWith("system:") && !MANIFEST[S.voice]) { const first = Object.keys(MANIFEST)[0]; S.voice = first || "system:"; }
   buildPool();
+  preload([...HELLOS, ...COMMON_PARTS]);
   await new Promise(r => setTimeout(r, Math.max(0, 1300 - (Date.now() - shown))));
+  const sp = $(".splash"); sp.insertAdjacentHTML("beforeend", `<div class="tapme">Touche-moi!</div>`); $(".splashzomb").innerHTML = zombinette("idle");
+  await new Promise(r => sp.addEventListener("click", r, { once: true }));
+  unlockAudio(); sfx("sparkle");
   home();
   if ("serviceWorker" in navigator && location.protocol !== "file:") navigator.serviceWorker.register("sw.js").catch(() => {});
 }
