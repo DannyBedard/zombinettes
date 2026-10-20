@@ -45,7 +45,7 @@ question de Découverte s'ajoute au défi du jour (11 questions). À l'accueil, 
 
 Onglet 🧟‍♀️ Zombidette : personnaliser la Zombidette (coiffure et couleur des cheveux ; robe, pantalon ou short, couleur et
 dessin ; souliers ; mains, S.zomb), puis sa chambre. Récompense de fin de partie : choisir 1 parmi 3 entre un objet (27, dans
-ITEMS) et un décor (16 : murs, planchers, fenêtres, dans DECOR). Les objets se déplacent au doigt (S.cabin.pos) ; les décors
+ITEMS) et un décor (16 : murs, planchers, fenêtres, dans DECOR). Les objets se déplacent au doigt (S.cabin.pos) et se rangent en les glissant dans le panier 🧺 (S.cabin.hidden), d'où on les remet d'un toucher ; les décors
 gagnés se choisissent sous la chambre. Une fois sur 6, une visite surprise (chat noir, fantôme, hibou).
 
 Rétroaction : en dictée, après une erreur, le jeu explique la cause quand il la reconnaît (« Ici, c'est le son de gâteau,

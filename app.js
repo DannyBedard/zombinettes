@@ -136,7 +136,7 @@ function load() {
   if (s.palier && (s.boost || 0) < 4) out.keys = { level: 3 };
   if (s.palier && (s.boost || 0) < 5) { out.boost = 5; out.money = { level: 1 }; }
   out.days = (s.days || []).slice();
-  out.cabin = { items: [...(out.cabin.items || [])], visitors: [...(out.cabin.visitors || [])], pending: out.cabin.pending || 0, pos: Object.assign({}, out.cabin.pos), decor: out.cabin.decor, unlocked: [...(out.cabin.unlocked || [])] };
+  out.cabin = { items: [...(out.cabin.items || [])], visitors: [...(out.cabin.visitors || [])], pending: out.cabin.pending || 0, pos: Object.assign({}, out.cabin.pos), hidden: [...(out.cabin.hidden || [])], decor: out.cabin.decor, unlocked: [...(out.cabin.unlocked || [])] };
   const gone = out.cabin.items.filter(id => REMOVED_ITEMS.includes(id));
   if (gone.length) { out.cabin.items = out.cabin.items.filter(id => !gone.includes(id)); out.cabin.pending = Math.min(3, out.cabin.pending + gone.length); }
   if (!s.days && s.streak && s.streak.last) { const [y, m, d] = s.streak.last.split("-").map(Number); out.days = Array.from({ length: s.streak.n || 1 }, (_, k) => dayStr(new Date(y, m - 1, d - k))); }
@@ -1312,7 +1312,7 @@ function itemG(id, svg) { const p = (S.cabin.pos || {})[id] || ITEM_START[id] ||
 function cabinSvg(withZomb = true) {
   const own = S.cabin.items, vis = S.cabin.visitors, d = Object.assign({}, DECOR_DEF, S.cabin.decor || {});
   return `<svg class="cabin" viewBox="0 0 400 300">${roomBack(d)}
-    ${ITEMS.filter(([id]) => own.includes(id)).map(([id, , svg]) => itemG(id, svg)).join("")}
+    ${ITEMS.filter(([id]) => own.includes(id) && !(S.cabin.hidden || []).includes(id)).map(([id, , svg]) => itemG(id, svg)).join("")}
     ${withZomb ? `<g class="noptr" transform="translate(176 150) scale(.95)">${zombinette("idle").replace(/^<svg[^>]*>|<\/svg>$/g, "")}</g>` : ""}
     <g class="noptr">${CABIN_VISITORS.filter(([id]) => vis.includes(id)).map(x => x[2]).join("")}</g>
   </svg>`;
@@ -1339,14 +1339,18 @@ function cabinScreen(chosen) {
   const d = Object.assign({}, DECOR_DEF, S.cabin.decor || {});
   const decoRow = part => { const opts = DECOR[part].filter(([did]) => decorOwned(part, did)); return opts.length > 1 ? `<div class="zopts">${opts.map(([did]) => `<button class="zopt deco ${d[part] === did ? "on" : ""}" data-part="${part}" data-d="${did}">${itemThumb(`${part}:${did}`)}</button>`).join("")}</div>` : ""; };
   const decos = ["mur", "sol", "fenetre"].map(decoRow).filter(Boolean).join("");
+  const stored = (S.cabin.hidden || []).filter(id => S.cabin.items.includes(id));
   view(`<div class="section"><h1>Zombidette</h1>${tabs}
     ${hasReward() ? `<div class="cabinpick" id="cabinPickTab"></div>` : ""}
-    <div class="cabinwrap" id="room">${cabinSvg(true)}</div>
-    <p class="tagline">${S.cabin.items.length ? "✋ Glisse un objet avec ton doigt pour le déplacer." : "La chambre est vide… Finis une partie pour choisir un objet!"}</p>
+    <div class="cabinwrap roomwrap" id="room">${cabinSvg(true)}<div class="bin" id="bin">🧺</div></div>
+    <p class="tagline">${S.cabin.items.length ? "✋ Glisse un objet pour le déplacer, ou dans le panier 🧺 pour le ranger." : "La chambre est vide… Finis une partie pour choisir un objet!"}</p>
+    ${stored.length ? `<div class="zpart"><div class="zlab">🧺 Objets rangés <small>(touche pour le remettre)</small></div><div class="zopts">${stored.map(id => `<button class="zopt stored" data-back="${id}">${itemThumb(id)}</button>`).join("")}</div></div>` : ""}
     ${decos ? `<div class="zpart"><div class="zlab">🎨 Décor</div>${decos}</div>` : ""}</div>`, "cabin");
   app.querySelectorAll("[data-room]").forEach(b => b.onclick = () => { cabinRoom = b.dataset.room; cabinScreen(true); });
   app.querySelectorAll("[data-part]").forEach(b => b.onclick = () => { S.cabin.decor = Object.assign({}, d, { [b.dataset.part]: b.dataset.d }); save(); cabinScreen(true); });
   enableDrag($("#room svg"));
+  fitThumbs();
+  app.querySelectorAll("[data-back]").forEach(b => b.onclick = () => { S.cabin.hidden = (S.cabin.hidden || []).filter(x => x !== b.dataset.back); save(); cabinScreen(true); });
   offerCabin($("#cabinPickTab"));
 }
 function enableDrag(svg) {
@@ -1369,10 +1373,12 @@ function enableDrag(svg) {
   svg.onpointermove = e => {
     if (!cur) return; const s1 = pt(e);
     cur.now = clamp(cur.box, cur.p0.x + s1.x - cur.s0.x, cur.p0.y + s1.y - cur.s0.y);
+    const bin = $("#bin"); if (bin) { const r = bin.getBoundingClientRect(); cur.overBin = e.clientX >= r.left - 10 && e.clientX <= r.right + 10 && e.clientY >= r.top - 10 && e.clientY <= r.bottom + 10; bin.classList.toggle("hot", cur.overBin); }
     cur.g.setAttribute("transform", `translate(${cur.now.x} ${cur.now.y})`);
   };
   svg.onpointerup = svg.onpointercancel = () => {
     if (!cur) return; cur.g.classList.remove("drag");
+    if (cur.overBin) { S.cabin.hidden = [...new Set((S.cabin.hidden || []).concat(cur.id))]; save(); cur = null; say(["Rangé!"]); return cabinScreen(true); }
     if (cur.now) { S.cabin.pos = Object.assign({}, S.cabin.pos || {}, { [cur.id]: cur.now }); save(); }
     cur = null;
   };
@@ -1697,7 +1703,7 @@ function parent() {
     msg.textContent = `Prêt : ${urls.length} sons de ${S.voice === "sylvie" ? "Sylvie" : S.voice} disponibles hors ligne.`;
   };
   $("#pin").onclick = () => { const p = prompt("Nouveau NIP (4 chiffres)"); if (p && /^\d{4}$/.test(p)) { S.pin = p; save(); alert("NIP changé"); } };
-  $("#reset").onclick = () => { if (confirm("Effacer tous les progrès, abonnés et collants ?")) { S.progress = {}; S.stars = 0; S.stickers = {}; S.sessions = 0; S.palier = DEFAULTS.palier; S.daily = null; S.days = []; S.cabin = { items: [], visitors: [], pending: 0, pos: {}, decor: null, unlocked: [] }; for (const k of ["mathStats", "plays", "mixCount"]) S[k] = JSON.parse(JSON.stringify(DEFAULTS[k])); save(); parent(); } };
+  $("#reset").onclick = () => { if (confirm("Effacer tous les progrès, abonnés et collants ?")) { S.progress = {}; S.stars = 0; S.stickers = {}; S.sessions = 0; S.palier = DEFAULTS.palier; S.daily = null; S.days = []; S.cabin = { items: [], visitors: [], pending: 0, pos: {}, hidden: [], decor: null, unlocked: [] }; for (const k of ["mathStats", "plays", "mixCount"]) S[k] = JSON.parse(JSON.stringify(DEFAULTS[k])); save(); parent(); } };
 }
 
 /* ---------- démarrage ---------- */
