@@ -166,14 +166,33 @@ function frVoices() {
   const seen = new Set();
   return speechSynthesis.getVoices().filter(v => /^fr/i.test(v.lang) && SYSTEM_VOICE_OK.test(v.name)).filter(v => { const k = v.name + v.lang; if (seen.has(k)) return false; seen.add(k); return true; });
 }
-let actx = null; const BUFFERS = new Map(), AUDIO_KEEP = 60;
-function remember(map, key, val) { map.delete(key); map.set(key, val); while (map.size > AUDIO_KEEP) map.delete(map.keys().next().value); return val; }
+let actx = null; const BUFFERS = new Map(), AUDIO_KEEP = 80;
+function remember(map, key, val, keep = AUDIO_KEEP) { map.delete(key); map.set(key, val); while (map.size > keep) map.delete(map.keys().next().value); return val; }
 function unlockAudio() { try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); if (actx.state !== "running") actx.resume(); } catch {} }
 document.addEventListener("pointerdown", unlockAudio, { passive: true });
-async function getBuffer(url) {
-  if (BUFFERS.has(url)) return remember(BUFFERS, url, BUFFERS.get(url));
-  const buf = await actx.decodeAudioData(await fetch(url).then(r => r.arrayBuffer()));
-  return remember(BUFFERS, url, buf);
+const RAW = new Map(), DECODING = new Map();
+function fetchClip(url) {
+  if (RAW.has(url)) return remember(RAW, url, RAW.get(url), 400);
+  const p = fetch(url).then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); });
+  p.catch(() => RAW.delete(url));
+  return remember(RAW, url, p, 400);
+}
+function getBuffer(url) {
+  if (BUFFERS.has(url)) return Promise.resolve(remember(BUFFERS, url, BUFFERS.get(url)));
+  if (DECODING.has(url)) return DECODING.get(url);
+  const p = fetchClip(url).then(b => actx.decodeAudioData(b.slice(0))).then(buf => remember(BUFFERS, url, buf)).finally(() => DECODING.delete(url));
+  DECODING.set(url, p); return p;
+}
+function preload(parts, decode) {
+  for (const t of parts) {
+    const url = typeof t === "string" && clipUrl(t); if (!url) continue;
+    if (decode && actx) getBuffer(url).catch(() => {}); else fetchClip(url).catch(() => {});
+  }
+}
+async function contextReady() {
+  if (actx.state === "running") return true;
+  try { await Promise.race([actx.resume(), new Promise(r => setTimeout(r, 400))]); } catch {}
+  return actx.state === "running";
 }
 const STRETCHED = new Map();
 function stretch(buf, f, key) {
@@ -204,6 +223,7 @@ function playClip(url, rate, robot) { return new Promise(async res => {
   try {
     unlockAudio(); if (!actx) return playClipFallback(url, rate).then(res);
     let buf = await getBuffer(url);
+    if (!await contextReady()) return res(true);
     if (rate !== 1) buf = stretch(buf, rate, url + "@" + rate);
     const src = actx.createBufferSource(); src.buffer = buf; src.playbackRate.value = rate;
     let osc = null;
@@ -229,6 +249,7 @@ function playTts(text) { return new Promise(res => {
 async function say(parts) {
   stopAudio(); const tok = sayToken; parts = parts.filter(Boolean);
   const rate = S.pitch === 1.4 ? 1.25 : S.pitch === 0.7 ? 0.8 : 1;
+  preload(parts, true);
   for (let i = 0; i < parts.length; i++) {
     if (tok !== sayToken) return;
     if (typeof parts[i] === "object") { await new Promise(r => setTimeout(r, parts[i].pause)); continue; }
@@ -719,6 +740,12 @@ function readChooser() {
   app.querySelectorAll("[data-m]").forEach(b => b.onclick = () => startSession("read", b.dataset.m));
   say(["Veux-tu lire des mots ou des phrases?"]);
 }
+const COMMON_PARTS = [...PRAISE, ...PRAISE_RETRY, ...Object.values(PRAISE_ROW), "Presque! Essaie encore.", "Oups! Reste sur le modèle.", "Écoute encore.", "À toi!", "Félicitations!", "Tu as gagné", "nouveaux abonnés", "nouvel abonné", "et un nouveau collant!"];
+function itemParts(it) {
+  const g = GAMES[it.kind]; if (!g) return [];
+  try { return [CONSIGNE[it.kind], ANNONCE[it.kind], ...g.prompt(it), ...(g.praise ? g.praise(it) : []), ...(PRAISE_BY[it.kind] || [])]; } catch { return []; }
+}
+function sessionParts(items) { return [...items.slice(0, 2).flatMap(itemParts), ...COMMON_PARTS, ...items.slice(2).flatMap(itemParts)]; }
 function startSession(kind, opt) {
   stopAudio();
   if (kind === "read" && !opt) return readChooser();
@@ -730,6 +757,7 @@ function startSession(kind, opt) {
   if (!items.length) { view(`${topbar()}<div class="card">Aucun mot chargé.</div>`); $("#back").onclick = home; return; }
   S.plays[kind] = (S.plays[kind] || 0) + 1; save();
   session = { kind, items, i: 0, retry: [], good: 0, total: items.length, s: S.sessions, seen: new Set() };
+  preload(sessionParts(items));
   nextItem();
 }
 function nextItem() {
@@ -748,6 +776,7 @@ function nextItem() {
   const intro = first || (it.kind === "trace" && !it.fig && it.cursive !== session.lastCursive);
   const parts = intro && !S.mute[it.kind] && consigne ? [consigne, { pause: 700 }, ...(ann ? [ann, { pause: 350 }] : []), ...prompt] : it.kind === "read" ? (first ? GAMES.read.prompt(it) : []) : prompt;
   session.seen.add(key); session.lastCursive = it.cursive;
+  preload([...parts, ...itemParts(it)], true); if (session.items[session.i + 1]) preload(itemParts(session.items[session.i + 1]), true);
   const me = session, idx = session.i;
   setTimeout(() => { if (session === me && session.i === idx && $("#speak")) say(parts).then(() => { if (it.kind === "music" && session === me && session.i === idx && !session.locked && $("#speak")) playMusic(it); }); }, 300);
 }
@@ -1479,6 +1508,7 @@ function home() {
   app.querySelectorAll("[data-g]").forEach(b => b.onclick = () => startSession(b.dataset.g));
   app.querySelectorAll("[data-cat]").forEach(b => b.onclick = () => catScreen(b.dataset.cat));
   if (!greeted) { greeted = true; setTimeout(() => { if ($(".hello")) say([hello]); }, 400); }
+  preload(COMMON_PARTS);
   clearTimeout(home.nap);
   const nap = () => { home.nap = setTimeout(() => { const z = $(".hellozomb"), bub = $(".bubble"); if (!z) return; z.innerHTML = zombinette("sleep"); z.classList.add("asleep"); bub.textContent = "Zzz…"; }, 40000); };
   nap();
