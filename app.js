@@ -1263,7 +1263,7 @@ function outfitSvg(z) {
 function zombinette(pose = "idle") {
   const z = Object.assign({}, ZDEF, S.zomb || {});
   const arm = d => `<path d="${d}" class="zarm-o"/><path d="${d}" class="zarm"/>`, hand = (x, y) => `<circle cx="${x}" cy="${y}" r="5.5" fill="${z.hands}" stroke="${OUT}" stroke-width="2.5"/>`;
-  const pom = (x, y) => `<circle cx="${x}" cy="${y}" r="9" fill="${z.hands === ZDEF.hands ? "#f472b6" : z.hands}" stroke="${OUT}" stroke-width="3"/>`;
+  const pom = (x, y) => `<circle cx="${x}" cy="${y}" r="9" fill="${z.handsSet ? z.hands : "#f472b6"}" stroke="${OUT}" stroke-width="3"/>`;
   const arms = pose === "happy" ? arm("M28 76 L12 50") + arm("M72 76 L88 50") + pom(11, 46) + pom(89, 46)
     : pose === "think" ? arm("M28 78 L20 100") + arm("M72 78 L62 62 L56 58") + hand(20, 100) + hand(56, 58)
     : pose === "dance" ? arm("M28 76 L12 58") + arm("M72 78 L88 94") + hand(12, 58) + hand(88, 94)
@@ -1450,7 +1450,7 @@ function zombEditor(tabs) {
       <div class="zparts">${rows.map(([ic, lb, html]) => `<div class="zpart"><div class="zlab">${ic} ${lb}</div>${html}</div>`).join("")}</div></div></div>`, "cabin");
   app.querySelectorAll("[data-room]").forEach(b => b.onclick = () => { cabinRoom = b.dataset.room; cabinScreen(true); });
   app.querySelectorAll(".zopt").forEach(b => b.onclick = () => {
-    S.zomb = Object.assign({}, ZDEF, S.zomb || {}, { [b.dataset.k]: b.dataset.v }); save();
+    S.zomb = Object.assign({}, ZDEF, S.zomb || {}, { [b.dataset.k]: b.dataset.v }, b.dataset.k === "hands" ? { handsSet: true } : {}); save();
     app.querySelectorAll(`.zopt[data-k="${b.dataset.k}"]`).forEach(x => x.classList.toggle("on", x === b));
     $("#zprev").innerHTML = zombinette("happy"); clearTimeout(zombEditor.t); zombEditor.t = setTimeout(() => { if ($("#zprev")) $("#zprev").innerHTML = zombinette("idle"); }, 900);
   });
