@@ -141,6 +141,7 @@ function load() {
   if (gone.length) { out.cabin.items = out.cabin.items.filter(id => !gone.includes(id)); out.cabin.pending = Math.min(3, out.cabin.pending + gone.length); }
   if (!s.days && s.streak && s.streak.last) { const [y, m, d] = s.streak.last.split("-").map(Number); out.days = Array.from({ length: s.streak.n || 1 }, (_, k) => dayStr(new Date(y, m - 1, d - k))); }
   delete out.bg;
+  if (!s.zombV) { out.zomb = null; out.zombV = 2; }
   if (s.palier && !s.boost) { out.palier = Math.max(out.palier, 5);
     out.math = Object.assign(out.math, { firstMax: Math.max(out.math.firstMax, 20), addMax: Math.max(out.math.addMax, 10), sub: true });
     out.trace = Object.assign(out.trace, { upper: true, cursive: true, cwords: true });
@@ -1240,14 +1241,15 @@ function decoStep() {
 const OUT = "#2b1d3d";
 const ZOPT = {
   hair: [["#7c3aed", "violet"], ["#f472b6", "rose"], ["#3b82f6", "bleu"], ["#22c55e", "vert"], ["#ea580c", "roux"], ["#facc15", "blond"], ["#1f2937", "noir"]],
-  style: [["couettes", "🎀", "Couettes"], ["court", "💇‍♀️", "Court"], ["long", "👱‍♀️", "Long"]],
-  outfit: [["robe", "👗"], ["pantalon", "👖"], ["short", "🩳"]],
-  dress: [["#ec4899", "rose"], ["#8b5cf6", "violet"], ["#3b82f6", "bleu"], ["#22c55e", "vert"], ["#facc15", "jaune"], ["#ef4444", "rouge"], ["#1f2937", "noir"], ["#f8fafc", "blanc"]],
+  style: [["frise", "🌀", "Frisé"], ["couettes", "🎀", "Couettes"], ["court", "💇‍♀️", "Court"], ["long", "👱‍♀️", "Long"]],
+  outfit: [["veste", "🧥"], ["robe", "👗"], ["pantalon", "👖"], ["short", "🩳"]],
+  dress: [["#1e3a8a", "marine"], ["#ec4899", "rose"], ["#8b5cf6", "violet"], ["#3b82f6", "bleu"], ["#22c55e", "vert"], ["#facc15", "jaune"], ["#ef4444", "rouge"], ["#1f2937", "noir"], ["#f8fafc", "blanc"]],
+  acc: [["coeur", "💙"], ["aucun", "⬜"]],
   motif: [["etoile", "⭐"], ["coeur", "❤️"], ["eclair", "⚡"], ["note", "🎵"], ["crane", "💀"], ["aucun", "⬜"]],
   shoes: [["#7c3aed", "violet"], ["#f472b6", "rose"], ["#ef4444", "rouge"], ["#3b82f6", "bleu"], ["#22c55e", "vert"], ["#facc15", "jaune"], ["#1f2937", "noir"], ["#f8fafc", "blanc"]],
   hands: [["#86d49a", "peau"], ["#f472b6", "rose"], ["#8b5cf6", "violet"], ["#3b82f6", "bleu"], ["#22c55e", "vert"], ["#facc15", "jaune"], ["#ef4444", "rouge"], ["#f8fafc", "blanc"], ["#1f2937", "noir"]]
 };
-const ZDEF = { hair: "#7c3aed", style: "couettes", outfit: "robe", dress: "#ec4899", motif: "etoile", shoes: "#7c3aed", hands: "#86d49a" };
+const ZDEF = { hair: "#22c55e", style: "frise", outfit: "veste", dress: "#1e3a8a", motif: "aucun", shoes: "#1f2937", hands: "#86d49a", acc: "coeur" };
 const MOTIFS = {
   etoile: `<path d="M50 74 l3 6 7 1 -5 5 1 7 -6 -3 -6 3 1 -7 -5 -5 7 -1 z" fill="#fde047" stroke="${OUT}" stroke-width="1.5"/>`,
   coeur: `<path d="M50 92 l-8 -8 a5 5 0 0 1 8 -6 a5 5 0 0 1 8 6 z" fill="#ef4444" stroke="${OUT}" stroke-width="1.5"/>`,
@@ -1258,29 +1260,42 @@ const MOTIFS = {
 };
 function outfitSvg(z) {
   const st = `stroke="${OUT}" stroke-width="3" stroke-linejoin="round"`, low = shade(z.dress, 0, 0.35);
+  if (z.outfit === "veste") return `<path d="M32 94 L68 94 L73 113 L27 113 Z" fill="#9ca3af" ${st}/><path d="M44 95 L58 95 L52 112 Z" fill="#f59e0b"/><path d="M29 104 L40 104 L38 112 L28 112 Z" fill="#8b5cf6"/><path d="M32 94 L68 94 L73 113 L27 113 Z" fill="none" ${st}/>
+    <path d="M34 66 L66 66 L68 96 L32 96 Z" fill="${z.dress}" ${st}/><path d="M44 67 L56 67 L55 95 L45 95 Z" fill="#9f1239" stroke="${OUT}" stroke-width="2"/>`;
   if (z.outfit === "pantalon") return `<path d="M36 92 h13 l-1 34 h-11 z M51 92 h13 l-1 34 h-11 z" fill="${low}" ${st}/><path d="M34 66 L66 66 L69 95 L31 95 Z" fill="${z.dress}" ${st}/>`;
   if (z.outfit === "short") return `<path d="M35 92 h14 l-1 14 h-12 z M51 92 h14 l-1 14 h-12 z" fill="${low}" ${st}/><path d="M34 66 L66 66 L69 95 L31 95 Z" fill="${z.dress}" ${st}/>`;
   return `<path d="M34 66 L66 66 L76 108 L24 108 Z" fill="${z.dress}" ${st}/><path d="M24 108 L76 108 L72 100 L28 100 Z" fill="${shade(z.dress, 255, 0.45)}"/>`;
 }
 function zombinette(pose = "idle") {
   const z = Object.assign({}, ZDEF, S.zomb || {});
-  const arm = d => `<path d="${d}" class="zarm-o"/><path d="${d}" class="zarm"/>`, hand = (x, y) => `<circle cx="${x}" cy="${y}" r="5.5" fill="${z.hands}" stroke="${OUT}" stroke-width="2.5"/>`;
+  const sleeve = z.outfit === "veste" ? ` style="stroke:${z.dress}"` : "";
+  const arm = d => `<path d="${d}" class="zarm-o"/><path d="${d}" class="zarm"${sleeve}/>`;
+  const hand = (x, y, fx, fy) => {
+    const a = Math.atan2(y - fy, x - fx), tips = [-0.8, -0.27, 0.27, 0.8].map(o => [x + Math.cos(a + o) * 9, y + Math.sin(a + o) * 9].map(v => v.toFixed(1)));
+    const f = tips.map(([tx, ty]) => `M${x} ${y} L${tx} ${ty}`).join(" ");
+    return `<path d="${f}" stroke="${OUT}" stroke-width="5" stroke-linecap="round"/><path d="${f}" stroke="${z.hands}" stroke-width="2.8" stroke-linecap="round"/><circle cx="${x}" cy="${y}" r="5.5" fill="${z.hands}" stroke="${OUT}" stroke-width="2.5"/>`;
+  };
   const pom = (x, y) => `<circle cx="${x}" cy="${y}" r="9" fill="${z.handsSet ? z.hands : "#f472b6"}" stroke="${OUT}" stroke-width="3"/>`;
   const arms = pose === "happy" ? arm("M28 76 L12 50") + arm("M72 76 L88 50") + pom(11, 46) + pom(89, 46)
-    : pose === "think" ? arm("M28 78 L20 100") + arm("M72 78 L62 62 L56 58") + hand(20, 100) + hand(56, 58)
-    : pose === "dance" ? arm("M28 76 L12 58") + arm("M72 78 L88 94") + hand(12, 58) + hand(88, 94)
-    : pose === "surprise" ? arm("M28 76 L8 62") + arm("M72 76 L92 62") + hand(8, 62) + hand(92, 62)
-    : pose === "sleep" ? arm("M28 78 L24 100") + arm("M72 78 L76 100") + hand(24, 100) + hand(76, 100)
-    : arm("M28 78 L20 100") + arm("M72 76 L86 56") + hand(20, 100) + hand(86, 56);
-  const mouth = pose === "happy" || pose === "dance" ? `<path d="M41 50 Q50 61 59 50 Z" fill="#7f1d1d" stroke="${OUT}" stroke-width="2.5"/>`
+    : pose === "think" ? arm("M28 78 L20 100") + arm("M72 78 L62 62 L56 58") + hand(20, 100, 28, 78) + hand(56, 58, 62, 62)
+    : pose === "dance" ? arm("M28 76 L12 58") + arm("M72 78 L88 94") + hand(12, 58, 28, 76) + hand(88, 94, 72, 78)
+    : pose === "surprise" ? arm("M28 76 L8 62") + arm("M72 76 L92 62") + hand(8, 62, 28, 76) + hand(92, 62, 72, 76)
+    : pose === "sleep" ? arm("M28 78 L24 100") + arm("M72 78 L76 100") + hand(24, 100, 28, 78) + hand(76, 100, 72, 78)
+    : arm("M28 78 L20 100") + arm("M72 76 L86 56") + hand(20, 100, 28, 78) + hand(86, 56, 72, 76)
+      + (z.acc === "coeur" ? `<path d="M18 97 Q8 90 12 78" stroke="${OUT}" stroke-width="1.4" fill="none"/><path d="M12 79 l-7.5 -7.5 a4.5 4.5 0 0 1 7.5 -5.5 a4.5 4.5 0 0 1 7.5 5.5 z" fill="#2563eb" stroke="${OUT}" stroke-width="2" stroke-linejoin="round"/>` : "");
+  const grin = (w, h) => `<path d="M${50 - w} 49 Q50 ${49 + h} ${50 + w} 49 Z" fill="#dc2626" stroke="${OUT}" stroke-width="2.5" stroke-linejoin="round"/><path d="M${52 - w} 50.2 H${48 + w} L${48.5 + w - 1} 52.6 H${51.5 - w + 1} Z" fill="#fff"/>`;
+  const mouth = pose === "happy" || pose === "dance" ? grin(11, 16)
     : pose === "surprise" ? `<ellipse cx="50" cy="54" rx="4.5" ry="6" fill="#7f1d1d" stroke="${OUT}" stroke-width="2.5"/>`
     : pose === "sleep" ? `<path d="M46 53 Q50 55 54 53" fill="none" stroke="${OUT}" stroke-width="2.5" stroke-linecap="round"/>`
     : pose === "think" ? `<path d="M44 53 Q50 50 57 54" fill="none" stroke="${OUT}" stroke-width="3" stroke-linecap="round"/>`
-    : `<path d="M42 51 Q50 58 58 51" fill="none" stroke="${OUT}" stroke-width="3" stroke-linecap="round"/>`;
+    : grin(9, 13);
+  const curl = (cx, cy, r) => `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${z.hair}" stroke="${OUT}" stroke-width="2.5"/><path d="M${cx - r * .45} ${cy} a${r * .45} ${r * .45} 0 1 1 ${r * .45} ${r * .45}" fill="none" stroke="${shade(z.hair, 0, 0.4)}" stroke-width="1.6" stroke-linecap="round"/>`;
   const hairBack = z.style === "long" ? `<path d="M24 40 Q22 12 50 12 Q78 12 76 40 L80 76 Q68 82 62 68 L38 68 Q32 82 20 76 Z" fill="${z.hair}" stroke="${OUT}" stroke-width="3" stroke-linejoin="round"/>`
+    : z.style === "frise" ? [[22, 30, 11], [19, 46, 10], [21, 62, 10], [78, 30, 11], [81, 46, 10], [79, 62, 10], [30, 16, 11], [50, 10, 12], [70, 16, 11], [27, 75, 8], [73, 75, 8]].map(c => curl(...c)).join("")
     : z.style === "court" ? `<path d="M23 52 Q16 14 50 12 Q84 14 77 52 Q71 58 66 52 L66 40 L34 40 L34 52 Q29 58 23 52 Z" fill="${z.hair}" stroke="${OUT}" stroke-width="3" stroke-linejoin="round"/>` : "";
-  const tails = z.style === "couettes" ? `<circle cx="22" cy="28" r="11" fill="${z.hair}" stroke="${OUT}" stroke-width="3"/><circle cx="78" cy="28" r="11" fill="${z.hair}" stroke="${OUT}" stroke-width="3"/>
+  const tails0 = z.style === "couettes" ? `<circle cx="22" cy="28" r="11" fill="${z.hair}" stroke="${OUT}" stroke-width="3"/><circle cx="78" cy="28" r="11" fill="${z.hair}" stroke="${OUT}" stroke-width="3"/>
     <path d="M14 19 l8 5 -8 5 z M30 19 l-8 5 8 5 z" fill="#f472b6" stroke="${OUT}" stroke-width="1.5"/>` : "";
+  const tails = tails0;
   return `<svg class="zomb ${pose}" viewBox="0 0 100 140">
     <rect x="37" y="104" width="9" height="24" rx="4" fill="#86d49a" stroke="${OUT}" stroke-width="3"/><rect x="54" y="104" width="9" height="24" rx="4" fill="#86d49a" stroke="${OUT}" stroke-width="3"/>
     <path d="M33 130 h15 v-6 h-12 z M52 130 h15 l-3 -6 h-12 z" fill="${z.shoes}" stroke="${OUT}" stroke-width="3" stroke-linejoin="round"/>
@@ -1288,11 +1303,11 @@ function zombinette(pose = "idle") {
     ${outfitSvg(z)}${MOTIFS[z.motif] || ""}
     ${tails}
     <circle cx="50" cy="40" r="25" fill="#9ae6a6" stroke="${OUT}" stroke-width="3"/>
-    <path d="M25 38 Q27 14 50 14 Q73 14 75 38 Q66 26 52 28 Q44 22 34 30 Q30 33 25 38 Z" fill="${z.hair}" stroke="${OUT}" stroke-width="3" stroke-linejoin="round"/>
+    ${z.style === "frise" ? [[29, 27, 7], [37, 20, 7.5], [46, 16, 7.5], [55, 16, 7.5], [64, 20, 7.5], [71, 27, 7]].map(c => curl(...c)).join("") : `<path d="M25 38 Q27 14 50 14 Q73 14 75 38 Q66 26 52 28 Q44 22 34 30 Q30 33 25 38 Z" fill="${z.hair}" stroke="${OUT}" stroke-width="3" stroke-linejoin="round"/>`}
     <path d="M60 30 l8 4 M62 28 l-2 6 M66 30 l-2 6" stroke="${OUT}" stroke-width="1.6"/>
     ${pose === "sleep" ? `<path d="M36 43 Q41 47 46 43 M54 43 Q59 47 64 43" fill="none" stroke="${OUT}" stroke-width="2.5" stroke-linecap="round"/>`
       : `<circle cx="41" cy="42" r="${pose === "surprise" ? 7.5 : 6}" fill="#fff" stroke="${OUT}" stroke-width="2"/><circle cx="42" cy="43" r="3" fill="${OUT}"/>
-    <circle cx="59" cy="42" r="${pose === "surprise" ? 7.5 : 6}" fill="#fff" stroke="${OUT}" stroke-width="2"/><circle cx="58" cy="43" r="3" fill="${OUT}"/>`}
+    <circle cx="59" cy="42" r="${pose === "surprise" ? 7.5 : 6}" fill="#fff" stroke="${OUT}" stroke-width="2"/><circle cx="58" cy="43" r="3" fill="${OUT}"/>${pose === "surprise" ? "" : `<path d="M35 42 a6 6 0 0 1 12 0 z M53 42 a6 6 0 0 1 12 0 z" fill="#3b0764" stroke="${OUT}" stroke-width="2" stroke-linejoin="round"/>`}`}
     <circle cx="35" cy="50" r="3.5" fill="#f9a8d4" opacity=".8"/><circle cx="65" cy="50" r="3.5" fill="#f9a8d4" opacity=".8"/>
     ${mouth}${pose === "think" ? `<text x="78" y="20" font-size="18" font-weight="800" fill="#fde047" stroke="${OUT}" stroke-width="1">?</text>` : ""}
     ${pose === "surprise" ? `<text x="80" y="22" font-size="20" font-weight="900" fill="#fde047" stroke="${OUT}" stroke-width="1">!</text>` : ""}
@@ -1446,10 +1461,10 @@ function enableDrag(svg) {
 }
 function zombEditor(tabs) {
   const z = Object.assign({}, ZDEF, S.zomb || {});
-  const sw = (key, list) => `<div class="zrow"><div class="zopts">${list.map(([v, a]) => key === "style" || key === "motif" || key === "outfit"
+  const sw = (key, list) => `<div class="zrow"><div class="zopts">${list.map(([v, a]) => key === "style" || key === "motif" || key === "outfit" || key === "acc"
     ? `<button class="zopt txt ${z[key] === v ? "on" : ""}" data-k="${key}" data-v="${v}">${a}</button>`
     : `<button class="zopt ${z[key] === v ? "on" : ""}" data-k="${key}" data-v="${v}" style="background:${v}" aria-label="${a}"></button>`).join("")}</div></div>`;
-  const rows = [["💇‍♀️", "Cheveux", sw("style", ZOPT.style) + sw("hair", ZOPT.hair)], ["👗", "Vêtements", sw("outfit", ZOPT.outfit) + sw("dress", ZOPT.dress) + sw("motif", ZOPT.motif)], ["👟", "Souliers", sw("shoes", ZOPT.shoes)], ["🧤", "Mains", sw("hands", ZOPT.hands)]];
+  const rows = [["💇‍♀️", "Cheveux", sw("style", ZOPT.style) + sw("hair", ZOPT.hair)], ["👗", "Vêtements", sw("outfit", ZOPT.outfit) + sw("dress", ZOPT.dress) + sw("motif", ZOPT.motif)], ["👟", "Souliers", sw("shoes", ZOPT.shoes)], ["🧤", "Mains", sw("hands", ZOPT.hands)], ["🎈", "Ballon", sw("acc", ZOPT.acc)]];
   view(`<div class="section"><h1>Zombidette</h1>${tabs}
     <div class="zedit"><div class="zprev" id="zprev">${zombinette("idle")}</div>
       <div class="zparts">${rows.map(([ic, lb, html]) => `<div class="zpart"><div class="zlab">${ic} ${lb}</div>${html}</div>`).join("")}</div></div></div>`, "cabin");
